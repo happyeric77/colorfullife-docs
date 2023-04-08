@@ -31,6 +31,19 @@ In addition to my work in the tech industry, I'm also an avid boxer and enjoy co
 
 I'm excited to share my experiences and insights with others who are passionate about blockchain and full-stake development. Whether you're a seasoned developer or just starting out, I believe that continuous learning and exploration are key to success in this field. So let's connect and share our knowledge and experiences together!
 
+```mermaid
+gantt
+  title My Journey
+  dateFormat  YYYY-MM-DD
+  section Study
+  Student (UK)         : master1, 2012-08-01, 1y
+  section Work
+  IoT Product manager (TW)      : tw, after master1  , 4y
+  IoT FAE (US)      : us, after tw, 180d
+  BD (JP)      :  jp1, after us, 4y
+  Full-stack / blockchain (JP)      : jp2,  2019, 5y
+```
+
 ### Cheers!!!!!!!!!!!!!!🍺 🍺 🍺 🍺 🍺 🍺
 
 ![Beer in Hokaito](/img/beer.jpeg)
