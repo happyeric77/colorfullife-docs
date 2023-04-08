@@ -26,11 +26,11 @@ After completing my master's degree in business in the UK and working many years
 I also enjoy the creativity that comes with being a developer. There's a certain satisfaction in taking a client's vision and turning it into a fully functioning application. The ability to create something tangible and meaningful from scratch is incredibly rewarding and keeps me motivated to continue learning and growing as a developer.
 
 In addition to my work in the tech industry, I'm also an avid boxer and enjoy cooking, especially Japanese cuisine. Living in Japan has given me the chance to learn more about the country's culture and traditions, which has been an incredibly enriching experience.
-![](https://docs.colorfullife.ml/img/jp-fujisan.jpeg)
-![](https://docs.colorfullife.ml/img/sushi.jpeg)
+![Fujisan photo](/img/jp-fujisan.jpeg)
+![Sushi photo](/img/sushi.jpeg)
 
 I'm excited to share my experiences and insights with others who are passionate about blockchain and full-stake development. Whether you're a seasoned developer or just starting out, I believe that continuous learning and exploration are key to success in this field. So let's connect and share our knowledge and experiences together!
 
 ### Cheers!!!!!!!!!!!!!!🍺 🍺 🍺 🍺 🍺 🍺
 
-![](https://docs.colorfullife.ml/img/beer.jpeg)
+![Beer in Hokaito](/img/beer.jpeg)
