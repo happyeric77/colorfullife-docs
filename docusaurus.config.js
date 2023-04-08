@@ -116,13 +116,13 @@ const config = {
           {
             title: "More",
             items: [
-              // {
-              //   label: "Blog",
-              //   to: "/blog",
-              // },
               {
-                label: "GitHub",
-                href: "https://github.com/happyeric77",
+                label: "ColorfulLife Blog",
+                to: "https://blog.colorfullife.ml/pages/diary/erics-daily-life/",
+              },
+              {
+                label: "HackMD",
+                href: "https://hackmd.io/@happyeric77",
               },
             ],
           },
