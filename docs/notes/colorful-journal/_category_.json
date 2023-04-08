@@ -1,0 +1,8 @@
+{
+  "label": "Colorful journal",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "The daily note of my learning journey"
+  }
+}
