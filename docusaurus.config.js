@@ -134,6 +134,11 @@ const config = {
         darkTheme: darkCodeTheme,
       },
     }),
+  // Mermaid graph feature: https://mermaid.js.org/syntax/pie.html
+  markdown: {
+    mermaid: true,
+  },
+  themes: ["@docusaurus/theme-mermaid"],
 };
 
 module.exports = config;

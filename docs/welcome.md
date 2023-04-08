@@ -5,7 +5,7 @@ slug: /
 
 # Welcome to ColorfulLife
 
-Welcome to ColorfulLife Docs, where you will find a comprehensive collection of information related to blockchain and frontend development.
+Welcome to ColorfulLife Docs, where you will find a comprehensive collection of information related to blockchain and full-stake development.
 
 As a developer in this field, I understand the importance of continuous learning and self-motivation in order to stay up-to-date with the latest technologies and trends. That is why I have decided to share my learning journey with you through this platform.
 
