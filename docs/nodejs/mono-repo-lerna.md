@@ -3,7 +3,12 @@ title: "Lerna"
 tags: [nodejs, lerna, mono-repo]
 ---
 
+import Drawio from "@theme/Drawio";
+import drawIo from "!!raw-loader!../../static/drawio/mono-repo.drawio";
+
 # Mono Repo with Lerna
+
+<Drawio content={drawIo} page={1} zoom={0.5} editable={true} maxHeight={300}/>
 
 Lerna is a tool for managing JavaScript projects with multiple packages. It optimizes the workflow around managing multi-package repositories with git and npm.
 
