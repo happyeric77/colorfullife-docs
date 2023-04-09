@@ -86,6 +86,19 @@ And I also want to remove associated style and react components.
 └── pages
 ```
 
+### Set default theme to dark
+
+```js title="docusaurus.config.js"
+themeConfig: {
+  colorMode: {
+    // highlight-start
+    defaultMode: 'dark',
+    disableSwitch: false, // option: default is false
+    // highlight-end
+  },
+},
+```
+
 ### Start writing docs 🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉
 
 Now you can start writing docs in the `docs` folder by creating markdown files by referring to the [docs](https://docusaurus.io/docs/docs-introduction) section.
