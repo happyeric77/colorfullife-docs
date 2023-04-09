@@ -1,6 +1,7 @@
 ---
 title: Search bar
 description: implement search bar
+tags: [docusaurus]
 ---
 
 # Use Argolia to implement search bar

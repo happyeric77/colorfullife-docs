@@ -1,5 +1,7 @@
 ---
+title: Git Tag
 position: 6
+tags: [git, github]
 ---
 
 # Git Tag

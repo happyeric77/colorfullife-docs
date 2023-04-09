@@ -1,5 +1,7 @@
 ---
+title: GitHub SSH
 position: 3
+tags: [git, github]
 ---
 
 # Access GitHub using SSH

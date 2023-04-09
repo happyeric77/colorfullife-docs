@@ -1,5 +1,7 @@
 ---
+title: Git Reset
 position: 5
+tags: [git, github]
 ---
 
 # Git Reset

@@ -1,5 +1,7 @@
 ---
+title: Git Config Alias
 position: 1
+tags: [git, github]
 ---
 
 # Git Config Alias

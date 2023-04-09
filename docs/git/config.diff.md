@@ -1,5 +1,7 @@
 ---
+title: Git Config Diff
 position: 2
+tags: [git, github]
 ---
 
 # Git Config Diff

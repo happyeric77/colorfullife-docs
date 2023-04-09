@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 slug: /
+tags: [diary, about]
 ---
 
 # Welcome to ColorfulLife

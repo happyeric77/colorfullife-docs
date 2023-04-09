@@ -1,5 +1,7 @@
 ---
+title: Multiple GitHub SSH locally
 position: 4
+tags: [git, github]
 ---
 
 # Multiple GitHub SSH locally
