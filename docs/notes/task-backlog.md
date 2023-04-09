@@ -1,6 +1,6 @@
 ---
 title: Task Backlog 🛠
-discription: New ideas to be implemented
+description: New ideas to be implemented
 ---
 
 # TODO
