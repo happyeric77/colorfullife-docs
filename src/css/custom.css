@@ -18,7 +18,7 @@
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --ifm-color-primary: #25c2a0;
   --ifm-color-primary-dark: #21af90;
   --ifm-color-primary-darker: #1fa588;
@@ -27,4 +27,44 @@
   --ifm-color-primary-lighter: #32d8b4;
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Custom CSS for code blocks */
+
+.code-block-added-line,
+.code-block-highlighted-line {
+  background-color: #37423b;
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+.code-block-highlighted-line {
+  border-left: 3px solid green;
+}
+
+.code-block-added-line::before {
+  content: "+ ";
+  position: absolute;
+  left: 0.2rem;
+  color: #1a8870;
+}
+
+.code-block-deleted-line,
+.code-block-error-line {
+  background-color: #ff000020;
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+.code-block-error-line {
+  border-left: 3px solid #ff000080;
+}
+
+.code-block-deleted-line::before {
+  content: "- ";
+  position: absolute;
+  left: 0.2rem;
+  color: #ff000080;
 }

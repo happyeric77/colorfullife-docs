@@ -84,6 +84,10 @@ const config = {
           },
         ],
       },
+      colorMode: {
+        defaultMode: "dark",
+        disableSwitch: false,
+      },
       footer: {
         style: "dark",
         links: [
@@ -132,12 +136,36 @@ const config = {
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
+        magicComments: [
+          // Remember to extend the default highlight class name as well!
+          {
+            className: "code-block-highlighted-line",
+            line: "highlight-next-line",
+            block: { start: "highlight-start", end: "highlight-end" },
+          },
+          {
+            className: "code-block-error-line",
+            line: "error-next-line",
+            block: { start: "error-start", end: "error-end" },
+          },
+          {
+            className: "code-block-added-line",
+            line: "add-next-line",
+            block: { start: "add-start", end: "add-end" },
+          },
+          {
+            className: "code-block-deleted-line",
+            line: "delete-next-line",
+            block: { start: "delete-start", end: "delete-end" },
+          },
+        ],
       },
     }),
   // Mermaid graph feature: https://mermaid.js.org/syntax/pie.html
   markdown: {
     mermaid: true,
   },
+
   themes: ["@docusaurus/theme-mermaid"],
 };
 

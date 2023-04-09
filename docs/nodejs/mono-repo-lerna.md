@@ -1,0 +1,73 @@
+---
+title: "Lerna"
+tags: [nodejs, lerna, mono-repo]
+---
+
+# Mono Repo with Lerna
+
+Lerna is a tool for managing JavaScript projects with multiple packages. It optimizes the workflow around managing multi-package repositories with git and npm.
+
+This article will show you how to create a mono repo with Lerna.
+
+:::tip
+You can checkout my [video tutorial](https://www.youtube.com/watch?v=M-C1c_EP29w) on YouTube.
+:::
+
+## Create a new project
+
+Create a new project with the following command:
+
+```bash
+mkdir lerna-example
+cd lerna-example
+
+npm init -y
+```
+
+## Initialize Lerna
+
+Initialize Lerna with the following command:
+
+```bash
+npx lerna init
+```
+
+This will create a `lerna.json` file in the root of the project.
+
+## Create a package
+
+Create a new package with the following command:
+
+```bash
+npx lerna create @lerna-example/package-1 -y
+```
+
+This will create a new folder `packages/package-1` with a `package.json` file.
+
+## Most common commands
+
+Now that we have a mono repo with a package, it helps to manage all npm packages in root `package.json` file and node modules in root `node_modules` folder. So, if we `npm install` a package in root `package.json` file, it will be installed in root `node_modules` folder and all packages in `packages` folder will be able to use it.
+
+To manage the packages, I often use the following commands:
+
+### Run certain npm script in all packages (ex: `build`)
+
+```bash
+npx lerna run build
+```
+
+### Run npm script in a certain package (ex: `build` in `package-1`)
+
+```bash
+npx lerna --scope=@lerna-example/package-1 run build
+```
+
+### Publish all packages
+
+```bash
+npx lerna publish
+```
+
+:::info
+If you want to publish packages to npm, you can also checkout my [another video tutorial](https://youtu.be/0KGXdDv6pYc) on YouTube.
+:::
