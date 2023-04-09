@@ -1,6 +1,7 @@
 ---
 title: Get Started
 tags: [docusaurus]
+description: Get started with docusaurus
 ---
 
 # Init a new documentation site with docusaurus
@@ -88,3 +89,5 @@ And I also want to remove associated style and react components.
 ### Start writing docs 🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉
 
 Now you can start writing docs in the `docs` folder by creating markdown files by referring to the [docs](https://docusaurus.io/docs/docs-introduction) section.
+
+Here it is the [inital version](https://github.com/happyeric77/colorfullife-docs/releases/tag/v0.0.0) of my documentation website.

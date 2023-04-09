@@ -1,0 +1,51 @@
+---
+title: Draw.io plugin
+description: Draw.io plugin for Docusaurus
+---
+
+# Enable draw.io plugin
+
+This [plugin](https://github.com/xiguaxigua/docusaurus-plugin-drawio) allows you to embed draw.io diagrams in your Docusaurus site.
+
+## Installation
+
+Install plugin npm package by yarn or npm:
+
+```sh
+# yarn
+yarn add @docusaurus/plugin-drawio
+
+# npm
+npm install @docusaurus/plugin-drawio
+```
+
+## configuration
+
+Add the plugin to your `docusaurus.config.js` file:
+
+```js title="docusaurus.config.js"
+module.exports = {
+  // ...
+  plugins: [["drawio", {}]],
+  // ...
+};
+```
+
+## Usage & Example
+
+Now you can use the Drawio component in your MDX files:
+
+```mdx
+import Drawio from "@theme/Drawio";
+// highlight-next-line
+import drawIo from "!!raw-loader!@site/static/drawio/filename.drawio";
+
+# The example of draw.io with mdx
+
+<Drawio content={drawIo} page={1} zoom={0.5} editable={true} maxHeight={300} />
+```
+
+:::tip
+Make sure to put filename.drawio under ./static/drawio directory
+Checkout the example [here](/nodejs/mono-repo-lerna)
+:::
