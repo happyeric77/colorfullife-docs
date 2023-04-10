@@ -160,6 +160,11 @@ const config = {
           },
         ],
       },
+      algolia: {
+        appId: "WW3EG7I07T",
+        apiKey: "e71ea8f5f3dab4e20bd6f4bed0c643be",
+        indexName: "colorfullife",
+      },
     }),
   // Mermaid graph feature: https://mermaid.js.org/syntax/pie.html
   markdown: {
