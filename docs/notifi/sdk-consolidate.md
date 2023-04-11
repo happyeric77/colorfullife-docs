@@ -173,33 +173,27 @@ export const createLocalForageStorageDriver = (config: NotifiFrontendConfigurati
 
 :::
 
-#### - configuration modules:
+#### - configuration modules (WIP...🛠️)
 
 - `packages/notifi-react-hooks/lib/hooks/useNotifiConfig.ts`
 - `packages/notifi-frontend-client/lib/configuration/NotifiFrontendConfiguration.ts`
 
-#### - utils modules:
+#### - utils modules (WIP...🛠️)
 
 - `packages/notifi-react-hooks/lib/utils`
 - `packages/notifi-frontend-client/lib/client`
 
-#### - FilterOptions.ts
+#### - FilterOptions.ts ((WIP...🛠️)
 
 - `./packages/notifi-frontend-client/lib/models/FilterOptions.ts`
 - `packages/notifi-core/lib/NotifiClient.ts`
 
-#### - SubscriptionCardConfig.ts
+#### - SubscriptionCardConfig.ts (WIP...🛠️)
 
 - `packages/notifi-react-card/lib/hooks/SubscriptionCardConfig.ts`
 - `packages/notifi-frontend-client/lib/models/SubscriptionCardConfig.ts`
 
-:::caution
-**TODO**:
-It is still under high-level overview and not sure the scope.
-Need to break down the implementation into smaller tasks.
-:::
-
-### 3. Make all supported chains available in `notifi-frontend-client`
+### 3. Make all supported chains available in `notifi-frontend-client` (WIP...🛠️)
 
 Currently, we only have `APTOS` and `SOLANA` supported in `notifi-frontend-client`.
 
@@ -229,7 +223,7 @@ export const newSolanaConfig =
 // Need to add the reset of the chains
 ```
 
-### 4. Make all supported event available in `notifi-frontend-client`
+### 4. Make all supported event available in `notifi-frontend-client` (WIP...🛠️)
 
 Now, `notifi-frontend-client` only supports:
 
