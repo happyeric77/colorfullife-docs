@@ -38,7 +38,7 @@ flowchart TD
 
 ## Goal
 
-The better idea is to consolidate notifi-sdk-ts by the following steps:
+The idea is to consolidate notifi-sdk-ts by the following steps:
 
 1. Migrate useSubscribe hook from notifi-react-card to notifi-frontend-client.
 2. Combine notifi-react-hook and notifi-frontend-client.
@@ -49,11 +49,12 @@ So the final flow will be like the flowchart below:
 flowchart TD
     notifi-react-card --consume--> notifi-frontend-client --Operate--> Service
     subgraph notifi-frontend-client
-    ClientAdaptor(((ClientAdaptor))) --consume--> NotifiFrontendClient
+    ClientAdaptor((ClientAdaptor)):::adaptor --consume--> NotifiFrontendClient
+    classDef adaptor fill:orange,color:black
     end
 ```
 
-The ClientAdaptor object object will be the one replace the logic of useNotifiSubscribe hook in notifi-react-card.
+The ClientAdaptor object will be the one represent the logic of useNotifiSubscribe hook in notifi-react-card.
 
 > Naming of the ClientAdaptor is not fixed (TBC).
 
@@ -61,14 +62,12 @@ The ClientAdaptor object object will be the one replace the logic of useNotifiSu
 
 ### 1. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
 
-For now, the notifi-frontend-client only supports 'Solana' and 'APTOS' blockchain. We will need to test if it is working before implementing more chains.
-
-A new file structure (the clientAdaptor below) will be needed to support the new feature under /lib/.
+A new file structure (the clientAdaptor below) will be needed to support the new features (migrated from useNotifiSubscribe).
 
 ```bash
 ├── client
 # highlight-next-line
-├── clientAdaptor # new feature
+├── clientAdaptor # new feature (migrated from useNotifiSubscribe)
 ├── configuration
 ├── index.ts
 ├── models
@@ -77,90 +76,43 @@ A new file structure (the clientAdaptor below) will be needed to support the new
 ```
 
 :::caution
-**Question**:
-
-1. Not sure if it is a good idea to call it `clientAdaptor`.
-2. Seems like the `client` in `notifi-frontend-client` is using the type source from `notifi-graphql` instead of `notifi-core`. **Does it mean we want to migrate to `notifi-graphql` from `notifi-axios-adaptor` as a result of this consolidation?**
-
-Below is an example of type difference between react-frontend-client and react-hook.
-
-```ts title="packages/notifi-frontend-client/lib/client/NotifiFrontendClient.ts"
-  async completeLoginViaTransaction({
-    walletBlockchain,
-    walletAddress,
-    transactionSignature,
-    // highlight-start
-    // The input and output are from notifi-graphql
-  }: CompleteLoginProps): Promise<Types.CompleteLogInByTransactionMutation>
-  // highlight-end
-  // ...
-
-  type CompleteLoginProps = Omit<
-  // highlight-next-line
-  Types.CompleteLogInByTransactionInput,
-  'dappAddress' | 'randomUuid'
->;
-```
-
-```ts title="packages/notifi-graphql/lib/gql/generated.ts"
-export type CompleteLogInByTransactionInput = {
-  /** The dapp id for this tenant */
-  dappAddress: Scalars["String"];
-  /** Random client generated UUID used in hash generation of nonce+uuid */
-  randomUuid: Scalars["String"];
-  /** Timestamp in seconds since Unix epoch. Required for Aptos chain. This will be the timestamp on the transaction. */
-  timestamp?: InputMaybe<Scalars["Long"]>;
-  /** Transaction containing the Base64(SHA256(hash(nonce+uuid))) printed to 'Notifi Auth: <value>' */
-  transactionSignature: Scalars["String"];
-  /** Address of wallet attempting to log in with */
-  walletAddress: Scalars["String"];
-  /** Blockchain of the wallet */
-  walletBlockchain: WalletBlockchain;
-  /** Public key of wallet attempting to log in with. Required for Aptos chain. */
-  walletPublicKey?: InputMaybe<Scalars["String"]>;
-};
-
-export type CompleteLogInByTransactionMutation = {
-  __typename?: "NotifiMutation";
-  completeLogInByTransaction?:
-    | {
-        __typename?: "User";
-        email?: string | undefined;
-        emailConfirmed: boolean;
-        roles?: Array<string | undefined> | undefined;
-        authorization?: { __typename?: "Authorization"; token: string; expiry: string } | undefined;
-      }
-    | undefined;
-};
-```
-
-```ts title="packages/notifi-react-hooks/lib/hooks/useNotifiClient.ts"
-const completeLoginViaTransaction = useCallback(
-    async (
-      // highlight-start
-      // The input and output are from notifi-core
-      input: CompleteLoginViaTransactionInput, notifi-core
-      // highlight-end
-    ): Promise<CompleteLoginViaTransactionResult>
-    // ...
-```
-
-```ts title="packages/notifi-core/lib/NotifiClient.ts"
-export type CompleteLoginViaTransactionInput = Readonly<{
-  transactionSignature: string;
-}>;
-
-export type CompleteLoginViaTransactionResult = Readonly<User>;
-
-export type User = Readonly<{
-  email: string | null;
-  emailConfirmed: boolean;
-  authorization: Authorization | null;
-  roles: ReadonlyArray<string> | null;
-}>;
-```
-
+**Question#1**:
+Is it good to name it `clientAdaptor`.
 :::
+:::caution
+**Question#2**:
+Seems like the `client` in `notifi-frontend-client` is using the type source from `notifi-graphql` instead of `notifi-core`. **Does it mean we want to migrate to `notifi-graphql` from `notifi-axios-adaptor` as a result of this consolidation?** (Check on reference#1 for example)
+:::
+
+#### create useClientAdaptor hook
+
+Instead of using class, we might use a hook to cache the Client instance.
+
+ClientAdaptor will need to inherit the abstract class below.
+
+```tsx title="packages/notifi-frontend-client/lib/clientAdaptor/ClientAdaptor.ts"
+
+type ClientAdaptor = Readonly<{
+  isAuthenticated: boolean;
+  isEmailConfirmationSent: boolean;
+  isInitialized: boolean;
+  isTokenExpired: boolean;
+  logIn: () => Promise<SubscriptionData>;
+  subscribe: (
+    alertConfigs: Record<string, AlertConfiguration>, // Move `packages/notifi-react-card/lib/utils/AlertConfiguration.ts` to `packages/notifi-frontend-client/lib/utils`
+  subscribeWallet: (walletParams: ConnectWalletParams) => Promise<void>;
+  updateWallets: () => Promise<void>;
+  instantSubscribe: (
+    subscribeData: InstantSubscribe,
+  ) => Promise<SubscriptionData>;
+  updateTargetGroups: () => Promise<SubscriptionData>;
+  resendEmailVerificationLink: (emailId: string) => Promise<string>;
+}>
+
+const useClientAdaptor = (props: UseClientAdaptorProps): ClientAdaptor => {
+  // TODO: Migrated logic from useNotifiSubscribe
+}
+```
 
 ### 2. Consolidate the duplicated modules in `notifi-react-hooks` and `notifi-frontend-client`
 
@@ -168,6 +120,58 @@ export type User = Readonly<{
 
 - `packages/notifi-react-hooks/lib/utils/storage.ts`
 - `packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts`
+
+:::caution
+**Questions**
+
+- What is oldValue for?
+- Why we have to reset the key to newKey with expired authorization when the oldKey is not null?
+
+```ts title="packages/notifi-react-hooks/lib/utils/storage.ts"
+// ...
+const oldKey = `${jwtPrefix}:${dappAddress}:${walletPublicKey}`;
+const newKey = `${jwtPrefix}:${dappAddress}:${walletPublicKey}:authorization`;
+const getAuthorization = async () => {
+  const oldValue = await localforage.getItem<string>(oldKey);
+  if (oldValue !== null) {
+    const expiry = new Date();
+    expiry.setMinutes(expiry.getMinutes() - 1); // Assume expired
+    const migrated: Authorization = {
+      token: oldValue,
+      expiry: expiry.toISOString(),
+    };
+
+    await localforage.removeItem(oldKey);
+    await localforage.setItem(newKey, migrated);
+  }
+
+  return await localforage.getItem<Authorization>(newKey);
+};
+```
+
+- It seems like the `oldKey` logic does not appear in frontend-client.
+
+```ts title="packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts"
+export const createLocalForageStorageDriver = (config: NotifiFrontendConfiguration): StorageDriver => {
+  // highlight-next-line
+  let keyPrefix = `${getEnvPrefix(config.env)}:${config.tenantId}`;
+  switch (config.walletBlockchain) {
+    case "SOLANA": {
+      keyPrefix += `:${config.walletPublicKey}`;
+      break;
+    }
+    case "APTOS": {
+      keyPrefix += `:${config.accountAddress}:${config.authenticationKey}`;
+      break;
+    }
+  }
+  // ...
+};
+```
+
+- Why does frontend-client has iInMemoryStorageDriver? and what is it for
+
+:::
 
 #### - configuration modules:
 
@@ -250,4 +254,86 @@ export type EventTypeItem =
   | PriceChangeEventTypeItem
   | CustomTopicTypeItem
   | XMTPTopicTypeItem;
+```
+
+## References
+
+1. type changes from using `notifi-core` to `notifi-graphql`:
+
+Below is an example of type difference between react-frontend-client and react-hook.
+
+```ts title="packages/notifi-frontend-client/lib/client/NotifiFrontendClient.ts"
+  async completeLoginViaTransaction({
+    walletBlockchain,
+    walletAddress,
+    transactionSignature,
+    // highlight-start
+    // The input and output are from notifi-graphql
+  }: CompleteLoginProps): Promise<Types.CompleteLogInByTransactionMutation>
+  // highlight-end
+  // ...
+
+  type CompleteLoginProps = Omit<
+  // highlight-next-line
+  Types.CompleteLogInByTransactionInput,
+  'dappAddress' | 'randomUuid'
+>;
+```
+
+```ts title="packages/notifi-graphql/lib/gql/generated.ts"
+export type CompleteLogInByTransactionInput = {
+  /** The dapp id for this tenant */
+  dappAddress: Scalars["String"];
+  /** Random client generated UUID used in hash generation of nonce+uuid */
+  randomUuid: Scalars["String"];
+  /** Timestamp in seconds since Unix epoch. Required for Aptos chain. This will be the timestamp on the transaction. */
+  timestamp?: InputMaybe<Scalars["Long"]>;
+  /** Transaction containing the Base64(SHA256(hash(nonce+uuid))) printed to 'Notifi Auth: <value>' */
+  transactionSignature: Scalars["String"];
+  /** Address of wallet attempting to log in with */
+  walletAddress: Scalars["String"];
+  /** Blockchain of the wallet */
+  walletBlockchain: WalletBlockchain;
+  /** Public key of wallet attempting to log in with. Required for Aptos chain. */
+  walletPublicKey?: InputMaybe<Scalars["String"]>;
+};
+
+export type CompleteLogInByTransactionMutation = {
+  __typename?: "NotifiMutation";
+  completeLogInByTransaction?:
+    | {
+        __typename?: "User";
+        email?: string | undefined;
+        emailConfirmed: boolean;
+        roles?: Array<string | undefined> | undefined;
+        authorization?: { __typename?: "Authorization"; token: string; expiry: string } | undefined;
+      }
+    | undefined;
+};
+```
+
+```ts title="packages/notifi-react-hooks/lib/hooks/useNotifiClient.ts"
+const completeLoginViaTransaction = useCallback(
+    async (
+      // highlight-start
+      // The input and output are from notifi-core
+      input: CompleteLoginViaTransactionInput
+      // highlight-end
+    ): Promise<CompleteLoginViaTransactionResult>
+    // ...
+```
+
+```ts title="packages/notifi-core/lib/NotifiClient.ts"
+export type CompleteLoginViaTransactionInput = Readonly<{
+  transactionSignature: string;
+}>;
+
+export type CompleteLoginViaTransactionResult = Readonly<User>;
+
+export type User = Readonly<{
+  email: string | null;
+  emailConfirmed: boolean;
+  authorization: Authorization | null;
+  roles: ReadonlyArray<string> | null;
+}>;
 ```
