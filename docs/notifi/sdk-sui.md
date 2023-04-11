@@ -20,10 +20,10 @@ flowchart TD
   classDef fail fill:red
   check{eligible} --yes--> Connected:::success
   classDef success fill:green
-
-  signature --> NotifiBackend
+  sdk --signature to--> NotifiBackend
   subgraph Dapp
-    walletAdaptor --signMessage-method--> signature
+    walletAdaptor --signMessage-method--> signature --> sdk(notifi-sdk-ts):::sdkColor
+    classDef sdkColor fill:orange,color:black
   end
 
   subgraph NotifiBackend
