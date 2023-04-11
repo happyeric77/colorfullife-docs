@@ -2,7 +2,7 @@
 title: Notifi Supports SUI
 ---
 
-# SUI supported by Notifi SDK
+# SUI supported in Notifi SDK
 
 Now the Dapp can use Notifi SDK to connect to SUI chain.
 
