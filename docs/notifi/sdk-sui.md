@@ -8,14 +8,18 @@ Now the Dapp can use Notifi SDK to connect to SUI chain.
 
 You can use whatever wallet adaptor to connect to SUI chain.
 
-One thing needs to be very careful is that Notifi verifys the signature signed by the wallet using official [SUI SDK](https://github.com/MystenLabs/sui/blob/main/sdk/typescript/src/utils/verify.ts). That means the the signMessage method in the wallet adaptor should return the signature in the format of SUI SDK.
+One thing needs to be very careful is that Notifi verifys the signature signed by the wallet using official [SUI SDK](https://github.com/MystenLabs/sui/blob/main/sdk/typescript/src/utils/verify.ts). That means the the signMessage method in the wallet adaptor should return the signature eligible for SUI SDK.
+
+Check out the flowchart below to see how the signature is verified.
 
 ```mermaid
 flowchart TD
   User --sign message--> walletAdaptor
   verifyService --> verifyMessage
-  verifyMessage --> check{eligible} --no--> Fail
-  check{eligible} --yes--> Connected
+  verifyMessage --> check{eligible} --no--> Fail:::fail
+  classDef fail fill:red
+  check{eligible} --yes--> Connected:::success
+  classDef success fill:green
 
   signature --> NotifiBackend
   subgraph Dapp
@@ -44,7 +48,7 @@ caught (in promise) Error: GQL Errors occurred during logInFromDapp
 
 ## Verify if the signature is eligible
 
-You can you the example code to check if the signature generated from the wallet is eligible.
+You can use the example code below to check if the signature generated from the wallet is eligible.
 
 :::tip
 Make sure to install SUI SDK `npm install @mysten/sui.js`
