@@ -55,13 +55,15 @@ flowchart TD
 
 The ClientAdaptor object object will be the one replace the logic of useNotifiSubscribe hook in notifi-react-card.
 
+> Naming of the ClientAdaptor is not fixed (TBC).
+
 ## Implementation
 
 ### 1. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
 
 For now, the notifi-frontend-client only supports 'Solana' and 'APTOS' blockchain. We will need to test if it is working before implementing more chains.
 
-A new file structure will be needed to support the new feature under /lib/.
+A new file structure (the clientAdaptor below) will be needed to support the new feature under /lib/.
 
 ```bash
 ├── client
@@ -77,7 +79,7 @@ A new file structure will be needed to support the new feature under /lib/.
 :::caution
 **Question**:
 
-1. Not sure if it is a good idea to call it `clientAdaptor`. So the tree will be like
+1. Not sure if it is a good idea to call it `clientAdaptor`.
 2. Seems like the `client` in `notifi-frontend-client` is using the type source from `notifi-graphql` instead of `notifi-core`. **Does it mean we want to migrate to `notifi-graphql` from `notifi-axios-adaptor` as a result of this consolidation?**
 
 Below is an example of type difference between react-frontend-client and react-hook.
