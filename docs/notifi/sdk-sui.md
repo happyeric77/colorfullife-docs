@@ -46,6 +46,12 @@ caught (in promise) Error: GQL Errors occurred during logInFromDapp
     at async index.js:6910:1
 ```
 
+And the [error under the hood](https://github.com/MystenLabs/sui/blob/main/sdk/typescript/src/utils/verify.ts#L45) from SuiMystenLabs should be:
+
+```
+The signature is not eligible: Error: Unknown signature scheme: "undefined"
+```
+
 ## Verify if the signature is eligible
 
 You can use the example code below to check if the signature generated from the wallet is eligible.
