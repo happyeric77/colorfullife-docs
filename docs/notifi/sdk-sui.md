@@ -69,8 +69,6 @@ const verifySig = () => {
   // The wallet objects depends on the implemented wallet adaptor.
   // But it needs to implement signMessage method
   if (wallet) {
-    const dummySig = await signer.signMessage({ message: dummyMsg });
-    console.log("dummySig", dummySig);
     const signature = await wallet.signMessage({ message: dummyMsg });
     console.log("signature", signature);
     try {
