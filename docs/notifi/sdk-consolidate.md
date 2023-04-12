@@ -6,19 +6,11 @@ title: Spike SDK consolidation
 
 ## Background
 
-There are three key packages in the Notifi SDK:
+Currently, The way the following 3 packages interact with each other is like the flowchart below, which is complicated and hard to maintain.
 
 1. notifi-react-hook
 2. notifi-frontend-client
 3. notifi-react-card
-
-The way they interact with each other is like the flowchart below, which is complicated and hard to maintain.
-
-Two keys points:
-
-1. The **notifi-react-hook** is difficult to be consumed as a standalone package since it is tightly coupled with the 'notifi-react-card'.
-
-2. At the same time, the **notifi-react-card** has many complex logic to handle 'Service logic' inside its useSubscribe hook.
 
 ```mermaid
 flowchart TD
@@ -36,14 +28,15 @@ flowchart TD
   end
 ```
 
+Two keys points:
+
+1. The **notifi-react-hook** is difficult to be consumed as a standalone package since it is tightly coupled with the 'notifi-react-card'.
+
+2. The **notifi-react-card** has many complex logic to handle 'Service logic' inside its useSubscribe hook.
+
 ## Goal
 
-The idea is to consolidate notifi-sdk-ts by the following steps:
-
-1. Migrate useSubscribe hook from notifi-react-card to notifi-frontend-client.
-2. Combine notifi-react-hook and notifi-frontend-client.
-
-So the final flow will be like the flowchart below:
+To solve the problem, consolidating notifi-sdk-ts is needed so that the packages' interaction should become simple like below:
 
 ```mermaid
 flowchart TD
@@ -58,7 +51,14 @@ The ClientAdaptor object will be the one represent the logic of useNotifiSubscri
 
 > Naming of the ClientAdaptor is not fixed (TBC).
 
-## Implementation
+## Actions
+
+| Action                                                                             | Description         | point |
+| ---------------------------------------------------------------------------------- | ------------------- | ----- |
+| Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client | See breakdown below | 5     |
+| Consolidate notifi-react-hook and notifi-frontend-client                           | See breakdown below | 3     |
+
+## Implementation Details
 
 ### 1. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
 
@@ -86,9 +86,7 @@ Seems like the `client` in `notifi-frontend-client` is using the type source fro
 
 #### create useClientAdaptor hook
 
-Instead of using class, we might use a hook to cache the Client instance.
-
-ClientAdaptor will need to inherit the abstract class below.
+Migrate the logic of useNotifiSubscribe hook to useClientAdaptor hook.
 
 ```tsx title="packages/notifi-frontend-client/lib/clientAdaptor/ClientAdaptor.ts"
 
@@ -114,9 +112,93 @@ const useClientAdaptor = (props: UseClientAdaptorProps): ClientAdaptor => {
 }
 ```
 
-### 2. Consolidate the duplicated modules in `notifi-react-hooks` and `notifi-frontend-client`
+### 2. Consolidate `notifi-react-hooks` and `notifi-frontend-client`
 
-#### - storage modules:
+#### Step#1: Consolidate the duplicated modules in `notifi-react-hooks` and `notifi-frontend-client`
+
+<details>
+<summary>useNotifiClient hook v.s. NotifiFrontendClient object</summary>
+
+```mermaid
+flowchart TB
+  useNotifiClient --- CommonMethods
+  NotifiFrontendClient --- CommonMethods
+  subgraph useNotifiClient
+    classDef removeColor fill:red,color:black;
+    classDef implColor fill:orange,color:black;
+    broadcastMessage --not used--> x((Remove)):::removeColor
+
+    connectWallet --used in useNotifiSubscribe--> v((Impl)):::implColor
+
+
+    createAlert --see info#1 -->x((Remove)):::removeColor
+    createBonfidaAuctionSource --not used--> x((Remove)):::removeColor
+    createMetaplexAuctionSource --not used--> x((Remove)):::removeColor
+    createSource --see info#2 --> x((Remove)):::removeColor
+    ensureSourceGroup --see inf#3 --> x((Remove)):::removeColor
+
+    fetchData --see info#4 --> x((Remove)):::removeColor
+
+    getConfiguration
+    getConversationMessages
+
+    getTopics
+    updateAlert
+
+    sendConversationMessages
+
+    createSupportConversation
+    createDiscordTarget
+  end
+
+  subgraph NotifiFrontendClient
+    initialize
+
+
+
+
+    getTargetGroups
+    ensureAlert
+    getSourceGroups
+    getAlerts
+    ensureAlert
+    deleteAlert
+
+
+
+
+  end
+  subgraph CommonMethods
+    logIn
+    logOut
+    beginLoginViaTransaction
+    completeLoginViaTransaction
+    ensureTargetGroup
+    deleteAlert
+    getNotificationHistory
+    fetchSubscriptionCard
+    sendEmailTargetVerification
+  end
+
+```
+
+<details>
+<summary>Info</summary>
+
+1. createAlert is used updateAlertInternal. After making sure the the source is valid, the createAlert will be called. It is included in ensureAlert in frontendClient. So we can remove createAlert.
+
+2. createSource is used in updateAlertInternal, and the updateAlertInternal is used in subscribe. And in subscribe, it iterates through all existing alerts to make sure if the alert to subscribe is valid. It is the same as ensureAlert. So we can remove createSource.
+
+3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensure sourceGroup (frontend-client/ensureSource.ts). So we can remove ensureSourceGroup. TBD?
+4. TBD?
+
+</details>
+
+</details>
+
+<details>
+
+<summary>storage modules</summary>
 
 - `packages/notifi-react-hooks/lib/utils/storage.ts`
 - `packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts`
@@ -169,31 +251,97 @@ export const createLocalForageStorageDriver = (config: NotifiFrontendConfigurati
 };
 ```
 
+> **Note**: The duplicated code also happens in `/notifi-frontend-client/lib/storage/InMemoryStorageDriver.ts` and `/notifi-frontend-client/lib/storage/LocalForageStorageDriver.ts`
+
 - Why does frontend-client has iInMemoryStorageDriver? and what is it for
 
 :::
 
-#### - configuration modules (WIP...🛠️)
+</details>
+
+<details>
+<summary>configuration modules</summary>
 
 - `packages/notifi-react-hooks/lib/hooks/useNotifiConfig.ts`
 - `packages/notifi-frontend-client/lib/configuration/NotifiFrontendConfiguration.ts`
 
-#### - utils modules (WIP...🛠️)
+:::tip
+Basically, no need change.
+:::
 
+</details>
+
+<details>
+<summary>utils modules</summary>
 - `packages/notifi-react-hooks/lib/utils`
 - `packages/notifi-frontend-client/lib/client`
 
-#### - FilterOptions.ts ((WIP...🛠️)
+```mermaid
+flowchart LR
+utils/ensureSource --->  client/ensureSource
+utils/ensureSourceGroup --->  client/ensureSource
+utils/ensureTargetGroup --->  client/ensureTarget
+utils/ensureTargetIds --->  client/ensureTarget
+utils/ensureTarget --->  client/ensureTarget
+utils/alertUtils --- Remove
+utils/fetchDataImpl --- TBD?:::tbdColor
+utils/filterOptions --- Remove
+
+classDef tbdColor fill:orange,color:black;
+
+
+subgraph reactHooks
+utils/filterOptions
+utils/alertUtils
+utils/fetchDataImpl
+utils/ensureSource
+utils/ensureSourceGroup
+utils/ensureTargetGroup
+utils/ensureTargetIds
+utils/ensureTarget
+end
+
+subgraph frontendClient
+client/ensureSource
+client/ensureTarget
+end
+
+```
+
+:::info
+
+- `alertUtils` is totally not used --> deprecate.
+- `fetchDataImpl` only used in hooks doing internal data fetching. In frontendClient, the source or target not exist, error will be directly thrown. --> deprecate.
+
+:::
+
+</details>
+
+<details>
+<summary>FilterOptions.ts</summary>
+
+:::tip
+It is copy-paste from `core`, consider remove
+:::
 
 - `./packages/notifi-frontend-client/lib/models/FilterOptions.ts`
 - `packages/notifi-core/lib/NotifiClient.ts`
 
-#### - SubscriptionCardConfig.ts (WIP...🛠️)
+</details>
+
+<details>
+<summary>SubscriptionCardConfig.ts (WIP...🛠️)</summary>
+
+:::tip
+react-card will make use of the SubscriptionCardConfig from frontend-client --> deprecate the one in react-card.
+:::
 
 - `packages/notifi-react-card/lib/hooks/SubscriptionCardConfig.ts`
 - `packages/notifi-frontend-client/lib/models/SubscriptionCardConfig.ts`
 
-### 3. Make all supported chains available in `notifi-frontend-client` (WIP...🛠️)
+</details>
+
+#### Step#2 Make all supported chains available in `notifi-frontend-client` (WIP...🛠️)
 
 Currently, we only have `APTOS` and `SOLANA` supported in `notifi-frontend-client`.
 
@@ -223,7 +371,7 @@ export const newSolanaConfig =
 // Need to add the reset of the chains
 ```
 
-### 4. Make all supported event available in `notifi-frontend-client` (WIP...🛠️)
+#### Step#3: Make all supported event available in `notifi-frontend-client` (WIP...🛠️)
 
 Now, `notifi-frontend-client` only supports:
 
@@ -232,7 +380,8 @@ export type EventTypeItem =
   | DirectPushEventTypeItem
   | BroadcastEventTypeItem
   | LabelEventTypeItem
-  | PriceChangeEventTypeItem;
+  | PriceChangeEventTypeItem
+  | CustomTopicTypeItem;
 ```
 
 But in `notifi-react-card`, we have:
