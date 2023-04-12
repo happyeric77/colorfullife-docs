@@ -139,16 +139,17 @@ flowchart TB
 
     fetchData --see info#4 --> x((Remove)):::removeColor
 
-    getConfiguration
-    getConversationMessages
+    getConfiguration --> TBD:::tbdColor
+    classDef tbdColor fill:yellow,color:black;
+    getConversationMessages --> TBD:::tbdColor
 
-    getTopics
-    updateAlert
+    getTopics --> TBD:::tbdColor
+    updateAlert --> TBD:::tbdColor
 
-    sendConversationMessages
+    sendConversationMessages --> TBD:::tbdColor
 
-    createSupportConversation
-    createDiscordTarget
+    createSupportConversation --> TBD:::tbdColor
+    createDiscordTarget --> TBD:::tbdColor
   end
 
   subgraph NotifiFrontendClient
@@ -189,8 +190,8 @@ flowchart TB
 
 2. createSource is used in updateAlertInternal, and the updateAlertInternal is used in subscribe. And in subscribe, it iterates through all existing alerts to make sure if the alert to subscribe is valid. It is the same as ensureAlert. So we can remove createSource.
 
-3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensure sourceGroup (frontend-client/ensureSource.ts). So we can remove ensureSourceGroup. TBD?
-4. TBD?
+3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensure sourceGroup (frontend-client/ensureSource.ts). So we can remove ensureSourceGroup. TBC?
+4. TBC?
 
 </details>
 
