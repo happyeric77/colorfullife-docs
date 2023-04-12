@@ -117,7 +117,7 @@ const useClientAdaptor = (props: UseClientAdaptorProps): ClientAdaptor => {
 #### Step#1: Consolidate the duplicated modules in `notifi-react-hooks` and `notifi-frontend-client`
 
 <details>
-<summary>useNotifiClient hook v.s. NotifiFrontendClient object</summary>
+<summary>useNotifiClient hook v.s. NotifiFrontendClient object (WIP 🛠️) </summary>
 
 ```mermaid
 flowchart TB
@@ -261,7 +261,7 @@ export const createLocalForageStorageDriver = (config: NotifiFrontendConfigurati
 </details>
 
 <details>
-<summary>configuration modules  (WIP 🛠️) </summary>
+<summary>configuration modules </summary>
 
 - `packages/notifi-react-hooks/lib/hooks/useNotifiConfig.ts`
 - `packages/notifi-frontend-client/lib/configuration/NotifiFrontendConfiguration.ts`
@@ -331,7 +331,7 @@ It is copy-paste from `core`, consider remove
 </details>
 
 <details>
-<summary>SubscriptionCardConfig.ts (WIP...🛠️)</summary>
+<summary>SubscriptionCardConfig.ts </summary>
 
 :::tip
 react-card will make use of the SubscriptionCardConfig from frontend-client --> deprecate the one in react-card.
@@ -342,7 +342,7 @@ react-card will make use of the SubscriptionCardConfig from frontend-client --> 
 
 </details>
 
-#### Step#2 Make all supported chains available in `notifi-frontend-client` (WIP...🛠️)
+#### Step#2 Make all supported chains available in `notifi-frontend-client`
 
 Currently, we only have `APTOS` and `SOLANA` supported in `notifi-frontend-client`.
 
@@ -372,7 +372,7 @@ export const newSolanaConfig =
 // Need to add the reset of the chains
 ```
 
-#### Step#3: Make all supported event available in `notifi-frontend-client` (WIP...🛠️)
+#### Step#3: Make all supported event available in `notifi-frontend-client`
 
 Now, `notifi-frontend-client` only supports:
 
