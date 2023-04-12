@@ -260,7 +260,7 @@ export const createLocalForageStorageDriver = (config: NotifiFrontendConfigurati
 </details>
 
 <details>
-<summary>configuration modules</summary>
+<summary>configuration modules  (WIP 🛠️) </summary>
 
 - `packages/notifi-react-hooks/lib/hooks/useNotifiConfig.ts`
 - `packages/notifi-frontend-client/lib/configuration/NotifiFrontendConfiguration.ts`
