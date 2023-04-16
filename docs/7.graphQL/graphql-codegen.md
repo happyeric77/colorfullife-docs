@@ -1,5 +1,5 @@
 ---
-title: GraphQL Codegen
+title: "GraphQL Codegen: Preset"
 ---
 
 # Get started with type free graphQL with graphql-codegen
