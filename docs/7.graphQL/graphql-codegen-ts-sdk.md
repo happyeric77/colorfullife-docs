@@ -153,4 +153,6 @@ See the reference [HERE](https://stackoverflow.com/questions/75652477/graphql-co
 
 Checkout the [full code](https://github.com/happyeric77/gql-codegen/releases/tag/v3.0.0-ts-graphql-request) here.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Wt7qStC_dac" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 :::
