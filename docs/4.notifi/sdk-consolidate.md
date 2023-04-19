@@ -49,10 +49,6 @@ flowchart TD
     end
 ```
 
-The ClientAdaptor object will be the one represent the logic of useNotifiSubscribe hook in notifi-react-card.
-
-> Naming of the ClientAdaptor is not fixed (TBC).
-
 ## Actions
 
 | Action                                                                             | Description         | point |
