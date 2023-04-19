@@ -16,15 +16,18 @@ Currently, The way the following 3 packages interact with each other is like the
 flowchart TD
   useNotifiService --Manipulate--> Service
   useNotifiClient --Provide context with client instance---> NotifiContext
+
   subgraph notifi-react-hook
   useNotifiClient:::hookColor --Consume--> useNotifiService:::hookColor
   classDef hookColor fill:red;
   end
   subgraph notifi-react-card
-  subgraph NotifiContext
-  useSubscribe:::useSubscribeColor
-  classDef useSubscribeColor fill:red;
-  end
+
+    subgraph NotifiContext
+    useSubscribe:::useSubscribeColor
+    classDef useSubscribeColor fill:red;
+    end
+
   end
 ```
 
@@ -42,7 +45,6 @@ To solve the problem, consolidating notifi-sdk-ts is needed so that the packages
 flowchart TD
     notifi-react-card --consume--> notifi-frontend-client --Operate--> Service
     subgraph notifi-frontend-client
-    ClientAdaptor((ClientAdaptor)):::adaptor --consume--> NotifiFrontendClient
     classDef adaptor fill:orange,color:black
     end
 ```
@@ -55,109 +57,76 @@ The ClientAdaptor object will be the one represent the logic of useNotifiSubscri
 
 | Action                                                                             | Description         | point |
 | ---------------------------------------------------------------------------------- | ------------------- | ----- |
+| Consolidate notifi-react-hook (useNotifiClient) and notifi-frontend-client         | See breakdown below | 3     |
 | Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client | See breakdown below | 5     |
-| Consolidate notifi-react-hook and notifi-frontend-client                           | See breakdown below | 3     |
+| Extend `FrontendClient` to fully support all available chains and event types      | See breakdown below | 3     |
 
 ## Implementation Details
 
-### 1. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
+### 1. Consolidate `notifi-react-hooks` and `notifi-frontend-client`
 
-A new file structure (the clientAdaptor below) will be needed to support the new features (migrated from useNotifiSubscribe).
-
-```bash
-├── client
-# highlight-next-line
-├── clientAdaptor # new feature (migrated from useNotifiSubscribe)
-├── configuration
-├── index.ts
-├── models
-├── storage
-└── utils
-```
-
-:::caution
-**Question#1**:
-Is it good to name it `clientAdaptor`.
-:::
-:::caution
-**Question#2**:
-Seems like the `client` in `notifi-frontend-client` is using the type source from `notifi-graphql` instead of `notifi-core`. **Does it mean we want to migrate to `notifi-graphql` from `notifi-axios-adaptor` as a result of this consolidation?** (Check on reference#1 for example)
-:::
-
-#### create useClientAdaptor hook
-
-Migrate the logic of useNotifiSubscribe hook to useClientAdaptor hook.
-
-```tsx title="packages/notifi-frontend-client/lib/clientAdaptor/ClientAdaptor.ts"
-
-type ClientAdaptor = Readonly<{
-  isAuthenticated: boolean;
-  isEmailConfirmationSent: boolean;
-  isInitialized: boolean;
-  isTokenExpired: boolean;
-  logIn: () => Promise<SubscriptionData>;
-  subscribe: (
-    alertConfigs: Record<string, AlertConfiguration>, // Move `packages/notifi-react-card/lib/utils/AlertConfiguration.ts` to `packages/notifi-frontend-client/lib/utils`
-  subscribeWallet: (walletParams: ConnectWalletParams) => Promise<void>;
-  updateWallets: () => Promise<void>;
-  instantSubscribe: (
-    subscribeData: InstantSubscribe,
-  ) => Promise<SubscriptionData>;
-  updateTargetGroups: () => Promise<SubscriptionData>;
-  resendEmailVerificationLink: (emailId: string) => Promise<string>;
-}>
-
-const useClientAdaptor = (props: UseClientAdaptorProps): ClientAdaptor => {
-  // TODO: Migrated logic from useNotifiSubscribe
-}
-```
-
-### 2. Consolidate `notifi-react-hooks` and `notifi-frontend-client`
+Since `notifi-react-card` will finally use `FrontendClient`(notifi-frontend-client) to manipulate service instead of using `useNotifiClient` (notifi-react-hooks), making sure the `FrontendClient` is able to cover all the functionalities of `useNotifiClient` is the first step.
 
 #### Step#1: Consolidate the duplicated modules in `notifi-react-hooks` and `notifi-frontend-client`
 
+We need to implement extra 5 methods in `FrontendClient` to cover all the functionalities of `useNotifiClient`.
+See the detail below:
+
 <details>
-<summary>useNotifiClient hook v.s. NotifiFrontendClient object (WIP 🛠️) </summary>
+<summary>useNotifiClient hook v.s. NotifiFrontendClient object </summary>
 
 ```mermaid
 flowchart TB
   useNotifiClient --- CommonMethods
   NotifiFrontendClient --- CommonMethods
+  getConversationMessages --see info#6-intercom --> impl
+  connectWallet --see info#5--> impl
+  fetchData --see info#4 --> impl
+
+  sendConversationMessages --see info#6-intercom --> impl
+
+  createSupportConversation --see info#8-intercom --> impl
+
+  createDiscordTarget --see info#9 --> rm
+  updateAlert --see info#7 --> rm
+  broadcastMessage --not used--> rm
+  createAlert --see info#1 -->rm
+  createBonfidaAuctionSource --not used--> rm
+  createMetaplexAuctionSource --not used--> rm
+  createSource --see info#2 --> rm
+  ensureSourceGroup --see info#3 --> rm
+  getConfiguration --not used--> rm
+  getTopics --not used--> rm
+
   subgraph useNotifiClient
+
+    broadcastMessage
+    createAlert
+    createBonfidaAuctionSource
+    createMetaplexAuctionSource
+    createSource
+    ensureSourceGroup
+    getConfiguration
+    getTopics
+
+    getConversationMessages
+    connectWallet
+    fetchData
+    updateAlert
+    sendConversationMessages
+    createSupportConversation
+    createDiscordTarget
+
+    rm((Deprecated)):::removeColor
+    impl((Impl)):::implColor
+
+    classDef tbdColor fill:yellow,color:black;
     classDef removeColor fill:red,color:black;
     classDef implColor fill:orange,color:black;
-    broadcastMessage --not used--> x((Remove)):::removeColor
-
-    connectWallet --used in useNotifiSubscribe--> v((Impl)):::implColor
-
-
-    createAlert --see info#1 -->x((Remove)):::removeColor
-    createBonfidaAuctionSource --not used--> x((Remove)):::removeColor
-    createMetaplexAuctionSource --not used--> x((Remove)):::removeColor
-    createSource --see info#2 --> x((Remove)):::removeColor
-    ensureSourceGroup --see inf#3 --> x((Remove)):::removeColor
-
-    fetchData --see info#4 --> x((Remove)):::removeColor
-
-    getConfiguration --> TBD:::tbdColor
-    classDef tbdColor fill:yellow,color:black;
-    getConversationMessages --> TBD:::tbdColor
-
-    getTopics --> TBD:::tbdColor
-    updateAlert --> TBD:::tbdColor
-
-    sendConversationMessages --> TBD:::tbdColor
-
-    createSupportConversation --> TBD:::tbdColor
-    createDiscordTarget --> TBD:::tbdColor
   end
 
   subgraph NotifiFrontendClient
     initialize
-
-
-
-
     getTargetGroups
     ensureAlert
     getSourceGroups
@@ -165,10 +134,8 @@ flowchart TB
     ensureAlert
     deleteAlert
 
-
-
-
   end
+
   subgraph CommonMethods
     logIn
     logOut
@@ -181,140 +148,31 @@ flowchart TB
     sendEmailTargetVerification
   end
 
+
+
 ```
 
 <details>
 <summary>Info</summary>
 
-1. createAlert is used updateAlertInternal. After making sure the the source is valid, the createAlert will be called. It is included in ensureAlert in frontendClient. So we can remove createAlert.
+1. createAlert is used updateAlertInternal. After making sure the the source is valid, the createAlert will be called. It is included in ensureAlert in frontendClient. So createAlert can be deprecated.
 
-2. createSource is used in updateAlertInternal, and the updateAlertInternal is used in subscribe. And in subscribe, it iterates through all existing alerts to make sure if the alert to subscribe is valid. It is the same as ensureAlert. So we can remove createSource.
+2. Used in updateAlertInternal, and the updateAlertInternal is used in subscribe. And in subscribe, it iterates through all existing alerts to make sure if the alert to subscribe is valid. It is the same as ensureAlert. So createSource can be deprecated.
 
-3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensure sourceGroup (frontend-client/ensureSource.ts). So we can remove ensureSourceGroup. TBC?
-4. TBC?
+3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensureSourceAndFilters(frontend-client/ensureSource.ts). ensureSourceGroup can be deprecated.
+4. For now, I think it's sufficient to add a "fetchData" equivalent to notifi frontend client. We should create a single query which fetches all of the data (alerts, sources, sourceGroups, etc...)
 
-</details>
+5. Used inside subscribeWallet method in useNotifiSubscribe. It allows user to subscribe multiWallet if the dapp tenant enable multiWallet subscription.
 
-</details>
+6. Used inside `useItercomChat` hook. Might need to simply impl `getConversationMessages` & `sendConversationMessages` stateless method in `FrontendClient`. (TBD)
 
-<details>
+7. Used inside `updateAlertInternal` which is used in `subscribe` method in useNotifiSubscribe. `subscribe` method can be replaced with `FrontendClient.ensureAlert` method. So `updateAlert` can be deprecated.
 
-<summary>storage modules</summary>
+8. Used inside `IntercomCard` as a button handler. Might need to simply impl `createSupportConversation` stateless method in `FrontendClient`. (TBD)
 
-- `packages/notifi-react-hooks/lib/utils/storage.ts`
-- `packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts`
-
-:::caution
-**Questions**
-
-- What is oldValue for?
-- Why we have to reset the key to newKey with expired authorization when the oldKey is not null?
-
-```ts title="packages/notifi-react-hooks/lib/utils/storage.ts"
-// ...
-const oldKey = `${jwtPrefix}:${dappAddress}:${walletPublicKey}`;
-const newKey = `${jwtPrefix}:${dappAddress}:${walletPublicKey}:authorization`;
-const getAuthorization = async () => {
-  const oldValue = await localforage.getItem<string>(oldKey);
-  if (oldValue !== null) {
-    const expiry = new Date();
-    expiry.setMinutes(expiry.getMinutes() - 1); // Assume expired
-    const migrated: Authorization = {
-      token: oldValue,
-      expiry: expiry.toISOString(),
-    };
-
-    await localforage.removeItem(oldKey);
-    await localforage.setItem(newKey, migrated);
-  }
-
-  return await localforage.getItem<Authorization>(newKey);
-};
-```
-
-- It seems like the `oldKey` logic does not appear in frontend-client.
-
-```ts title="packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts"
-export const createLocalForageStorageDriver = (config: NotifiFrontendConfiguration): StorageDriver => {
-  // highlight-next-line
-  let keyPrefix = `${getEnvPrefix(config.env)}:${config.tenantId}`;
-  switch (config.walletBlockchain) {
-    case "SOLANA": {
-      keyPrefix += `:${config.walletPublicKey}`;
-      break;
-    }
-    case "APTOS": {
-      keyPrefix += `:${config.accountAddress}:${config.authenticationKey}`;
-      break;
-    }
-  }
-  // ...
-};
-```
-
-> **Note**: The duplicated code also happens in `/notifi-frontend-client/lib/storage/InMemoryStorageDriver.ts` and `/notifi-frontend-client/lib/storage/LocalForageStorageDriver.ts`
-
-- Why does frontend-client has iInMemoryStorageDriver? and what is it for
-
-:::
+9. Used in `subscribe` method in useNotifiSubscribe. `subscribe` method can be replaced with `FrontendClient.ensureAlert` method. So `createDiscordTarget` can be deprecated.
 
 </details>
-
-<details>
-<summary>configuration modules </summary>
-
-- `packages/notifi-react-hooks/lib/hooks/useNotifiConfig.ts`
-- `packages/notifi-frontend-client/lib/configuration/NotifiFrontendConfiguration.ts`
-
-:::tip
-Basically, no need change.
-:::
-
-</details>
-
-<details>
-<summary>utils modules</summary>
-- `packages/notifi-react-hooks/lib/utils`
-- `packages/notifi-frontend-client/lib/client`
-
-```mermaid
-flowchart LR
-utils/ensureSource --->  client/ensureSource
-utils/ensureSourceGroup --->  client/ensureSource
-utils/ensureTargetGroup --->  client/ensureTarget
-utils/ensureTargetIds --->  client/ensureTarget
-utils/ensureTarget --->  client/ensureTarget
-utils/alertUtils --- Remove
-utils/fetchDataImpl --- TBD?:::tbdColor
-utils/filterOptions --- Remove
-
-classDef tbdColor fill:orange,color:black;
-
-
-subgraph reactHooks
-utils/filterOptions
-utils/alertUtils
-utils/fetchDataImpl
-utils/ensureSource
-utils/ensureSourceGroup
-utils/ensureTargetGroup
-utils/ensureTargetIds
-utils/ensureTarget
-end
-
-subgraph frontendClient
-client/ensureSource
-client/ensureTarget
-end
-
-```
-
-:::info
-
-- `alertUtils` is totally not used --> deprecate.
-- `fetchDataImpl` only used in hooks doing internal data fetching. In frontendClient, the source or target not exist, error will be directly thrown. --> deprecate.
-
-:::
 
 </details>
 
@@ -330,21 +188,264 @@ It is copy-paste from `core`, consider remove
 
 </details>
 
-<details>
-<summary>SubscriptionCardConfig.ts </summary>
+And the user state `useNotifiSubscribe` and `useNotifiClient` need to be handled somehow.
+
+- `isAuthenticated`
+- `isInitialized`
+- `expiry`
+- `isTokenExpired`
+
+Maybe implement a getter in FrontendClient
+
+```ts title="packages/notifi-frontend-client/lib/client/FrontendClient.ts"
+export class NotifiFrontendClient {
+  // ...
+  // add-start
+  private _userState: UserState | null = null;
+  get userState(): UserState | null {
+    return this._userState;
+  }
+  // add-end
+  // ...
+  async initialize(): Promise<UserState> {
+    // ...
+    this._service.setJwt(authorization.token);
+    // add-start
+    const userState = {
+      status: "authenticated",
+      authorization,
+      roles: roles ?? [],
+    };
+    this._userState = userState;
+    return userState;
+    // add-end
+    // delete-start
+    return {
+      status: "authenticated",
+      authorization,
+      roles: roles ?? [],
+    };
+    // delete-end
+  }
+}
+```
+
+### 2. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
+
+#### Step#1 Replace the `useNotifiClient` dependency with `FrontendClient` object.
+
+```ts title="packages/notifi-react-card/lib/context/NotifiClientContext.tsx"
+export const NotifiClientContextProvider: React.FC<NotifiParams> = ({
+  children,
+  ...params
+}: React.PropsWithChildren<NotifiParams>) => {
+  // delete-next-line
+  const client = useNotifiClient(params);
+  // add-start
+  const config: NotifiFrontendConfiguration =  "conditional check walletBlcokchain"; // use newXXXconfig to create config
+  const storage = useMemo(()=> newNotifiStorage(config), [config]);
+  const service = useMemo (()=> newNotifiService(config), [config]);
+  const client = useMemo(() => new FrontendClient(params, storage, service), [ storage, service]));
+  // add-end
+  return (
+    <NotifiClientContext.Provider value={{ client, params }}>
+      {children}
+    </NotifiClientContext.Provider>
+  );
+};
+```
+
+#### Step#2 Use client to replace the methods imported from `useNotifiSubscribe`
+
+We need to replace the methods imported from `useNotifiSubscribe` with `FrontendClient` object provided by context. The following components are using `useNotifiSubscribe`:
+
+- `packages/notifi-react-card/lib/components/intercom/IntercomCard.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/intercom/IntercomCard.tsx"
+// delete-start
+const { instantSubscribe, isAuthenticated, isInitialized } = useNotifiSubscribe({
+  targetGroupName: "Intercom",
+});
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { userState, ensureAlert } = client;
+const isInitialized = !!userState;
+const isAuthenticated = client.userState?.status === "authenticated";
+
+// add-end
+```
+
+- `packages/notifi-react-card/lib/components/subscription/EventTypeDirectPushRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeCustomHealthCheckRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeCustomToggleRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeHealthCheckRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypePriceChangeRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeTradingPairsRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeWalletBalanceRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeXMTPRow.tsx`
+- `packages/notifi-react-card/lib/components/subscription/EventTypeBroadcastRow.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/EventTypeBroadcastRow.tsx"
+// delete-start
+const { instantSubscribe } = useNotifiSubscribe({
+  targetGroupName: "Default",
+});
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { ensureAlert } = client;
+// add-end
+```
+
+- `packages/notifi-react-card/lib/components/subscription/NotifiSubscribeButton.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/NotifiSubscribeButton.tsx"
+// delete-start
+const { isInitialized, subscribe, updateTargetGroups } = useNotifiSubscribe({
+  targetGroupName: "Default",
+});
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { ensureAlert, ensureTargetGroup, userState } = client;
+const isInitialized = !!userState;
+// add-end
+```
+
+- `packages/notifi-react-card/lib/components/subscription/NotifiSubscriptionCardContainer.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/NotifiSubscriptionCardContainer.tsx"
+// delete-next-line
+const { isInitialized } = useNotifiSubscribe({ targetGroupName: "Default" });
+// add-start
+const { client } = useNotifiClientContext();
+const { userState } = client;
+const isInitialized = !!userState;
+// add-end
+```
+
+- `packages/notifi-react-card/lib/components/subscription/SubscriptionCardV1.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/SubscriptionCardV1.tsx"
+// delete-start
+const { isInitialized, isTokenExpired } = useNotifiSubscribe({
+  targetGroupName: "Default",
+});
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { userState } = client;
+const isInitialized = !!userState;
+const isTokenExpired = userState?.status === "expired";
+// add-end
+```
+
+- `packages/notifi-react-card/lib/components/subscription/subscription-card-views/ExpiredTokenViewCard.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/subscription-card-views/ExpiredTokenViewCard.tsx"
+// delete-start
+const { logIn } = useNotifiSubscribe({ targetGroupName: "Default" });
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { logIn } = client;
+// add-end
+```
+
+- `packages/notifi-react-card/lib/components/subscription/subscription-card-views/VerifyWalletView.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/subscription-card-views/VerifyWalletView.tsx"
+// delete-start
+const { subscribe, updateWallets } = useNotifiSubscribe({
+  targetGroupName: "Default",
+});
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { ensureAlert, login, fetchWallets } = client;
+// add-end
+```
 
 :::tip
-react-card will make use of the SubscriptionCardConfig from frontend-client --> deprecate the one in react-card.
+
+`updateWallets` is trying to call `login` and `ensureSourceGroup` methods. Then finally `fetchData` to get updated data
+
 :::
 
-- `packages/notifi-react-card/lib/hooks/SubscriptionCardConfig.ts`
-- `packages/notifi-frontend-client/lib/models/SubscriptionCardConfig.ts`
+-`packages/notifi-react-card/lib/components/WalletList/ConnectWalletRow.tsx`
 
-</details>
+```ts title="packages/notifi-react-card/lib/components/WalletList/ConnectWalletRow.tsx"
+// delete-start
+const { subscribeWallet } = useNotifiSubscribe({
+  targetGroupName: "Default",
+});
+// delete-end
+// add-start
+const { client } = useNotifiClientContext();
+const { subscribeWallet } = client;
+// add-end
+```
 
-#### Step#2 Make all supported chains available in `notifi-frontend-client`
+#### Step#3 Ensure all direct client usage in `notifi-react-card` can be normally used.
 
-Currently, we only have `APTOS` and `SOLANA` supported in `notifi-frontend-client`.
+1. `packages/notifi-react-card/lib/components/intercom/IntercomCard.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/intercom/IntercomCard.tsx"
+const { client } = useNotifiClientContext();
+
+const result = await client.createSupportConversation();
+```
+
+2. `packages/notifi-react-card/lib/components/subscription/EventTypeDirectPushRow.tsx`
+
+```ts title="packages/notifi-react-card/lib/components/subscription/subscription-card-views/HistoryCardView.tsx"
+const { client } = useNotifiClientContext();
+const result = await client.getNotificationHistory({
+  first,
+  after,
+});
+```
+
+3. `packages/notifi-react-card/lib/hooks/useIntercomCard.ts`
+
+```ts title="packages/notifi-react-card/lib/hooks/useIntercomCard.ts"
+const { client } = useNotifiClientContext();
+client.fetchSubscriptionCard({
+  type: "INTERCOM_CARD",
+  id: cardId,
+});
+```
+
+4. `packages/notifi-react-card/lib/hooks/useIntercomChat.ts`
+
+```ts title="packages/notifi-react-card/lib/hooks/useIntercomChat.ts"
+const { client } = useNotifiClientContext();
+client.getConversationMessages({
+  first: 50,
+  getConversationMessagesInput: { conversationId },
+});
+```
+
+5. `packages/notifi-react-card/lib/hooks/useSubscriptionCard.ts`
+
+```ts title="packages/notifi-react-card/lib/hooks/useSubscriptionCard.ts"
+const { client } = useNotifiClientContext();
+client.fetchSubscriptionCard(input);
+```
+
+### 3. Extend `FrontendClient` to fully support all available chains and event types
+
+#### Step#1 Make all supported chains available in `notifi-frontend-client`
+
+Currently, we only have `APTOS`, `EVM` and `SOLANA` supported in `notifi-frontend-client`.
+
+We need to add the config `NotifiFrontendConfiguration` generator for all the supported chains.
+
+- `newSuiConfig()`
+- `newNearConfig()`
+- `newAcalaConfig()`
+- `newInjectiveConfig()` --> TBD??
 
 ```ts title="./packages/notifi-frontend-client/configuration/NotifiFrontendConfiguration.ts"
 // highlight-start
@@ -372,7 +473,7 @@ export const newSolanaConfig =
 // Need to add the reset of the chains
 ```
 
-#### Step#3: Make all supported event available in `notifi-frontend-client`
+#### Step#2: Make all supported event available in `notifi-frontend-client`
 
 Now, `notifi-frontend-client` only supports:
 
@@ -481,3 +582,124 @@ export type User = Readonly<{
   roles: ReadonlyArray<string> | null;
 }>;
 ```
+
+<details>
+
+<summary>Question: storage modules</summary>
+
+- `packages/notifi-react-hooks/lib/utils/storage.ts`
+- `packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts`
+
+:::caution
+**Questions**
+
+- What is oldValue for?
+- Why we have to reset the key to newKey with expired authorization when the oldKey is not null?
+
+```ts title="packages/notifi-react-hooks/lib/utils/storage.ts"
+// ...
+const oldKey = `${jwtPrefix}:${dappAddress}:${walletPublicKey}`;
+const newKey = `${jwtPrefix}:${dappAddress}:${walletPublicKey}:authorization`;
+const getAuthorization = async () => {
+  const oldValue = await localforage.getItem<string>(oldKey);
+  if (oldValue !== null) {
+    const expiry = new Date();
+    expiry.setMinutes(expiry.getMinutes() - 1); // Assume expired
+    const migrated: Authorization = {
+      token: oldValue,
+      expiry: expiry.toISOString(),
+    };
+
+    await localforage.removeItem(oldKey);
+    await localforage.setItem(newKey, migrated);
+  }
+
+  return await localforage.getItem<Authorization>(newKey);
+};
+```
+
+- It seems like the `oldKey` logic does not appear in frontend-client.
+
+```ts title="packages/notifi-frontend-client/lib/storage/NotifiFrontendStorage.ts"
+export const createLocalForageStorageDriver = (config: NotifiFrontendConfiguration): StorageDriver => {
+  // highlight-next-line
+  let keyPrefix = `${getEnvPrefix(config.env)}:${config.tenantId}`;
+  switch (config.walletBlockchain) {
+    case "SOLANA": {
+      keyPrefix += `:${config.walletPublicKey}`;
+      break;
+    }
+    case "APTOS": {
+      keyPrefix += `:${config.accountAddress}:${config.authenticationKey}`;
+      break;
+    }
+  }
+  // ...
+};
+```
+
+> **Note**: The duplicated code also happens in `/notifi-frontend-client/lib/storage/InMemoryStorageDriver.ts` and `/notifi-frontend-client/lib/storage/LocalForageStorageDriver.ts`
+
+- Why does frontend-client has iInMemoryStorageDriver? and what is it for
+
+:::
+
+</details>
+
+<details>
+<summary>utils modules mapping (hooks and frontendClient)</summary>
+- `packages/notifi-react-hooks/lib/utils`
+- `packages/notifi-frontend-client/lib/client`
+
+```mermaid
+flowchart LR
+utils/ensureSource --->  client/ensureSource
+utils/ensureSourceGroup --->  client/ensureSource
+utils/ensureTargetGroup --->  client/ensureTarget
+utils/ensureTargetIds --->  client/ensureTarget
+utils/ensureTarget --->  client/ensureTarget
+utils/alertUtils --- Remove
+utils/fetchDataImpl --- TBD?:::tbdColor
+utils/filterOptions --- Remove
+
+classDef tbdColor fill:orange,color:black;
+
+
+subgraph reactHooks
+utils/filterOptions
+utils/alertUtils
+utils/fetchDataImpl
+utils/ensureSource
+utils/ensureSourceGroup
+utils/ensureTargetGroup
+utils/ensureTargetIds
+utils/ensureTarget
+end
+
+subgraph frontendClient
+client/ensureSource
+client/ensureTarget
+end
+
+```
+
+:::info
+
+- `alertUtils` is totally not used --> deprecate.
+- `fetchDataImpl` only used in hooks doing internal data fetching. In frontendClient, the source or target not exist, error will be directly thrown. --> deprecate.
+
+:::
+
+</details>
+
+<details>
+<summary>SubscriptionCardConfig.ts </summary>
+
+:::tip
+react-card will make use of the SubscriptionCardConfig from frontend-client --> deprecate the one in react-card.
+:::
+
+- `packages/notifi-react-card/lib/hooks/SubscriptionCardConfig.ts`
+- `packages/notifi-frontend-client/lib/models/SubscriptionCardConfig.ts`
+
+</details>
