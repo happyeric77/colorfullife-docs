@@ -184,7 +184,9 @@ classDef implColor fill:orange,color:black;
 
 #### Step#2: Consolidate useNotifiSubscribe hook and NotifiFrontendClient object
 
-The following new methods will need to be implemented in `FrontendClient`
+We need to extract the logic of `useNotifiSubscribe` hook in `notifi-react-card` to `NotifiFrontendClient` object in `notifi-frontend-client` package.
+
+So the 2nd step will be implementing the following new methods into `FrontendClient`
 
 - [ ] userState
 - [ ] subscribeWallet
