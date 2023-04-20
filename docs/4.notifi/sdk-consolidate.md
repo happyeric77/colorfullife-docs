@@ -31,7 +31,7 @@ flowchart TD
   end
 ```
 
-Two keys points:
+Two key points:
 
 1. The **notifi-react-hook** is difficult to be consumed as a standalone package since it is tightly coupled with the 'notifi-react-card'.
 
@@ -51,11 +51,11 @@ flowchart TD
 
 ## Actions
 
-| Action                                                                             | Description         | point |
-| ---------------------------------------------------------------------------------- | ------------------- | ----- |
-| Consolidate notifi-react-hook (useNotifiClient) and notifi-frontend-client         | See breakdown below | 3     |
-| Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client | See breakdown below | 5     |
-| Extend `FrontendClient` to fully support all available chains and event types      | See breakdown below | 3     |
+| Action                                                                                            | Description         | point |
+| ------------------------------------------------------------------------------------------------- | ------------------- | ----- |
+| Consolidate notifi-react-hook (useNotifiClient) and notifi-frontend-client (NotifiFrontendClient) | See breakdown below | 3     |
+| Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client                | See breakdown below | 5     |
+| Extend `FrontendClient` to fully support all available chains and event types                     | See breakdown below | 3     |
 
 ## Implementation Details
 
@@ -63,65 +63,81 @@ flowchart TD
 
 Since `notifi-react-card` will finally use `FrontendClient`(notifi-frontend-client) to manipulate service instead of using `useNotifiClient` (notifi-react-hooks), making sure the `FrontendClient` is able to cover all the functionalities of `useNotifiClient` is the first step.
 
-#### Step#1: Consolidate the duplicated modules in `notifi-react-hooks` and `notifi-frontend-client`
+#### Step#1: Consolidate useNotifiClient hook and NotifiFrontendClient object
 
-We need to implement extra 5 methods in `FrontendClient` to cover all the functionalities of `useNotifiClient`.
-See the detail below:
+The following now methods will need to be implemented in `FrontendClient`
+
+- [ ] getConversationMessages
+- [ ] subscribeWallet
+- [ ] sendConversationMessages
+- [ ] createSupportConversation
+      See detailed info below
 
 <details>
 <summary>useNotifiClient hook v.s. NotifiFrontendClient object </summary>
 
 ```mermaid
-flowchart TB
-  useNotifiClient --- CommonMethods
-  NotifiFrontendClient --- CommonMethods
-  getConversationMessages --see info#6-intercom --> impl
-  connectWallet --see info#5--> impl
-  fetchData --see info#4 --> impl
-
-  sendConversationMessages --see info#6-intercom --> impl
-
-  createSupportConversation --see info#8-intercom --> impl
-
-  createDiscordTarget --see info#9 --> rm
-  updateAlert --see info#7 --> rm
-  broadcastMessage --not used--> rm
-  createAlert --see info#1 -->rm
-  createBonfidaAuctionSource --not used--> rm
-  createMetaplexAuctionSource --not used--> rm
-  createSource --see info#2 --> rm
-  ensureSourceGroup --see info#3 --> rm
-  getConfiguration --not used--> rm
-  getTopics --not used--> rm
+flowchart LR
+  logIn-Before --> logIn-After
+  logOut-Before --> logOut-After
+  beginLoginViaTransaction-Before --> beginLoginViaTransaction-After
+  completeLoginViaTransaction-Before --> completeLoginViaTransaction-After
+  ensureTargetGroup-Before --> ensureTargetGroup-After
+  deleteAlert-Before --> deleteAlert-After
+  getNotificationHistory-Before  --> getNotificationHistory-After
+  fetchSubscriptionCard-Before --> fetchSubscriptionCard-After
+  getConversationMessages -- see info#6-intercom --> new-GetConversationMessages
+  connectWallet -- see info#5 --> new-SubscribeWallet
+  sendConversationMessages -- see info#6-intercom --> new-SendConversationMessages
+  createSupportConversation -- see info#8-intercom --> new-CreateSupportConversation
+  sendEmailTargetVerification-Before -- see info#10 --> sendEmailTargetVerification-After
 
   subgraph useNotifiClient
-
-    broadcastMessage
-    createAlert
-    createBonfidaAuctionSource
-    createMetaplexAuctionSource
-    createSource
-    ensureSourceGroup
-    getConfiguration
-    getTopics
-
+    logIn-Before
+    logOut-Before
+    beginLoginViaTransaction-Before
+    completeLoginViaTransaction-Before
+    ensureTargetGroup-Before
+    deleteAlert-Before
+    getNotificationHistory-Before
+    fetchSubscriptionCard-Before
+    sendEmailTargetVerification-Before
     getConversationMessages
     connectWallet
-    fetchData
-    updateAlert
     sendConversationMessages
     createSupportConversation
-    createDiscordTarget
 
-    rm((Deprecated)):::removeColor
-    impl((Impl)):::implColor
 
-    classDef tbdColor fill:yellow,color:black;
-    classDef removeColor fill:red,color:black;
-    classDef implColor fill:orange,color:black;
+    fetchData-info#4-deprecate:::removeColor
+    createDiscordTarget-info#9-deprecate:::removeColor
+    updateAlert-info#7-deprecate:::removeColor
+    broadcastMessage-noUsed-deprecate:::removeColor
+    createAlert-info#1-deprecate:::removeColor
+    createBonfidaAuctionSource-noUsed-deprecate:::removeColor
+    createMetaplexAuctionSource-noUsed-deprecate:::removeColor
+    createSource-info#2-deprecate:::removeColor
+    ensureSourceGroup-info#3-deprecate:::removeColor
+    getConfiguration-noUsed-deprecate:::removeColor
+    getTopics-noUsed-deprecate:::removeColor
+
   end
 
   subgraph NotifiFrontendClient
+    logIn-After
+    logOut-After
+    beginLoginViaTransaction-After
+    completeLoginViaTransaction-After
+    ensureTargetGroup-After
+    deleteAlert-After
+    getNotificationHistory-After
+    fetchSubscriptionCard-After
+    sendEmailTargetVerification-After
+    new-GetConversationMessages:::implColor
+    new-SubscribeWallet:::implColor
+    new-SendConversationMessages:::implColor
+    new-CreateSupportConversation:::implColor
+
+
     initialize
     getTargetGroups
     ensureAlert
@@ -130,21 +146,13 @@ flowchart TB
     ensureAlert
     deleteAlert
 
-  end
 
-  subgraph CommonMethods
-    logIn
-    logOut
-    beginLoginViaTransaction
-    completeLoginViaTransaction
-    ensureTargetGroup
-    deleteAlert
-    getNotificationHistory
-    fetchSubscriptionCard
-    sendEmailTargetVerification
   end
 
 
+classDef tbdColor fill:yellow,color:black;
+classDef removeColor fill:red,color:black;
+classDef implColor fill:orange,color:black;
 
 ```
 
@@ -156,9 +164,9 @@ flowchart TB
 2. Used in updateAlertInternal, and the updateAlertInternal is used in subscribe. And in subscribe, it iterates through all existing alerts to make sure if the alert to subscribe is valid. It is the same as ensureAlert. So createSource can be deprecated.
 
 3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensureSourceAndFilters(frontend-client/ensureSource.ts). ensureSourceGroup can be deprecated.
-4. For now, I think it's sufficient to add a "fetchData" equivalent to notifi frontend client. We should create a single query which fetches all of the data (alerts, sources, sourceGroups, etc...)
+4. I think we do not need to implement fetchData in frontendClient because the original `fetchData` in useNotifiClient is only used in `useNotifiSubscribe` hook. And the `useNotifiSubscribe` hook is going to be deprecated. So we can remove fetchData in frontendClient.
 
-5. Used inside subscribeWallet method in useNotifiSubscribe. It allows user to subscribe multiWallet if the dapp tenant enable multiWallet subscription.
+5. Used inside subscribeWallet method in useNotifiSubscribe. It allows user to subscribe multiWallet if the dapp tenant enable multiWallet subscription. NotifiFrontendClient needs to impl new subscribeWallet method to replace this one as well as the `subscribeWallet` in useNotifiSubscribe hook.
 
 6. Used inside `useItercomChat` hook. Might need to simply impl `getConversationMessages` & `sendConversationMessages` stateless method in `FrontendClient`. (TBD)
 
@@ -168,7 +176,94 @@ flowchart TB
 
 9. Used in `subscribe` method in useNotifiSubscribe. `subscribe` method can be replaced with `FrontendClient.ensureAlert` method. So `createDiscordTarget` can be deprecated.
 
+10. Used in `resendEmailVerificationLink` method in `useNotifiSubscribe`. NotifiFrontendClient has the sendEmailTargetVerification method which will cover both `resendEmailVerificationLink` in useNotifiSubscribe and `sendEmailTargetVerification` in useNotifiClient hook.
+
 </details>
+
+</details>
+
+#### Step#2: Consolidate useNotifiSubscribe hook and NotifiFrontendClient object
+
+The following new methods will need to be implemented in `FrontendClient`
+
+- [ ] userState
+- [ ] subscribeWallet
+- [ ] updateWallets
+
+See detailed info below
+
+<details>
+<summary>useNotifiSubscribe hook v.s. NotifiFrontendClient object </summary>
+
+```mermaid
+
+flowchart LR
+logInBefore --> logInAfter
+resendEmailVerificationLink --> sendEmailTargetVerification
+instantSubscribe --> ensureAlert
+subscribe --> ensureAlert
+updateTargetGroups --> ensureTargetGroup
+isAuthenticated --> impl1
+isInitialized --> impl1
+isTokenExpired --> impl1
+subscribeWallet --> impl2
+updateWallets --> impl3
+
+
+
+subgraph NotifiFrontendClient
+  logInAfter
+  sendEmailTargetVerification
+  ensureAlert
+  ensureTargetGroup
+  initialize
+
+  impl1(UserState):::implColor
+  impl2(newSubscribeWallet):::implColor
+  impl3(newUpdateWallets):::implColor
+
+  logOut
+
+  beginLoginViaTransaction
+  completeLoginViaTransaction
+  getTargetGroups
+
+  getSourceGroups
+  getAlerts
+
+  deleteAlert
+  getNotificationHistory
+  fetchSubscriptionCard
+
+
+end
+
+
+subgraph useNotifiSubscribe
+  logInBefore
+  resendEmailVerificationLink
+  instantSubscribe
+  subscribe
+  updateTargetGroups
+
+
+  subscribeWallet
+  updateWallets
+
+  isAuthenticated
+  isInitialized
+  isTokenExpired
+
+  rm1(isEmailConfirmationSent):::removeColor
+end
+
+
+
+classDef tbdColor fill:yellow,color:black;
+classDef removeColor fill:red,color:black;
+classDef implColor fill:orange,color:black;
+
+```
 
 </details>
 
@@ -359,7 +454,7 @@ const { subscribe, updateWallets } = useNotifiSubscribe({
 // delete-end
 // add-start
 const { client } = useNotifiClientContext();
-const { ensureAlert, login, fetchWallets } = client;
+const { ensureAlert, login, fetchData } = client;
 // add-end
 ```
 
