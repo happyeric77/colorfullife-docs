@@ -79,9 +79,42 @@ npx lerna --scope=@lerna-example/package-1 run build
 
 ### Publish all packages
 
+To push mono-repository to npm which is the concept of using npm [scope](https://docs.npmjs.com/cli/v7/using-npm/scope). Meaning it is necessary to create a organization under the account.
+After that, you can publish packages to npm with the following command:
+
 ```bash
 npx lerna publish
 ```
+
+The command above exectues actually `npx lerna version` and `npx lerna publish from-packages` under the hood.
+
+You can also run it seperately.
+
+If you are using a free tier account, you might come across the following error:
+
+:::warning
+
+```
+
+? Are you sure you want to publish these packages? Yes
+lerna info publish Publishing packages to npm...
+lerna ERR! E402 You must sign up for private packages
+
+```
+
+The reason is npm treats all packages under the same scope as private packages. So, you either need to upgrade your account to a paid tier or you need to [set `access` to `public`](https://stackoverflow.com/questions/43007471/how-to-migrate-npm-package-to-an-organization-scope) like below:
+
+```json
+{
+  "publishConfig": {
+    "access": "public"
+  }
+}
+```
+
+:::
+
+Congratulations! You have successfully created a mono repo with Lerna. 🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉
 
 :::info
 If you want to publish packages to npm, you can also checkout my [another video tutorial](https://youtu.be/0KGXdDv6pYc) below.
@@ -95,4 +128,5 @@ If you want to publish packages to npm, you can also checkout my [another video 
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
   allowfullscreen
 ></iframe>
+
 :::

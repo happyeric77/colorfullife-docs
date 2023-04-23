@@ -1,0 +1,92 @@
+<mxfile host="65bd71144e">
+    <diagram id="WumAjAdXrXWM_JYxqsuq" name="Page-1">
+        <mxGraphModel dx="1806" dy="680" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#000000" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="13" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="322" y="465" width="659" height="349" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="333" y="498" width="637" height="311" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="emmiter.on('&lt;font color=&quot;#ff8000&quot;&gt;newsUpdated&lt;/font&gt;', &lt;font color=&quot;#00cccc&quot;&gt;(news =&amp;gt;{ /* TODO*/}&lt;/font&gt;)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="541" y="689" width="284" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="38" value="" style="ellipse;whiteSpace=wrap;html=1;strokeColor=#00CC00;fontSize=15;fontColor=#00CCCC;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="697" y="684" width="125" height="37" as="geometry"/>
+                </mxCell>
+                <mxCell id="3" value="eventListeners" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="348" y="616" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="on" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="641" y="616" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="emit" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="822" y="619" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="EventEmitter" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="580" y="470" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" value="" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.containers.browserWindow;rSize=0;strokeColor=#666666;strokeColor2=#008cff;strokeColor3=#c4c4c4;mainText=,;recursiveResize=0;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="-74" y="457" width="344" height="241" as="geometry"/>
+                </mxCell>
+                <mxCell id="9" value="myApplication" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.containers.anchor;fontSize=17;fontColor=#666666;align=left;fillColor=none;" vertex="1" parent="8">
+                    <mxGeometry x="60" y="12" width="110" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="10" value="https://application.io" style="strokeWidth=1;shadow=0;dashed=0;align=center;html=1;shape=mxgraph.mockup.containers.anchor;rSize=0;fontSize=17;fontColor=#666666;align=left;fillColor=none;" vertex="1" parent="8">
+                    <mxGeometry x="130" y="60" width="250" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" value="Subscribe News" style="rounded=1;whiteSpace=wrap;html=1;fillColor=none;fontColor=#000000;strokeColor=#00CC00;" vertex="1" parent="8">
+                    <mxGeometry x="17" y="189" width="120" height="31" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontColor=#FFFFFF;fillColor=#d80073;strokeColor=#A50040;strokeWidth=3;" edge="1" parent="1" source="20" target="4">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="577" y="541" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="3" y="585"/>
+                            <mxPoint x="305" y="580"/>
+                            <mxPoint x="705" y="585"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="25" value="newsUpdated" style="whiteSpace=wrap;html=1;strokeColor=#00CC00;fontColor=#FFFFFF;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="364" y="689" width="120" height="32" as="geometry"/>
+                </mxCell>
+                <mxCell id="30" value="emitter.emit('&lt;font color=&quot;#ff8000&quot;&gt;newsUpdated&lt;/font&gt;', '&lt;font color=&quot;#00cccc&quot;&gt;news&lt;/font&gt;')" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontColor=#FFFFFF;" vertex="1" parent="1">
+                    <mxGeometry x="828" y="687" width="205" height="26" as="geometry"/>
+                </mxCell>
+                <mxCell id="33" style="edgeStyle=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=2;fontColor=#00CCCC;endSize=2;exitX=0.5;exitY=1;exitDx=0;exitDy=0;strokeColor=#FFFFFF;" edge="1" parent="1" source="38" target="25">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="760" y="748"/>
+                            <mxPoint x="563" y="748"/>
+                            <mxPoint x="420" y="748"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="34" value="+1" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontColor=#00CCCC;spacing=3;fontSize=15;labelBackgroundColor=default;" vertex="1" connectable="0" parent="33">
+                    <mxGeometry x="0.0009" y="-3" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="36" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=4;fontColor=#00CCCC;endSize=2;exitX=0.31;exitY=0.8;exitDx=0;exitDy=0;exitPerimeter=0;strokeColor=#FFFFFF;" edge="1" parent="1" source="35" target="5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="35" value="News server" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#006EAF;fontColor=#ffffff;fillColor=#1ba1e2;" vertex="1" parent="1">
+                    <mxGeometry x="1013" y="163" width="288" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" style="edgeStyle=none;html=1;entryX=0.908;entryY=1.166;entryDx=0;entryDy=0;strokeWidth=2;fontColor=#00CCCC;endSize=2;fillColor=#008a00;strokeColor=#005700;entryPerimeter=0;" edge="1" parent="1" target="32">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="882" y="713" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="885" y="753"/>
+                            <mxPoint x="838" y="753"/>
+                            <mxPoint x="803" y="753"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
