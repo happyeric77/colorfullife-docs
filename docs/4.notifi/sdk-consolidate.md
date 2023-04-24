@@ -63,7 +63,64 @@ flowchart TD
 
 Since `notifi-react-card` will finally use `FrontendClient`(notifi-frontend-client) to manipulate service instead of using `useNotifiClient` (notifi-react-hooks), making sure the `FrontendClient` is able to cover all the functionalities of `useNotifiClient` is the first step.
 
-#### Step#1: Consolidate useNotifiClient hook and NotifiFrontendClient object
+#### Step1: Implement getter to get the userState
+
+The user state `useNotifiSubscribe` and `useNotifiClient` below need to be handled somehow.
+
+- `isAuthenticated`
+- `isInitialized`
+- `expiry`
+- `isTokenExpired`
+
+Need to implement a getter in FrontendClient
+
+```ts title="packages/notifi-frontend-client/lib/client/FrontendClient.ts"
+export class NotifiFrontendClient {
+  // ...
+  // add-start
+  private _userState: UserState | null = null;
+  get userState(): UserState | null {
+    return this._userState;
+  }
+  // add-end
+  // ...
+  async initialize(): Promise<UserState> {
+    // ...
+    this._service.setJwt(authorization.token);
+    // add-start
+    const userState = {
+      status: "authenticated",
+      authorization,
+      roles: roles ?? [],
+    };
+    this._userState = userState;
+    return userState;
+    // add-end
+    // delete-start
+    return {
+      status: "authenticated",
+      authorization,
+      roles: roles ?? [],
+    };
+    // delete-end
+  }
+}
+```
+
+So we can replace the previous `isInitialized` with the following example code:
+
+```ts
+// ...
+// delete-next-line
+const { isInitialized } = useNotifiSubscribe({ targetGroupName: "Default" });
+// add-start
+const { userState } = client;
+const isInitialized = !!userState;
+// add-end
+// ...
+```
+
+#### Step#2: Consolidate useNotifiClient hook and NotifiFrontendClient object
 
 The following now methods will need to be implemented in `FrontendClient`
 
@@ -90,6 +147,7 @@ flowchart LR
   connectWallet -- see info#5 --> new-SubscribeWallet
   sendConversationMessages -- see info#6-intercom --> new-SendConversationMessages
   createSupportConversation -- see info#8-intercom --> new-CreateSupportConversation
+  fetchData -- see info#4 --> new-fetchData
   sendEmailTargetVerification-Before -- see info#10 --> sendEmailTargetVerification-After
 
   subgraph useNotifiClient
@@ -108,7 +166,7 @@ flowchart LR
     createSupportConversation
 
 
-    fetchData-info#4-deprecate:::removeColor
+    fetchData
     createDiscordTarget-info#9-deprecate:::removeColor
     updateAlert-info#7-deprecate:::removeColor
     broadcastMessage-noUsed-deprecate:::removeColor
@@ -136,6 +194,7 @@ flowchart LR
     new-SubscribeWallet:::implColor
     new-SendConversationMessages:::implColor
     new-CreateSupportConversation:::implColor
+    new-fetchData:::implColor
 
 
     initialize
@@ -164,7 +223,7 @@ classDef implColor fill:orange,color:black;
 2. Used in updateAlertInternal, and the updateAlertInternal is used in subscribe. And in subscribe, it iterates through all existing alerts to make sure if the alert to subscribe is valid. It is the same as ensureAlert. So createSource can be deprecated.
 
 3. In hook implementation (useNotifiClient), we firstly ensure every single source (utils/ensureSource). And then go for ensuring sourceGroup (utils/ensureSourceGroup). But in frontendClient, we only need to use ensureSourceAndFilters(frontend-client/ensureSource.ts). ensureSourceGroup can be deprecated.
-4. I think we do not need to implement fetchData in frontendClient because the original `fetchData` in useNotifiClient is only used in `useNotifiSubscribe` hook. And the `useNotifiSubscribe` hook is going to be deprecated. So we can remove fetchData in frontendClient.
+4. `fetchData` in useNotifiClient is used in `useNotifiSubscribe` hook to render the client info shown in the cards. We will need to implement a new method in `FrontendClient` to replace this one.
 
 5. Used inside subscribeWallet method in useNotifiSubscribe. It allows user to subscribe multiWallet if the dapp tenant enable multiWallet subscription. NotifiFrontendClient needs to impl new subscribeWallet method to replace this one as well as the `subscribeWallet` in useNotifiSubscribe hook.
 
@@ -182,7 +241,7 @@ classDef implColor fill:orange,color:black;
 
 </details>
 
-#### Step#2: Consolidate useNotifiSubscribe hook and NotifiFrontendClient object
+#### Step#3: Consolidate useNotifiSubscribe hook and NotifiFrontendClient object
 
 We need to extract the logic of `useNotifiSubscribe` hook in `notifi-react-card` to `NotifiFrontendClient` object in `notifi-frontend-client` package.
 
@@ -280,48 +339,6 @@ It is copy-paste from `core`, consider remove
 - `packages/notifi-core/lib/NotifiClient.ts`
 
 </details>
-
-And the user state `useNotifiSubscribe` and `useNotifiClient` need to be handled somehow.
-
-- `isAuthenticated`
-- `isInitialized`
-- `expiry`
-- `isTokenExpired`
-
-Maybe implement a getter in FrontendClient
-
-```ts title="packages/notifi-frontend-client/lib/client/FrontendClient.ts"
-export class NotifiFrontendClient {
-  // ...
-  // add-start
-  private _userState: UserState | null = null;
-  get userState(): UserState | null {
-    return this._userState;
-  }
-  // add-end
-  // ...
-  async initialize(): Promise<UserState> {
-    // ...
-    this._service.setJwt(authorization.token);
-    // add-start
-    const userState = {
-      status: "authenticated",
-      authorization,
-      roles: roles ?? [],
-    };
-    this._userState = userState;
-    return userState;
-    // add-end
-    // delete-start
-    return {
-      status: "authenticated",
-      authorization,
-      roles: roles ?? [],
-    };
-    // delete-end
-  }
-}
-```
 
 ### 2. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
 
