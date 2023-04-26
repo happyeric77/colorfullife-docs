@@ -54,8 +54,8 @@ flowchart TD
 | Action                                                                                            | Description         | point |
 | ------------------------------------------------------------------------------------------------- | ------------------- | ----- |
 | Consolidate notifi-react-hook (useNotifiClient) and notifi-frontend-client (NotifiFrontendClient) | See breakdown below | 3     |
-| Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client                | See breakdown below | 5     |
 | Extend `FrontendClient` to fully support all available chains and event types                     | See breakdown below | 3     |
+| Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client                | See breakdown below | 5     |
 
 ## Implementation Details
 
@@ -124,8 +124,8 @@ const isInitialized = !!userState;
 
 The following now methods will need to be implemented in `FrontendClient`
 
+- [x] userState
 - [ ] getConversationMessages
-- [ ] subscribeWallet
 - [ ] sendConversationMessages
 - [ ] createSupportConversation
       See detailed info below
@@ -247,8 +247,7 @@ We need to extract the logic of `useNotifiSubscribe` hook in `notifi-react-card`
 
 So the 2nd step will be implementing the following new methods into `FrontendClient`
 
-- [ ] userState
-- [ ] subscribeWallet
+- [x] subscribeWallet
 - [ ] updateWallets
 
 See detailed info below
@@ -340,7 +339,89 @@ It is copy-paste from `core`, consider remove
 
 </details>
 
-### 2. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
+### 2. Extend `FrontendClient` to fully support all available chains and event types
+
+#### Step#1: Make all supported event available in `notifi-frontend-client`
+
+Now, `notifi-frontend-client` only supports:
+
+```ts
+export type EventTypeItem =
+  | DirectPushEventTypeItem
+  | BroadcastEventTypeItem
+  | LabelEventTypeItem
+  | PriceChangeEventTypeItem
+  | CustomTopicTypeItem; // Including HealthCheckEventTypeItem
+```
+
+But in `notifi-react-card`, we have:
+
+```ts
+export type EventTypeItem =
+  | DirectPushEventTypeItem
+  | BroadcastEventTypeItem
+  | HealthCheckEventTypeItem
+  | LabelEventTypeItem
+  | TradingPairEventTypeItem
+  | WalletBalanceEventTypeItem
+  | PriceChangeEventTypeItem
+  | CustomTopicTypeItem
+  | XMTPTopicTypeItem;
+```
+
+- [x] WalletBalanceEventTypeItem
+- [ ] TradingPairEventTypeItem
+- [ ] XMTPTopicTypeItem;
+
+:::tip
+**_Related files_**
+
+- `packages/notifi-frontend-client/lib/models/SubscriptionCardConfig.ts` --> Add new `XXXEventTypeItem` into `EventTypeItem`
+- `packages/notifi-frontend-client/lib/client/ensureSource.ts`
+  - Add new `ensureXXXSource(s)` method and implement into `ensureSources` used in `ensureSourceAndFilters`.
+  - Add new `getXXXSourceFilter` method and implement into `ensureSourceAndFilters`
+- `packages/notifi-frontend-client/lib/client/NotifiFrontendClient.ts`
+
+:::
+
+#### Step#2 Make all supported chains available in `notifi-frontend-client`
+
+Currently, we only have `APTOS`, `EVM` and `SOLANA` supported in `notifi-frontend-client`.
+
+We need to add the config `NotifiFrontendConfiguration` generator for all the supported chains.
+
+- `newSuiConfig()`
+- `newNearConfig()`
+- `newAcalaConfig()`
+- `newInjectiveConfig()` --> TBD??
+
+```ts title="./packages/notifi-frontend-client/configuration/NotifiFrontendConfiguration.ts"
+// highlight-start
+export type NotifiFrontendConfiguration = NotifiSolanaConfiguration | NotifiAptosConfiguration;
+// highlight-end
+
+export type NotifiAptosConfiguration = Readonly<{
+  walletBlockchain: 'APTOS';
+  authenticationKey: string;
+  accountAddress: string;
+}> &
+  NotifiEnvironmentConfiguration;
+
+export const newAptosConfig =
+// ...
+
+export type NotifiSolanaConfiguration = Readonly<{
+  walletBlockchain: "SOLANA";
+  walletPublicKey: string;
+}> &
+  NotifiEnvironmentConfiguration;
+
+export const newSolanaConfig =
+// ...
+// Need to add the reset of the chains
+```
+
+### 3. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
 
 #### Step#1 Replace the `useNotifiClient` dependency with `FrontendClient` object.
 
@@ -542,73 +623,6 @@ client.getConversationMessages({
 ```ts title="packages/notifi-react-card/lib/hooks/useSubscriptionCard.ts"
 const { client } = useNotifiClientContext();
 client.fetchSubscriptionCard(input);
-```
-
-### 3. Extend `FrontendClient` to fully support all available chains and event types
-
-#### Step#1 Make all supported chains available in `notifi-frontend-client`
-
-Currently, we only have `APTOS`, `EVM` and `SOLANA` supported in `notifi-frontend-client`.
-
-We need to add the config `NotifiFrontendConfiguration` generator for all the supported chains.
-
-- `newSuiConfig()`
-- `newNearConfig()`
-- `newAcalaConfig()`
-- `newInjectiveConfig()` --> TBD??
-
-```ts title="./packages/notifi-frontend-client/configuration/NotifiFrontendConfiguration.ts"
-// highlight-start
-export type NotifiFrontendConfiguration = NotifiSolanaConfiguration | NotifiAptosConfiguration;
-// highlight-end
-
-export type NotifiAptosConfiguration = Readonly<{
-  walletBlockchain: 'APTOS';
-  authenticationKey: string;
-  accountAddress: string;
-}> &
-  NotifiEnvironmentConfiguration;
-
-export const newAptosConfig =
-// ...
-
-export type NotifiSolanaConfiguration = Readonly<{
-  walletBlockchain: "SOLANA";
-  walletPublicKey: string;
-}> &
-  NotifiEnvironmentConfiguration;
-
-export const newSolanaConfig =
-// ...
-// Need to add the reset of the chains
-```
-
-#### Step#2: Make all supported event available in `notifi-frontend-client`
-
-Now, `notifi-frontend-client` only supports:
-
-```ts
-export type EventTypeItem =
-  | DirectPushEventTypeItem
-  | BroadcastEventTypeItem
-  | LabelEventTypeItem
-  | PriceChangeEventTypeItem
-  | CustomTopicTypeItem;
-```
-
-But in `notifi-react-card`, we have:
-
-```ts
-export type EventTypeItem =
-  | DirectPushEventTypeItem
-  | BroadcastEventTypeItem
-  | HealthCheckEventTypeItem
-  | LabelEventTypeItem
-  | TradingPairEventTypeItem
-  | WalletBalanceEventTypeItem
-  | PriceChangeEventTypeItem
-  | CustomTopicTypeItem
-  | XMTPTopicTypeItem;
 ```
 
 ## References
