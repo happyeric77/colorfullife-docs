@@ -125,10 +125,11 @@ const isInitialized = !!userState;
 The following now methods will need to be implemented in `FrontendClient`
 
 - [x] userState
-- [ ] getConversationMessages
-- [ ] sendConversationMessages
-- [ ] createSupportConversation
-      See detailed info below
+- [x] getConversationMessages
+- [x] sendConversationMessages
+- [x] createSupportConversation
+
+See detailed info below
 
 <details>
 <summary>useNotifiClient hook v.s. NotifiFrontendClient object </summary>
@@ -248,7 +249,7 @@ We need to extract the logic of `useNotifiSubscribe` hook in `notifi-react-card`
 So the 2nd step will be implementing the following new methods into `FrontendClient`
 
 - [x] subscribeWallet
-- [ ] updateWallets
+- [x] updateWallets
 
 See detailed info below
 
@@ -370,8 +371,8 @@ export type EventTypeItem =
 ```
 
 - [x] WalletBalanceEventTypeItem
-- [ ] TradingPairEventTypeItem
-- [ ] XMTPTopicTypeItem;
+- [x] TradingPairEventTypeItem
+- [x] XMTPTopicTypeItem;
 
 :::tip
 **_Related files_**
@@ -388,12 +389,14 @@ export type EventTypeItem =
 
 Currently, we only have `APTOS`, `EVM` and `SOLANA` supported in `notifi-frontend-client`.
 
-We need to add the config `NotifiFrontendConfiguration` generator for all the supported chains.
+We need to add the following 4 supported chains.
 
-- `newSuiConfig()`
-- `newNearConfig()`
-- `newAcalaConfig()`
-- `newInjectiveConfig()` --> TBD??
+- [ ] ACALA
+- [ ] SUI
+- [ ] NEAR
+- [ ] INJECTIVE
+
+1. Add new NotifiXXXConfiguration type
 
 ```ts title="./packages/notifi-frontend-client/configuration/NotifiFrontendConfiguration.ts"
 // highlight-start
@@ -419,6 +422,83 @@ export type NotifiSolanaConfiguration = Readonly<{
 export const newSolanaConfig =
 // ...
 // Need to add the reset of the chains
+```
+
+2. Implement signedMessage in `NotifiFrontendClient` for associated chains
+
+```ts title="./packages/notifi-frontend-client/lib/client/NotifiFrontendClient.ts"
+
+private async _signMessage({
+    signMessageParams,
+    timestamp,
+  }: Readonly<{
+    signMessageParams: SignMessageParams;
+    timestamp: number;
+  }>): Promise<string> {
+    switch (signMessageParams.walletBlockchain) {
+      case 'ETHEREUM':
+      case 'POLYGON':
+      case 'ARBITRUM':
+      case 'AVALANCHE':
+      case 'BINANCE':
+      case 'OPTIMISM': {
+        // ...
+      }
+      case 'SOLANA': {
+        // ...
+      }
+      case 'APTOS': {
+        // ...
+      }
+      /*
+      ** TODO: Need to implement the rest of the chains
+      ** 1. ACALA
+      ** 2. SUI
+      ** 3. NEAR
+      ** 4. INJECTIVE
+      */
+      default:
+        // Need implementation for other blockchains
+        return 'Chain not yet supported';
+    }
+  }
+
+```
+
+3. Storage prefix setting (TBC)
+
+:::warning
+
+There is conflict between `notifi-frontend-client` and `notifi-react-hooks` on the storage prefix. TBC
+
+- notifi-react-hooks: There s no blockchain specific prefix. all set as
+
+```ts
+${jwtPrefix}:${dappAddress}:${walletPublicKey}
+```
+
+- notifi-frontend-client: Blockchain specific prefix is set. Like
+
+```ts
+// For APTOS
+${jwtPrefix}:${dappAddress}:${accountAddress}:${walletPublicKey}
+// Rest
+${jwtPrefix}:${dappAddress}:${walletPublicKey}
+```
+
+:::
+
+4. Add newbclientFactory for newly added chains
+
+```ts title="./packages/notifi-frontend-client/lib/client/clientFactory.ts"
+// ...
+// add-start
+export const newXXXClient = (config: NotifiXXXConfiguration): NotifiFrontendClient => {
+  const storage = newNotifiStorage(config);
+  const service = newNotifiService(config);
+  return new NotifiFrontendClient(config, storage, service);
+};
+// add-end
 ```
 
 ### 3. Move the logic of useNotifiSubscribe (notifi-react-card) to notifi-frontend-client
