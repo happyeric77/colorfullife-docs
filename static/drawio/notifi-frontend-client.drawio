@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e">
+    <diagram id="RYvdN_0g_RRVlRkZ2gxF" name="Page-1">
+        <mxGraphModel dx="975" dy="632" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="850" pageHeight="1100" background="#ffffff" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="35" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;fontSize=16;fontColor=#000000;" parent="1" source="18" target="21" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="SUI&lt;br&gt;APTOS&lt;br&gt;ACALA&lt;br&gt;NEAR&lt;br&gt;INJECTIVE" style="whiteSpace=wrap;html=1;labelBackgroundColor=none;strokeColor=#000000;fontColor=#000000;fillColor=none;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="-160" y="230.5" width="120" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#000000;fontSize=16;fontColor=#000000;" parent="1" source="19" target="34" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="19" value=" 'ETHEREUM'&#10;    | 'POLYGON'&#10;    | 'ARBITRUM'&#10;    | 'AVALANCHE'&#10;    | 'BINANCE'&#10;    | 'OPTIMISM'&#10;    | 'SOLANA'" style="labelBackgroundColor=none;strokeColor=#000000;fontColor=#000000;fillColor=none;align=left;whiteSpace=wrap;" parent="1" vertex="1">
+                    <mxGeometry x="-158" y="344" width="120" height="117" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="account: {&#10;  address: string;&#10;  publicKey: string;&#10;  };&#10;  tenantId: string;&#10;  env: NotifiEnvironment;&#10;  walletBlockchain:" style="whiteSpace=wrap;labelBackgroundColor=none;strokeColor=#000000;fontColor=#000000;fillColor=none;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="15" y="224" width="136" height="108" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="account: {&#10;  address: string;&#10;  publicKey: string;&#10;  };&#10;  tenantId: string;&#10;  env: NotifiEnvironment;&#10;  walletBlockchain:" style="whiteSpace=wrap;labelBackgroundColor=none;strokeColor=#000000;fontColor=#000000;fillColor=none;align=left;" parent="1" vertex="1">
+                    <mxGeometry x="15" y="348.5" width="136" height="108" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" value="NotifiFrontendClient generate flow" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=20;fontColor=#000000;" parent="1" vertex="1">
+                    <mxGeometry x="142" y="86" width="320" height="36" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" style="edgeStyle=none;html=1;strokeColor=#000000;fontSize=16;fontColor=#000000;" parent="1" source="38" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="250.33333333333326" y="338" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="38" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;labelBackgroundColor=none;strokeColor=#000000;fontSize=16;fontColor=#000000;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="168" y="278" width="36" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" style="edgeStyle=none;html=1;strokeColor=#000000;fontSize=16;fontColor=#000000;" parent="1" source="40" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="425.57142857142844" y="335" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="40" value="newFrontendConfig" style="whiteSpace=wrap;html=1;labelBackgroundColor=none;strokeColor=#000000;fontSize=16;fontColor=#000000;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="251" y="305" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" style="edgeStyle=none;html=1;strokeColor=#000000;fontSize=16;fontColor=#000000;" parent="1" source="42" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="588.4285714285713" y="335" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="42" value="newNotifiClient" style="whiteSpace=wrap;html=1;labelBackgroundColor=none;strokeColor=#000000;fontSize=16;fontColor=#000000;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="426" y="305" width="130" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="44" value="NotifiFrontendClient" style="whiteSpace=wrap;html=1;labelBackgroundColor=none;strokeColor=#000000;fontSize=16;fontColor=#000000;fillColor=none;" parent="1" vertex="1">
+                    <mxGeometry x="589" y="305" width="169" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
