@@ -5,9 +5,6 @@ tags: [nodejs, axios, http, line-notify]
 
 Some of you might be like me, often forget the field definition of the request body and the corresponding args in the axios api.
 
-Most of the time, use use "POST" to send a request to api server with `request body` and `request header`.
-The authorization header is also required in most of the cases.
-
 Axios is a very popular http request library in nodejs. It is easy to use and has a lot of features.
 
 Before getting into axios usage. we need to know more about the detail about the basic of http protocol
