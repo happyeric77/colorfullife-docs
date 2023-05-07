@@ -1,0 +1,219 @@
+---
+title: "Image Proxy(Process) Server"
+tags: [nodejs, axios, express]
+---
+
+import Drawio from "@theme/Drawio";
+import drawIo from "!!raw-loader!@site/static/drawio/ms365-image-server.drawio";
+
+# Create your own image proxy server (Cloudinary)
+
+## Background
+
+We are able to get the image data from microsoft 365 sharepoint by using GraphApi.
+Here it is the data format that we can get from the API.
+
+```ts
+{
+  '@odata.context': "https://graph.microsoft.com/v1.0/$metadata#sites('your-tenant-name.sharepoint.com%2Cbdaafbd4-08f0-421c-877e-4b87dc459784%2C22c9a737-a9b6-4279-885e-2231d39a0627')/drives('drive-id')/root/$entity",
+  '@microsoft.graph.downloadUrl': 'image-download-url',
+  createdDateTime: '2023-02-25T11:29:32Z',
+  eTag: '"{816F406D-5FEA-4C16-A59D-38642DF4D422},1"',
+  id: '01YNQIXNTNIBXYD2S7CZGKLHJYMQW7JVBC',
+  lastModifiedDateTime: '2023-02-25T11:29:32Z',
+  name: 'TainanView2.jpg',
+  webUrl: 'https://your-tenant-name.sharepoint.com/sites/your-sharepoint-site-name/Shared%20Documents/TainanView2.jpg',
+  cTag: '"c:{816F406D-5FEA-4C16-A59D-38642DF4D422},2"',
+  size: 101248,
+  createdBy: {
+    user: {
+      email: 'ericlee@your-tenant-name.onmicrosoft.com',
+      id: '9cb2608c-4df5-4388-ac85-f8c9fac6f537',
+      displayName: 'Eric Lee'
+    }
+  },
+  lastModifiedBy: {
+    user: {
+      email: 'ericlee@5your-tenant-name.onmicrosoft.com',
+      id: '9cb2608c-4df5-4388-ac85-f8c9fac6f537',
+      displayName: 'Eric Lee'
+    }
+  },
+  parentReference: {
+    driveType: 'documentLibrary',
+    driveId: 'drive-id',
+    id: '01YNQIXNV6Y2GOVW7725BZO354PWSELRRZ',
+    path: '/drives/drive-id/root:',
+    siteId: 'bdaafbd4-08f0-421c-877e-4b87dc459784'
+  },
+  file: {
+    mimeType: 'image/jpeg',
+    hashes: { quickXorHash: 'HXxjKmWVs6vtfoKXupU3C5wyaks=' }
+  },
+  fileSystemInfo: {
+    createdDateTime: '2023-02-25T11:29:32Z',
+    lastModifiedDateTime: '2023-02-25T11:29:32Z'
+  },
+  image: { height: 720, width: 1280 },
+  shared: { scope: 'users' }
+}
+```
+
+As can be seen, here are two relavent fields, `@microsoft.graph.downloadUrl` and `webUrl`.
+
+- `@microsoft.graph.downloadUrl` is the url that we can download the image directly.
+- `webUrl` is the url that we can view the image in the browser.
+
+OK, you might think we can simply just make use of the `webUrl` to display the image in whatever web based application.
+However, No, we can't. You will realize that it requires the login to microsoft 365 account to view the image.
+
+So, what we can do is to create a proxy server to download the image from `@microsoft.graph.downloadUrl` and return the image data to the client.
+
+In this article, we will create a simple image proxy server to process the image from Microsoft 365.
+
+The following diagram shows the architecture of the image proxy server.
+
+<Drawio content={drawIo} page={1} zoom={0.5} editable={true} maxHeight={300} />
+
+## Scafold the project
+
+We will make use of `@colorfullife/ms365-graph-api-auth` package to manipulate sharepoint data.
+
+:::info
+
+You can checkout the following video for the detail usage of the package.
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/sXW3G8gtlWs"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+></iframe>
+
+:::
+
+After initialize the node project by yarn or npm init.
+We also need some more dependencies to create the express image process server
+
+```json
+"dependencies": {
+    "@azure/msal-node": "^1.14.1",
+    "axios": "^1.0.0"
+  },
+"devDependencies": {
+  "@types/node": "^18.14.1",
+  "dotenv": "^16.0.3",
+  "tsup": "^6.6.3"
+},
+```
+
+Then we can create the scripts in `package.json` to build and run the project.
+
+```json
+"scripts": {
+  "build": "rm -rf dist/ && tsup src/index.ts --format cjs,esm --dts",
+  "start": "yarn build && node dist/index.js"
+},
+```
+
+## Create the image proxy server
+
+We will create the image proxy server in `src/index.ts`.
+
+```ts title="src/index.ts"
+import express from "express";
+import https from "https";
+import { getAccessToken, GraphApiQuery } from "@colorfullife/ms365-graph-api-auth";
+require("dotenv").config();
+
+const app = express();
+
+app.get("/:imageName", async (req, res) => {
+  const { imageName } = req.params;
+  const authResponse = await getAccessToken(process.env.CLIENT_ID!, process.env.CLIENT_SECRET!, process.env.TENANT_ID!);
+  if (!authResponse) return res.status(500).send({ error: "Could not get access token" });
+  const query = new GraphApiQuery(authResponse.accessToken);
+  const mySite = await query.getSites(process.env.SITE_NAME!);
+  const drive = await query.getDrives(mySite.value[0].id);
+  const image = await query.getDriveItemByFileName(mySite.value[0].id, drive.value[0].id, imageName);
+  const imageDownloadUrl = image["@microsoft.graph.downloadUrl"];
+  https
+    .get(imageDownloadUrl, (response) => {
+      // Set the response headers to indicate that this is an image file
+      res.setHeader("Content-Type", "image/jpeg");
+      // Pipe the file stream to the response object to serve the file as an image
+      response.pipe(res);
+    })
+    .on("error", (err) => {
+      console.log({ err: err.message });
+      res.status(500).send("Cannot get image");
+    });
+});
+
+app.listen(3000, () => {
+  console.log("Server running on port 3000");
+});
+```
+
+In the above code, we will get the access token by `getAccessToken` function from `@colorfullife/ms365-graph-api-auth` package.
+Then we will get the image data by `getDriveItemByFileName` function from `@colorfullife/ms365-graph-api-auth` package.
+Finally, we will download the image data from `@microsoft.graph.downloadUrl` and return the image data to the client.
+
+## Run the image proxy server
+
+We will need the credentials of the Microsoft 365 application.
+So we will create a `.env` file to store the credentials.
+
+```env title=".env"
+TENANT_ID=your-tenant-id
+CLIENT_ID=your-client-id
+CLIENT_SECRET=your-client-secret
+SITE_NAME=your-site-name
+```
+
+If you are not sure how to get the credentials, you can checkout the video in above info section.
+
+Then we can run the image proxy server by `yarn start` or `npm start`.
+
+After seeing the following lines showing on the console, it means the image proxy server is up and running.
+
+```bash
+yarn run v1.22.19
+$ yarn build && node dist/index.js
+$ rm -rf dist/ && tsup src/index.ts --format cjs,esm --dts
+CLI Building entry: src/index.ts
+CLI Using tsconfig: tsconfig.json
+CLI tsup v6.7.0
+CLI Target: es6
+CJS Build start
+ESM Build start
+CJS dist/index.js 7.75 KB
+CJS ⚡️ Build success in 201ms
+ESM dist/index.mjs 7.08 KB
+ESM ⚡️ Build success in 202ms
+DTS Build start
+DTS ⚡️ Build success in 1926ms
+DTS dist/index.d.ts 12.00 B
+Server running on port 3000
+```
+
+Then we will be able to access the image by `http://localhost:3000/your-image-name.jpg`.
+
+Congratulations!!! We now have a image proxy server to process the image with Microsoft 365 sharepoint as backend storage.
+
+:::tip
+
+<iframe
+  width="560"
+  height="315"
+  src="https://www.youtube.com/embed/U-KYurbs_9M"
+  title="YouTube video player"
+  frameborder="0"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowfullscreen
+></iframe>
+
+:::

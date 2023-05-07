@@ -391,10 +391,10 @@ Currently, we only have `APTOS`, `EVM` and `SOLANA` supported in `notifi-fronten
 
 We need to add the following 4 supported chains.
 
-- [ ] ACALA
-- [ ] SUI
-- [ ] NEAR
-- [ ] INJECTIVE
+- [x] ACALA
+- [x] SUI
+- [x] NEAR
+- [x] INJECTIVE
 
 1. Add new NotifiXXXConfiguration type
 
@@ -596,7 +596,7 @@ const isInitialized = !!userState;
 // add-end
 ```
 
-- `packages/notifi-react-card/lib/components/subscription/SubscriptionCardV1.tsx`
+- [x] `packages/notifi-react-card/lib/components/subscription/SubscriptionCardV1.tsx`
 
 ```ts title="packages/notifi-react-card/lib/components/subscription/SubscriptionCardV1.tsx"
 // delete-start
