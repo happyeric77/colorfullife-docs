@@ -1,5 +1,5 @@
 ---
-title: Spike SDK consolidation
+title: SDK consolidation
 ---
 
 # SPIKE: notifi-sdk-ts consolidation
