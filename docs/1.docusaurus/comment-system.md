@@ -1,6 +1,5 @@
 ---
 title: Comment System
-created: 2023-4-14
 ---
 
 # Docusaurus Comment System
