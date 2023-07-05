@@ -1,6 +1,6 @@
 ---
 title: Big O
-position: 2
+sidebar_position: 2
 tags: [style]
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Write Good Code
-position: 1
+sidebar_position: 1
 tags: [style]
 ---
 

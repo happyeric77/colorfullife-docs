@@ -1,6 +1,6 @@
 ---
 title: Multiple GitHub SSH locally
-position: 4
+sidebar_position: 4
 tags: [git, github]
 ---
 

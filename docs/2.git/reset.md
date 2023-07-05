@@ -1,6 +1,6 @@
 ---
 title: Git Reset
-position: 5
+sidebar_position: 5
 tags: [git, github]
 ---
 
