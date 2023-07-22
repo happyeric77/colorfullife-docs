@@ -288,3 +288,7 @@ Run `npm audit` for details.
 
 - [Github Repo](https://github.com/happyeric77/colorfullife/tree/master/packages/vue-card-dummy)
 - [NPM package](https://www.npmjs.com/package/vue-card-dummy)
+
+## References
+
+- [walletconnect-vue example](https://github.com/AxyLm/web3modal-vue?ref=vuejsexamples.com)
