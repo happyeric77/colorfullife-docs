@@ -1,6 +1,6 @@
 {
-  "label": "Webpack",
-  "position": 10,
+  "label": "Mono Repo",
+  "position": 13,
   "link": {
     "type": "generated-index"
   }

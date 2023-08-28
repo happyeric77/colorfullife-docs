@@ -1,6 +1,6 @@
 ---
-title: ModuleScopePlugin
-tags: [webpack, react]
+title: Webpack - ModuleScopePlugin
+tags: [webpack, react, bundler]
 ---
 
 # ModuleScopePlugin
@@ -79,7 +79,9 @@ const webpack = require("webpack");
 
 module.exports = function override(config, env) {
   // ...
-  config.resolve.plugins = config.resolve.plugins.filter((plugin) => !(plugin instanceof ModuleScopePlugin));
+  config.resolve.plugins = config.resolve.plugins.filter(
+    (plugin) => !(plugin instanceof ModuleScopePlugin)
+  );
   // ...
   return config;
 };
@@ -103,7 +105,11 @@ Removing the `ModuleScopePlugin` is not a good practice, because this loses some
 We can print out the `ModuleScopePlugin` to see what it is by adding the following line in config file.
 
 ```js
-console.log(config.resolve.plugins.filter((plugin) => !(plugin instanceof ModuleScopePlugin)));
+console.log(
+  config.resolve.plugins.filter(
+    (plugin) => !(plugin instanceof ModuleScopePlugin)
+  )
+);
 ```
 
 Then we will see the following output:
@@ -144,7 +150,9 @@ module.exports = function override(config, env) {
   // ...
 
   // delete-next-line
-  config.resolve.plugins = config.resolve.plugins.filter((plugin) => !(plugin instanceof ModuleScopePlugin));
+  config.resolve.plugins = config.resolve.plugins.filter(
+    (plugin) => !(plugin instanceof ModuleScopePlugin)
+  );
 
   // add-start
   config.resolve.plugins[0].allowedPaths = [
