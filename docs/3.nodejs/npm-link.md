@@ -163,3 +163,43 @@ Run `npm audit` for details.
 </details>
 
 To use back the original npm package, we will need to define it back in the `package.json` file and run `npm install` to install it.
+
+:::tip
+
+If you're using npm link to link the local package (ex. `@notifi-network/notifi-react-card` package ) to your project, you may see a linting error in VS Code that suggests adding the package to your project's dependencies.
+
+To get rid of this error, you can add the following line to your project's .eslintrc file:
+
+<details>
+<summary>Example</summary>
+
+```
+'@notifi-network/notifi-react-card' should be listed in the project's dependencies. Run 'npm i -S @notifi-network/notifi-react-card' to add it eslint
+```
+
+</details>
+
+To get rid of this error, you can add the following line to your project's `.eslintrc.json` file. Replace the `"/Your/global/node_modules/node_modules"` with your global node_modules path.
+
+```json
+{
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["src"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"],
+        "moduleDirectory": [
+          "node_modules",
+          "/Your/global/node_modules/node_modules"
+        ]
+      }
+    }
+  }
+}
+```
+
+This configuration tells ESLint to resolve imports using the src directory as the root directory, and to look for modules in both the node_modules and global node_modules directory.
+
+This should allow ESLint to resolve the @notifi-network/notifi-react-card package correctly, even though it's not listed in your project's dependencies.
+
+:::
