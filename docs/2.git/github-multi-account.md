@@ -1,5 +1,5 @@
 ---
-title: Multiple GitHub SSH locally
+title: Multiple local GitHub Account
 sidebar_position: 4
 tags: [git, github]
 ---
