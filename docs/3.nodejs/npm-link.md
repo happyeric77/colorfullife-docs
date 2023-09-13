@@ -3,11 +3,11 @@ title: "Npm link"
 tags: [nodejs, npm]
 ---
 
-# Npm link
+## Npm link
 
 Npm link is a command that allows us to create a symlink between a global package and a local package. This is particularly useful when we are developing a package and want to test it in a real project.
 
-## Link a global package to a local package (local node project)
+### Link a global package to a local package (local node project)
 
 In the local package directory, run `npm link` to create a symlink in the global folder.
 
@@ -54,7 +54,7 @@ removed 1 package, and audited 1 package in 200ms
 
 </details>
 
-## Consume the global package
+### Consume the global package
 
 We can consume the linked package in any node project by running `npm link <package-name>` in the project directory.
 
@@ -128,7 +128,7 @@ xmtp-inbox-web@1.0.0 /Users/macbookpro4eric/Projects/notifi/xmtp-demo
 
 Then we can make the change locally in the `@notifi-network/notifi-react-card` package and test it in the project. The change will be reflected immediately. 🎉🎉🎉🎉🎉🎉🎉
 
-## Unlink the global package
+### Unlink the global package
 
 If we no longer want to use the local package in the project, we can run `npm unlink <package-name>` in the project directory.
 
@@ -203,3 +203,97 @@ This configuration tells ESLint to resolve imports using the src directory as th
 This should allow ESLint to resolve the @notifi-network/notifi-react-card package correctly, even though it's not listed in your project's dependencies.
 
 :::
+
+## yarn link
+
+Simiilarily, yarn also has a command called `yarn link` that does the same thing as `npm link`.
+
+Here we also want to have a small use case to demonstrate how to use `yarn link`.
+
+### Register a package (`A`) to the global folder
+
+Under the `A` package directory, run `yarn link` to register the package to the global folder.
+
+<details>
+<summary>Output</summary>
+
+```bash
+❯ mkdir A
+❯ mkdir B
+❯ cd A
+❯ yarn init -y
+yarn init v1.22.19
+warning The yes flag has been set. This will automatically answer yes to all questions, which may have security implications.
+success Saved package.json
+✨  Done in 0.03s.
+❯ yarn link
+yarn link v1.22.19
+success Registered "A".
+info You can now run `yarn link "A"` in the projects where you want to use this package and it will be used instead.
+✨  Done in 0.04s.
+```
+
+</details>
+
+Then we can see the `A` package is registered in the global folder by running
+
+```bash
+# macOS & Linux
+ls ~/.config/yarn/link
+```
+
+### Unregister the package (`A`)
+
+We can also unregister the package by running `yarn unlink` in the `A` package directory.
+
+<details>
+<summary>Output</summary>
+
+```bash
+❯ yarn unlink
+yarn unlink v1.22.19
+success Unregistered "A".
+info You can now run `yarn unlink "A"` in the projects where you no longer want to use this package.
+✨  Done in 0.04s.
+
+```
+
+</details>
+
+### Consume the global package in another project (`B`)
+
+Under the `B` package directory, run `yarn link A` to consume the global package `A`.
+
+<details>
+<summary>Output</summary>
+
+```bash
+❯ cd ../B
+❯ yarn init -y
+yarn init v1.22.19
+warning The yes flag has been set. This will automatically answer yes to all questions, which may have security implications.
+success Saved package.json
+✨  Done in 0.03s.
+❯ yarn link A
+yarn link v1.22.19
+success Using linked package for "A".
+✨  Done in 0.04s.
+```
+
+</details>
+
+Then we are able to use local `A` package in the `B` project without pushing the changes to the npm registry.
+
+### Unlink the global package
+
+To unlink the global package, we can run `yarn unlink A` in the `B` project directory.
+
+```bash
+❯ yarn unlink A
+yarn unlink v1.22.19
+success Removed linked package "A".
+info You will need to run `yarn install --force` to re-install the package that was linked.
+✨  Done in 0.04s.
+```
+
+Then we can run `yarn install --force` to install the original package back.
