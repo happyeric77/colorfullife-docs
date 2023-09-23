@@ -297,3 +297,71 @@ info You will need to run `yarn install --force` to re-install the package that 
 ```
 
 Then we can run `yarn install --force` to install the original package back.
+
+## yalc
+
+npm or yarn link is a good way to test the local package in the project. However, the symbolic linking solution might not work in all cases especially we have so many bundler tools like webpack, rollup, etc. in the project.
+
+> NPM and Yarn address this issue with a similar approach of symlinked packages (npm/yarn link). Though this may work in many cases, it often brings nasty constraints and problems with dependency resolution, symlink interoperability between file systems, etc.
+> Quoted from yalc doc
+
+[`yalc`](https://www.npmjs.com/package/yalc) in this case is a good alternative to `npm link` or `yarn link`.
+
+### Working flow of yalc with small example
+
+We will use one of my local packages `@notifii-network/notifi-react-card` and `vue-dummy-project` as example to showcase how to use `yalc`.
+
+- `@notifii-network/notifi-react-card` is a local package that we want to test in the `vue-dummy-project` project.
+- `vue-dummy-project` is a vue project that we want to test the `@notifii-network/notifi-react-card` package.
+
+#### Step 1: npx yalc publish
+
+When you run `yalc publish` in the package directory, it grabs only files that should be published to NPM and puts them in a special global store (located, for example, in ~/.yalc).
+
+So lets run `npx yalc publish` in the `@notifii-network/notifi-react-card` package directory.
+
+<detail>
+<summary>demo</summary>
+
+```bash
+❯ cd ~/.yalc
+❯ ls
+installations.json packages
+❯ cd packages
+❯ ls
+@notifi-network
+❯ cd @notifi-network
+❯ ls
+notifi-react-card
+    ~/.y/packages/@notifi-network 
+```
+
+</detail>
+
+#### Step 2: npx yalc add
+
+When you run `yalc add <package>` in your project it pulls package content into .yalc in the current folder and injects a file:/link: dependency into package.json
+
+So we can run `npx yalc add @notifi-network/notifi-react-card` in the `vue-dummy-project` project directory.
+
+<detail>
+<summary>demo</summary>
+
+```bash
+❯ npx yalc add @notifi-network/notifi-react-card
+Package @notifi-network/notifi-react-card@0.84.0 added ==> /Users/macbookpro4eric/Projects/notifi/ref/vue-dummy-project/node_modules/@notifi-network/notifi-react-card
+```
+
+</detail>
+
+#### Other operation
+
+yalc also have some other operations that might also be useful such as `remove`, `installation`.
+
+Checkout the [yalc doc](https://www.npmjs.com/package/yalc) for more details.
+
+:::tip
+
+We need to be cautious that the bundler for some reason might not rebuild the updated package. For example `.next` (next project) or `.vite` (vite project) folder might not be updated. In this case, we need to manually remove the folder and rebuild the project.
+
+:::
