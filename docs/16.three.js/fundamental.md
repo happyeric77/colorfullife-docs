@@ -24,7 +24,7 @@ npm run serve
 
 ## Basic components of three.js
 
-- Repo branch: TBD
+- Repo branch: 2.camera-scene-renderer
 
 ### OrbitControls: to have interactive canvas with mouse and keyboard
 
@@ -133,4 +133,86 @@ renderer.setAnimationLoop(() => {
   cube.rotation.z += 0.01;
   renderer.render(scene, camera);
 });
+```
+
+## Util
+
+- Repo branch: `3.utils-stat-dat.gui`
+
+### stat panel
+
+```ts
+import Stats from "three/examples/jsm/libs/stats.module";
+
+const stats = Stats();
+document.body.appendChild(stats.dom);
+```
+
+Then we can see the empty panel on the top left corner of the canvas. To make it work, we need to call `stats.update()` in the animation loop.
+
+```ts
+const animate = (render: THREE.WebGLRenderer) => {
+  requestAnimationFrame(() => animate(render));
+  stats.update();
+};
+```
+
+### dat.GUI
+
+dat.GUI is a lightweight controller library for JavaScript. It allows us to control the variables in the scene.
+
+It is not a tool specifically for three.js, we can use it in any JavaScript project to control the object's properties.
+
+Firstly, we need to install the package
+
+```bash
+npm install dat.gui @types/dat.gui --save-dev
+```
+
+In the example project, we use dat.GUI to control
+
+1. `cute.rotation` property
+2. `camera.position` property
+
+```ts
+import * as dat from "dat.gui";
+
+const gui = new GUI();
+const cubeFolder = gui.addFolder("Cube"); // create a folder called Cube
+cubeFolder.add(cube.rotation, "x", 0, Math.PI * 2);
+cubeFolder.add(cube.rotation, "y", 0, Math.PI * 2);
+cubeFolder.add(cube.rotation, "z", 0, Math.PI * 2);
+cubeFolder.open(); // open the folder by default
+const cameraFolder = gui.addFolder("Camera");
+cameraFolder.add(camera.position, "x", -10, 10);
+cameraFolder.add(camera.position, "y", -10, 10);
+cameraFolder.add(camera.position, "z", -10, 10);
+cameraFolder.open();
+```
+
+Then we will see the GUI panel on the top right corner of the canvas.
+![](/img/doc-threejs/dat.gui.png)
+
+## Object3D
+
+- Repo branch: `4.object3d`
+
+Object3D is the base class for most of the three.js objects. It provides a lot of useful methods and properties. ex. `add`, `remove`, `position`, `rotation`, `scale`, ...etc.
+
+> we need to be careful about the object hierarchy when we use `add` to create a parent-child relationship. If we add a child to a parent, then the child's position, rotation, scale will be relative to the parent.
+
+To get the world position, rotation, scale of an object, we can use `getWorldPosition`, `getWorldRotation`, `getWorldScale` methods.
+
+```ts
+const objectsWorldPosition = new THREE.Vector3();
+object.getWorldPosition(objectsWorldPosition);
+
+const objectsWorldDirection = new THREE.Vector3();
+object.getWorldDirection(objectsWorldDirection);
+
+const objectsWorldQuaternion = new THREE.Quaternion();
+object.getWorldQuaternion(objectsWorldQuaternion);
+
+const objectsWorldScale = new THREE.Vector3();
+object.getWorldScale(objectsWorldScale);
 ```
