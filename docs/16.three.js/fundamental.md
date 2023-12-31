@@ -216,3 +216,58 @@ object.getWorldQuaternion(objectsWorldQuaternion);
 const objectsWorldScale = new THREE.Vector3();
 object.getWorldScale(objectsWorldScale);
 ```
+
+## Geometry & transform matrix
+
+- Repo branch: `5.geometry-transform-matrix`
+
+There are 6 main properties of Geometry object:
+
+- width
+- height
+- depth
+- widthSegments
+- heightSegments
+- depthSegments
+
+We can change the shape of the geometry by changing these properties.
+
+**NOTE:**
+We can also use Object3D.scale to change the size of the geometry. But it will change the size of the geometry and its children as `scale` uses the `transfrom matrix` to change the size of the object.
+
+We can check out the transform matrix of an object by using `matrix` property.
+
+```ts
+const transformMatrix = cube.matrix;
+```
+
+## Material
+
+- Repo branch: `6.material`
+
+Material is used to define the appearance of an object. There are many types of materials in three.js. ex. `MeshBasicMaterial`, `MeshNormalMaterial`, `MeshLambertMaterial`, `MeshPhongMaterial`, `MeshToonMaterial`, `MeshStandardMaterial`, `MeshPhysicalMaterial`, `MeshMatcapMaterial`, `MeshDepthMaterial`, `MeshDistance
+
+We will explain some of them in separate sections.
+
+In this section, we simply introduce some common properties of material.
+
+1. transparent: whether the material is transparent or not
+2. opacity: the opacity of the material
+3. alphaTest: the alpha test value of the material (a threshold value)
+4. side: which side of the material will be rendered. ex. `THREE.FrontSide`, `THREE.BackSide`, `THREE.DoubleSide`
+
+### MeshBasicMaterial
+
+- Repo branch: `6.1.MeshBasicMaterial`
+
+This is the most basic material. It is not affected by light. It is not affected by shadows. It is not affected by any other objects in the scene.
+We can use it when we want to create a simple object without setting up complicated lightings.
+
+There are some properties we can set for MeshBasicMaterial:
+
+- color: the color of the material
+- wireframe: whether the material is rendered as wireframe or not
+- reflectivity: the reflectivity of the material (only take effect when .mapping is set as THREE.CubeReflectionMapping[default])
+- map: the texture map of the material
+- envMap: the environment map of the material
+- combine: the operation to combine the texture map and the environment map (default is THREE.MultiplyOperation)
