@@ -21,11 +21,11 @@ The real use case is like below:
 
 - Toggle to subscribe alert outside of card
 
-![](https://image-server.dev-eric.ml/docs-sdk-tashi-context.png)
+![](https://image-server.dev-eric.work/docs-sdk-tashi-context.png)
 
 - Press button to subscribe alert outside of card
 
-![](https://image-server.dev-eric.ml/docs-sdk-suins-context.png)
+![](https://image-server.dev-eric.work/docs-sdk-suins-context.png)
 
 ## [SDK] Consolidate `NotifiSubscriptionContextProvider` and `NotifiFormProvider`
 
@@ -41,7 +41,9 @@ The scope includes:
 <NotifiFormProvider>
   <NotifiSubscriptionContextProvider {...params}>
     {/* add-end */}
-    <NotifiClientContextProvider {...params}>{children}</NotifiClientContextProvider>
+    <NotifiClientContextProvider {...params}>
+      {children}
+    </NotifiClientContextProvider>
     {/* add-start */}
   </NotifiSubscriptionContextProvider>
 </NotifiFormProvider>
@@ -59,7 +61,9 @@ After Step#1, we can now consolidate the `NotifiSubscriptionCard` and `NotifiSub
 In the case we want to use the `NotifiSubscriptionContext` and `NotifiClientContext` in `SolanaCard` page, we will need to create a wrapper to wrap the `SolanaCard`.
 
 ```tsx title="SolanaNotifiContextWrapper.tsx"
-export const SolanaNotifiContextWrapper: React.FC<PropsWithChildren> = ({ children }) => {
+export const SolanaNotifiContextWrapper: React.FC<PropsWithChildren> = ({
+  children,
+}) => {
   // TODO ...
   return (
     <div className="container">

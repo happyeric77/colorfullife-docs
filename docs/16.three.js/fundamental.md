@@ -271,3 +271,45 @@ There are some properties we can set for MeshBasicMaterial:
 - map: the texture map of the material
 - envMap: the environment map of the material
 - combine: the operation to combine the texture map and the environment map (default is THREE.MultiplyOperation)
+
+### MeshLambertMaterial
+
+The property of MeshLambertMaterial is affected by light. It is more for matte objects such as wood, stone that are not shiny.
+
+We can use `emissive` property to make the object glow without light.
+
+> TODO add detail
+
+### MeshPhongMaterial
+
+It is useful when we want to create a shiny object. ex. polished wood
+
+Addition to the `emissive` property, we can also use `specular` and `shininess` properties to make the object more shiny.
+
+![Imgur](https://i.imgur.com/eek0Q7x.png)
+
+> TODO add detail
+
+### MeshStandardMaterial
+
+It uses the PBR (Physically Based Rendering) model to render the object. It is more realistic than MeshPhongMaterial.
+
+> More computationally expensive than MeshPhongMaterial & MeshLambertMaterial
+
+It provides `flatShading`, `roughness` and `metalness` properties to control the appearance of the object.
+
+It is kind of similar to MeshPhongMaterial, but it is more realistic.
+
+### MeshPhysicalMaterial
+
+It is an extension of MeshStandardMaterial. It provides more properties for reflectivity.
+
+Addition to `reflectivity` and `refractionRation`, we have `clearcoat`, `clearcoatRoughness` properties.
+
+### MeshMatcapMaterial
+
+It is a material that uses a texture map to define the color of the object. It is not affected by light.
+
+### MeshToonMaterial
+
+Toon shadding is a non-photorealistic rendering technique. It is a cartoon-like rendering style.

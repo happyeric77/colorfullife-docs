@@ -93,6 +93,6 @@ lg = log --graph --pretty='format:"%C(yellow)%h %C(green)%d %C(blue)%ar %C(white
 
 The following image shows the output of the lg command:
 
-![Git lg command output](https://image-server.dev-eric.ml/docs-git-lg.png)
+![Git lg command output](https://image-server.dev-eric.work/docs-git-lg.png)
 
 to sum up, it is a good practice to create a shortcut for a git command. It will save you a lot of time and effort.
