@@ -62,3 +62,25 @@ Reference doc: https://community.cloudflare.com/t/question-about-cloudflare-tunn
 ![Imgur](https://i.imgur.com/ZuY4kO4.png)
 
 :::
+
+## Auth
+
+Above will expose your application to the cloudflare network and allow anyone to access it. However, you may want to restrict the access to certain users. You can use the cloudflare access to achieve this goal.
+
+- Go to `Access` -> `Applications`, select `Self-Hosted`
+
+![Imgur](https://i.imgur.com/7KWHO8y.png)
+
+- Define the details of your application, the most important part is the `Identity provider`. We want to disable `Accept all avilable identity provider` and select `One-time PIN`.
+
+![Imgur](https://i.imgur.com/LVoR9sA.png)
+
+- Define the access policy
+
+![Imgur](https://i.imgur.com/isbNYgw.png)
+
+After that, you will be able to access your application through the cloudflare network. However, you will need to enter the one-time pin to access it.
+
+## Reference
+
+- [Video](https://www.youtube.com/watch?v=ZvIdFs3M5ic)
