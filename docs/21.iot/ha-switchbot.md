@@ -19,12 +19,24 @@ It depends on your system, we use the following command for Raspberry Pi4:
 
 ```bash
 curl -sSL https://get.docker.com | sh
+
+sudo usermod -aG docker pi
 ```
+
+:::tip
+
+The command `sudo usermod -aG docker pi` is used to add the user pi to the docker group.
+
+In Linux, the Docker daemon binds to a Unix socket instead of a TCP port. By default that Unix socket is owned by the user root and other users can only access it using sudo. The docker group is created to allow non-root users to execute Docker commands without using sudo.
+
+So, this command is essentially giving the pi user permission to run Docker commands without needing sudo.
+
+:::
 
 ## Install Home Assistant in your home server
 
 Firstly, you will need to install Home Assistant on your home server. We use [Docker compose](https://www.home-assistant.io/installation/raspberrypi#docker-compose) to install Home Assistant.
-
+sudo cloudflared service install eyJhIjoiYjIwNjMzYWQxZDc4MzQxM2MzNmY3MDVmZWZjZmU1MzIiLCJ0IjoiNDZjMDU5MmMtN2M2ZS00ZTI1LTk1MTQtMjc5YzI3Njg4MjQzIiwicyI6IlltTmxOak13WmpndE16a3hPQzAwWW1FNExUazBNemd0WldFd1lXWXpaVEUwWVRsaSJ9
 :::info
 You can refer to [this video](https://www.youtube.com/watch?v=DV_OD4OPKno&t=403s) to check the difference between running Home Assistant in Docker and Home Assistant OS.
 :::
