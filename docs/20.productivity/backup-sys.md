@@ -37,17 +37,7 @@ According we will need to map the `/opt` directory to the Duplicati `/source` di
 version: '3.0'
 
 services:
-
-  # homeassistant:
-  #   container_name: homeassistant
-  #   image: "ghcr.io/home-assistant/home-assistant:stable"
-  #   volumes:
-  #     - /opt/homeasistant/config:/config
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - /run/dbus:/run/dbus:ro
-  #   restart: unless-stopped
-  #   privileged: true
-  #   network_mode: host
+  # ... other services
 
   duplicati:
     image: lscr.io/linuxserver/duplicati:latest
@@ -57,8 +47,9 @@ services:
       - PGID=1000
       - TZ=Asia/Tokyo
     volumes:
-      - /opt/duplicati/config:/config
-      - /opt:/source
+      - /opt:/source # This will create a /source/ directory in the container with the host's /opt/ directory content in it, so that Duplicati can backup the /opt/ directory of our home server.
+      - /opt/duplicati/config:/config # The will create a /opt/duplicati/config/ directory in which we have access to the Duplicati's /config/ directory content in host /opt/ (it is so that we can also backup the Duplicati's configuration.)
+
     ports:
       - 8200:8200
     restart: unless-stopped
