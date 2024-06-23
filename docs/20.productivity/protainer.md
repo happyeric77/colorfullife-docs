@@ -21,7 +21,7 @@ services:
     ports:
       - 9443:9443
     volumes:
-      - /opt/portainer/portainer_data:/data
+      - /opt/portainer/portainer_data:/data # We do not create a new volume because we persist the data in our self-managed /opt/portainer/ dir
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 ```

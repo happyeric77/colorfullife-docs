@@ -34,3 +34,77 @@ pi@raspberrypi:~ $ dd if=/dev/zero of=/tmp/testfile.img bs=20M count=5 oflag=dir
 ```
 
 </details>
+
+- Check if certain user group exist
+
+```bash
+cat /etc/group | grep <GROUP_NAME>
+
+# ex.
+cat /etc/group | grep docker
+```
+
+- Create a new user group
+
+```bash
+sudo groupadd <GROUP_NAME>
+```
+
+- check what group the user belongs to
+
+```bash
+groups <USER_NAME>
+```
+
+- Add user to a group
+
+```bash
+sudo usermod -aG <GROUP_NAME> <USER_NAME>
+```
+
+- Refresh group info
+
+```bash
+newgrp <GROUP_NAME>
+```
+
+```ts
+type FormTargetRenewArgs = {
+  target: Extract<Target, "email" | "telegram" | "phoneNumber">;
+  value: string;
+};
+
+type toggleTargetRenewArgs = {
+  target: Extract<Target, "discord" | "slack" | "wallet">;
+  value: boolean;
+};
+
+type TargetRenewArgs = FormTargetRenewArgs | toggleTargetRenewArgs;
+
+const isFormTargetRenewArgs = (
+  args: TargetRenewArgs
+): args is FormTargetRenewArgs => {
+  return (
+    args.target === "email" ||
+    args.target === "telegram" ||
+    args.target === "phoneNumber"
+  );
+};
+
+const renewTargetGroup = useCallback(
+  async (singleTargetRenewArgs?: TargetRenewArgs) => {
+    let data = { ...targetGroupToBeSaved };
+
+    if (!!singleTargetRenewArgs) {
+      if (!isFormTargetRenewArgs(singleTargetRenewArgs)) {
+        const { target, value } = singleTargetRenewArgs;
+        // Only get the form related data updated
+      } else {
+        // Only get the toggle related data updated
+      }
+    }
+    // Rest of the code
+  },
+  [frontendClient, targetGroupToBeSaved]
+);
+```
