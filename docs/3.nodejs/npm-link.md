@@ -365,3 +365,42 @@ Checkout the [yalc doc](https://www.npmjs.com/package/yalc) for more details.
 We need to be cautious that the bundler for some reason might not rebuild the updated package. For example `.next` (next project) or `.vite` (vite project) folder might not be updated. In this case, we need to manually remove the folder and rebuild the project.
 
 :::
+
+:::info
+It might not be straightforward in the beginning because bundling tools tends to cache the package. So we need to be cautious about this. To make sure all the cache is cleared. Following are the steps to do so:
+
+- For dependency projects
+
+```bash
+# this example we have 3 packages to publish
+
+# 1. rebuild the dependency projects: in this case the mono repo notifi-sdk-ts
+npm run build && \
+
+# 2. remove the all the yalc packages in `~/.yalc/packages/@notifi-network`
+rm -rf ~/.yalc/packages/@notifi-network && \
+
+# 3. publish the packages
+
+npx yalc publish ./packages/notifi-react/ && \
+npx yalc publish ./packages/notifi-frontend-client/ && \
+npx yalc publish ./packages/notifi-graphql/
+```
+
+- For the main project (In this case, we use SvelteKit project powered by Vite)
+
+```bash
+#1 remove the possible cache folders and files
+
+rm -rf .yalc node_modules yalc.lock && \
+
+#2 Re-add the yalc packages
+npx yalc add @notifi-network/notifi-react @notifi-network/notifi-frontend-client @notifi-network/notifi-graphql
+
+#3 Re-install npm packages and start the project in dev
+npm install && npm run dev
+```
+
+:::
+
+Then we are ready to go 🔥🔥🔥🔥🔥🔥🔥

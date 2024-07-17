@@ -133,3 +133,31 @@ Then we can run the bundle analyzer to see the bundle size.
 ![](/img/docs-webpack-analyzer.png)
 
 We can see that the bundle size is reduced. The `marked` is moved to a separate chunk.🎉
+
+## Nextjs built-in bundle analyzer (Updated on 2024-07-16)
+
+If you are using Nextjs, its even easier to analyze the bundle size. Just install the `@next/bundle-analyzer` and add the following script in `next.config.mjs`:
+
+```ts title="next.config.mjs"
+
+// add-next-line
+import bundleAnalyzer from '@next/bundle-analyzer';
+//... your other imports
+
+const nextConfig = {
+  // ... your other config
+}
+
+// delete-next-line
+export nextConfig;
+
+// add-start
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
+export default withBundleAnalyzer(nextConfig);
+// add-end
+
+```
+
+Then you can run the script by `ANALYZE=true npm run build` to see the bundle size in browser.
