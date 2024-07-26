@@ -3,40 +3,11 @@ title: "Dependencies: normal, dev and peer"
 tags: [nodejs, npm]
 ---
 
-## Background
+The article, we are taking a quick look at the different types of dependencies in npm: normal, dev and peer.
 
-Recently, I have run into a warning issue about dependencies when `npm install` .
+Firstly, the use case of each type of dependencies
 
-```bash
-"XXX" has unmet peer dependency "XXX"
-```
-
-So I decided to have a deeper look at the dependencies in npm especially the `peerDependencies`.
-
-## Types of dependencies
-
-There are 3 types of dependencies in npm:
-
-- normal dependencies
-- dev dependencies
-- peer dependencies
-
-### Normal dependencies
-
-Normal dependencies are the dependencies that are required to run the package.
-
-```json
-{
-  "dependencies": {
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "~4.0.3",
-    "web-vitals": "^1.1.2"
-  }
-}
-```
-
-If a npm package defines a dependency in the `dependencies` section, it means that the package will be included in the `node_modules` folder of that particular package when you run `npm install`.
+1. normal dependencies: straightforward, the packages will be imported in root project during "RUNTIME".
 
 ```mermaid
 flowchart TB
@@ -51,39 +22,9 @@ end
 
 ```
 
-### Dev dependencies
+2. dev dependencies: the packages will be imported in root project, but will be used under development phase only, for example, testing, linting, bundling and building ... etc.
 
-Dev dependencies are the dependencies that are only required to develop the package.
-
-```json
-{
-  "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "jest": "^26.6.3",
-    "ts-jest": "^26.5.4",
-    "typescript": "^4.0.3"
-  }
-}
-```
-
-If a npm package defines a dependency in the `devDependencies` section, the package will not be included in the `node_modules` of the package when you run `npm install` because those packages are normally used for development only (ex. testing, linting, etc.).
-
-### Peer dependencies
-
-Peer dependencies are the dependencies that are required to run the package but not included in the `node_modules` of the package.
-
-```json
-{
-  "peerDependencies": {
-    "axios": "^0.26.1"
-  }
-}
-```
-
-If a npm package defines a dependency in the `peerDependencies` section, the consumer of the package will need to install the dependency by themselves and ensure the version is compatible with the one defined in the `peerDependencies` section.
+3. peer dependencies: the section is only used when the package is a library. There are some packages that are required to run the library, but should not be included in the library's `node_modules` folder. Instead, the consumer of the library should install them by themselves. The most common example is `react` and `react-dom`.
 
 ```mermaid
 
@@ -99,48 +40,44 @@ end
 
 ```
 
-As can be seen in the above diagram, the `package-A` does not necessarily include the `peer-dependency-defined-in-package-A` because it could work without the `peer-dependency-defined-in-package-A`.
+## More details on peer dependencies
 
-However, there might be limitation that package A can only work with a specific version of `peer-dependency-defined-in-package-A` or the developers of package A only tested the package with a specific version of `peer-dependency-defined-in-package-A`. They cannot guarantee that the package will work with other versions of `peer-dependency-defined-in-package-A`.
+`react` and `react-dom` are always the dependencies of all the react component libraries, but they should not be included in the library's `node_modules` folder.
+The consumer of the library will need (or want) to install them by themselves at the root project level, because the root project highly likely to use their own version of `react` and `react-dom`.
+Accordingly, the peer dependencies are meant to inform developers that certain other library versions are required and let them know that they should install them in their own project.
+The benefit of using peer dependencies is that it can help to avoid the duplication of the same library in the `node_modules` folder. Ex. imagine if the library has 1000 dependencies, and all of them have their own full set of `react` and `react-dom` if they are not normal dependencies instead of peer dependencies.
 
-## Peer dependencies real example
+Accordingly, it is important to think about the dependencies carefully when developing a library.
+
+:::tip
+The most common pattern is to think about the fact that
+
+1.  whether the dependency will be highly likely to be used by the customer's project. If yes, then it should be a peer dependency.
+2.  whether the library want to have the control of the dependency version. If the library wants to always use that certain version of the dependency no matter what version the customer's project is using, then it should not be a peer dependency.
+
+:::
+
+## The possible issue with peer dependencies
+
+After `npm install` then the following error thrown
+
+```bash
+"XXX" has unmet peer dependency "XXX"
+```
 
 Resolving the peer dependencies issue could be complicated. Let's take a look at the real example. We will make sure of the following three packages to demonstrate:
 
-1. `axios`
+In a example project named `example-app`, we have the two dependencies: `@notifi-network/notifi-axios-utils@0.76.0` and `axios-jwt@3.0.2`.
 
-   This will be a required module in the exmaple app.
+1. `@notifi-network/notifi-axios-utils@0.76.0` has a peer dependency `axios@^0.26.1` defined in the `peerDependencies` section.
 
-2. `@notifi-network/notifi-axios-utils@0.76.0`
+2. `axios-jwt@3.0.2` has the peer dependency `axios@^1.4.0` defined in the `peerDependencies` section.
 
-   It has the peer dependency `axios@^0.26.1` defined in the `peerDependencies` section.
+Obviously, the `@notifi-network/notifi-axios-utils@0.76.0` and `axios-jwt@3.0.2` are not compatible with each other because their peer dependencies are not compatible with each other.
 
-3. `axios-jwt@3.0.2`
-
-   It has the peer dependency `axios@^1.4.0` defined in the `peerDependencies` section.
-
-### Create consumer app
-
-Firstly, we will create a consumer app to consume the `@notifi-network/notifi-axios-utils` package.
+So the above error message mentioned in the beginning will be thrown when the `example-app` has `axios@1.4.0` installed with `@notifi-network/notifi-axios-utils@0.76.0` and `axios-jwt@3.0.2`.
 
 ```bash
-mkdir peer-dep-test && cd peer-dep-test && npm init -y
-```
-
-### Scenario 1
-
-Because the `@notifi-network/notifi-axios-utils` package has the peer dependency `axios@^0.26.1` defined in the `peerDependencies` section, it means `@notifi-network/notifi-axios-utils` is not guaranteed to work with `axios` version greater than 1.0.0.
-
-- Case#1: Axios@1.4.0 already installed in our package and then install `@notifi-network/notifi-axios-utils@0.76.0`
-
-```bash
-npm install axios@1.4.0
-```
-
-Then we see what happens when we install the `@notifi-network/notifi-axios-utils@0.76.0` package.
-
-```bash
-➜  npm install @notifi-network/notifi-axios-utils@0.76.0
 npm ERR! code ERESOLVE
 npm ERR! ERESOLVE unable to resolve dependency tree
 npm ERR!
@@ -164,59 +101,9 @@ npm ERR! A complete log of this run can be found in:
 npm ERR!     /Users/macbookpro4eric/.npm/_logs/2023-07-22T11_08_00_465Z-debug-0.log
 ```
 
-As can be seen in the above error message, the `@notifi-network/notifi-axios-utils@0.76.0` package cannot be installed because the `axios@^0.26.1` might not be compatible with the `axios@1.4.0` installed in our package.
+As can be seen in the above error message, the `@notifi-network/notifi-axios-utils@0.76.0` package cannot be installed because the `axios@^0.26.1` is required by the `@notifi-network/notifi-axios-utils@0.76.0`'s peer dependency.
 
-- Case#2: `@notifi-network/notifi-axios-utils@0.76.0` already installed in our package, then install `axios@1.4.0`
-
-```bash
-npm install @notifi-network/notifi-axios-utils@0.76.0
-```
-
-Then we see what happens when we install the `axios@1.4.0` package.
-
-```bash
-➜  npm install axios@1.4.0
-npm WARN ERESOLVE overriding peer dependency
-npm WARN While resolving: peer-dep-test@1.0.0
-npm WARN Found: axios@0.26.1
-npm WARN node_modules/axios
-npm WARN   peer axios@"^0.26.1" from @notifi-network/notifi-axios-utils@0.76.0
-npm WARN   node_modules/@notifi-network/notifi-axios-utils
-npm WARN     @notifi-network/notifi-axios-utils@"^0.76.0" from the root project
-npm WARN   1 more (the root project)
-npm WARN
-npm WARN Could not resolve dependency:
-npm WARN peer axios@"^0.26.1" from @notifi-network/notifi-axios-utils@0.76.0
-npm WARN node_modules/@notifi-network/notifi-axios-utils
-npm WARN   @notifi-network/notifi-axios-utils@"^0.76.0" from the root project
-
-added 7 packages, changed 1 package, and audited 11 packages in 538ms
-
-1 package is looking for funding
-  run `npm fund` for details
-
-found 0 vulnerabilities
-```
-
-It only shows a warning message then the `axios@1.4.0` package is installed successfully.
-
-:::caution
-
-We need to be very careful in this case
-
-:::
-
-### Scenario 2
-
-In this case, we have both `"axios": "0.26."` and `"@notifi-network/notifi-axios-utils": "^0.76.0"` installed.
-
-Then we want to install the `axios-jwt@3.0.2` package which has the peer dependency `axios@^1.4.0` defined in the `peerDependencies` section.
-
-```bash
-npm install axios-jwt@3.0.2
-```
-
-Then we see what happens when we install the `axios-jwt@3.0.2` package.
+However, if we install the `axios@0.26.1` package, then the following error will be thrown because the `axios@"^0.26.1"` is required by the `axios-jwt@3.0.2`'s peer dependency.
 
 ```bash
 npm ERR! code ERESOLVE
@@ -248,20 +135,6 @@ npm ERR! See /Users/macbookpro4eric/.npm/eresolve-report.txt for a full report.
 npm ERR! A complete log of this run can be found in:
 npm ERR!     /Users/macbookpro4eric/.npm/_logs/2023-07-22T11_16_14_146Z-debug-0.log
 ```
-
-As can be seen in the above error message, the `axios-jwt@3.0.2` package cannot be installed because the `axios@^1.4.0` might not be compatible with the `axios@0.26.1` installed in our package.
-
-But, at the same time, we cannot upgrade the `axios@0.26.1` to `axios@1.4.0` because the `@notifi-network/notifi-axios-utils@0.76.0` might not be compatible with the `axios@1.4.0`.
-
-The only way to resolve this issue is to contact the developers of `@notifi-network/notifi-axios-utils` to upgrade the `@notifi-network/notifi-axios-utils` to support `axios@1.4.0`.
-
-Or.
-
-We can also contact the developers of `axios-jwt` to downgrade the `axios@^1.4.0` to `axios@^0.26.1` event though it might not make much sense.
-
-## Conclusion
-
-As can be seen in the above example, the `peerDependencies` could be a nightmare for the developers as the project growing bigger. We need to be very careful when the `warning` or `error` message shows up when we run `npm install` or `npm update`.
 
 ## References
 
