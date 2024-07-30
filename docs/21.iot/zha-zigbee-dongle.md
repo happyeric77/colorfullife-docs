@@ -71,4 +71,4 @@ Then follow the on-screen instructions to add the Zigbee coordinator.
 
 ## Add Zigbee devices
 
-TODO ...
+Then we can start adding Zigbee devices to Home Assistant. To do this, put the Zigbee device in pairing mode and follow the on-screen instructions in Home Assistant to add the device.
