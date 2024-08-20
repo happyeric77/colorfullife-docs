@@ -17,6 +17,8 @@ tags: ['vscode', 'ide']
 
 6. **Markdown Preview Enhanced**
 
+7. **Code Spell Checker**
+
 ## TypeScript / JavaScript
 
 1. **Pretty TypeScript Errors**
