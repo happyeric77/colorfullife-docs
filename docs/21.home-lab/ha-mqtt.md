@@ -59,6 +59,8 @@ Reenter password:
 Warning: File /mosquitto/config/password.txt group is not root. Future versions will refuse to load this file./ #
 ```
 
+</details>
+
 Than we will see a file `password.txt` created under `/mosquitto/config` folder.
 
 Now add the following line to `mosquitto.conf`:

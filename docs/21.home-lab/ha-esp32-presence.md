@@ -31,8 +31,8 @@ Now we can start configuring the MQTT server (brocker) to which we want this ESP
 
 - Server: Home Assistant IP address
 - Port: 1883
-- Username: <mosquitto-broker-username>
-- Password: <mosquitto-broker-password>
+- Username: 'mosquitto-broker-username'
+- Password: 'mosquitto-broker-password'
 
 Click `Save` and `Restart device`.
 

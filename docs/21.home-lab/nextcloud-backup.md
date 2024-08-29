@@ -67,7 +67,13 @@ check the logs again to make sure the service is stopped
 sudo snap save nextcloud
 ```
 
-4. Copy or move the backup file to a safe location
+4. Restart the Nextcloud snap service
+
+```bash
+sudo snap start nextcloud
+```
+
+5. Copy or move the backup file to a safe location
 
 I have a local NAS shared folder mounted on my server. I will move the backup file to that location.
 
