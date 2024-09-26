@@ -131,4 +131,41 @@ sudo snap restore <snapshot-id>
 
 :::
 
-## TODO: systemd timer for automatic backup regularly
+## Automate the backup process
+
+It is recommended to automate the backup process using a systemd timer. Checkout my another post about systemd timer [here](/24.linux/systemd-timer.md).
+
+```json
+{
+  "id": "ca0031d5388644ad85ebbb1f610a95ed",
+  "name": "Huma Finance Notifications V2",
+  "inputs": [],
+  "titles": { "active": false },
+  "version": "v1",
+  "eventTypes": [
+    {
+      "name": "Important Pool Updates",
+      "type": "fusion",
+      "fusionEventId": {
+        "type": "value",
+        "value": "2b205aa9cf9e4a63821e839cde2463ec"
+      },
+      "sourceAddress": { "type": "value", "value": "*" },
+      "useCustomIcon": false,
+      "optOutAtSignup": false,
+      "selectedUIType": "TOGGLE",
+      "tooltipContent": "Notifications about important changes to a pool you\\u0027re participating in (e.g. pool liquidity cap updates)",
+      "topicGroupName": ""
+    }
+  ],
+  "contactInfo": {
+    "sms": { "active": false, "supportedCountryCodes": [] },
+    "email": { "active": true },
+    "telegram": { "active": false }
+  },
+  "walletChain": "Celo",
+  "isContactInfoRequired": true
+}
+```
+
+> You can install my [Nextcloud backup script](https://github.com/happyeric77/nextcloud-auto-backup) to automate the backup process weekly.
