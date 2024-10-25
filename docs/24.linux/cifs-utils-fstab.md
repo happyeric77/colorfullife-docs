@@ -64,3 +64,27 @@ Before mounting the shared folder,
 Then run `sudo mount -a` to mount the shared folder to Ubuntu server `/mnt/home-drive-2`.
 
 Then we should be to see the shared folder content in `/mnt/home-drive-2`.
+
+## Mount the attached drive
+
+If you want to mount the attached drive, you can find the attached drive name by running `lsblk` command. The output will look like:
+
+```bash
+NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+# ... others
+sdb      8:16   0 232.9G  0 disk
+├─sdb1   8:17   0     1K  0 part
+└─sdb5   8:21   0 232.9G  0 part /media/devmon/sdb5-scsi-1USB_3.0_012345
+```
+
+In this case, the attached drive name is `sdb5`.
+
+Then create a directory to mount the attached drive:
+
+```bash
+sudo mkdir /mnt/attached-drive
+```
+
+Exec `sudo mount /dev/sdb5 /mnt/attached-drive` to mount the attached drive to `/mnt/attached-drive`.
+
+Then we should be able to see the attached drive content in `/mnt/attached-drive`.
