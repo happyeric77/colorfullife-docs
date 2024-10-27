@@ -67,9 +67,11 @@ Then we should be to see the shared folder content in `/mnt/home-drive-2`.
 
 ## Mount the attached drive
 
-If you want to mount the attached drive, you can find the attached drive name by running `lsblk` command. The output will look like:
+1. find the drive location
 
-```bash
+If you want to mount the attached drive, you can find the attached drive name by running `lsblk` or `sudo fdisk -l` command. The output will look like:
+
+```bash title="lsblk"
 NAME        MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
 # ... others
 sdb      8:16   0 232.9G  0 disk
@@ -79,12 +81,57 @@ sdb      8:16   0 232.9G  0 disk
 
 In this case, the attached drive name is `sdb5`.
 
-Then create a directory to mount the attached drive:
+2. Create a directory to mount the attached drive
 
 ```bash
 sudo mkdir /mnt/attached-drive
 ```
 
-Exec `sudo mount /dev/sdb5 /mnt/attached-drive` to mount the attached drive to `/mnt/attached-drive`.
+3. find the detailed information of the attached drive
 
-Then we should be able to see the attached drive content in `/mnt/attached-drive`.
+```bash
+sudo blkid /dev/sdb5
+```
+
+Output will look like:
+
+```bash
+/dev/sdb5: UUID="b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1" TYPE="ext4" PARTUUID="fb43759d-05"
+```
+
+4. Edit the `/etc/fstab` file:
+
+Then exec `sudo vim /etc/fstab` and add the following line:
+
+```bash title="/etc/fstab"
+# add-next-line
+/dev/disk/by-uuid/b1b1b1b1-b1b1-b1b1-b1b1-b1b1b1b1b1b1 /mnt/attached-drive ext4 defaults 0 0
+```
+
+5. Mount the attached drive
+
+Since the `fstab` file is already updated, we need to run `sudo systemctl daemon-reload` to reload the system daemons and then run `sudo mount` to mount the attached drive.
+
+Once the drive is mounted, you should be able to see the attached drive content in `/mnt/attached-drive` by running `df -h` command. Output will look like:
+
+```bash
+Filesystem      Size  Used Avail Use% Mounted on
+# ... others
+/dev/sdb5       230G  120K  219G   1% /mnt/attached-drive
+```
+
+:::tip
+
+Recommended utils to gather information of the usage of storage:
+
+```bash title="ncdu"
+# install ncdu
+sudo apt install ncdu
+
+# run ncdu
+cd / && sudo ncdu
+```
+
+We will be able to see the usage of storage for certain directories.
+
+:::
