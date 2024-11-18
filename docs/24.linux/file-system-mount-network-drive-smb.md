@@ -1,5 +1,5 @@
 ---
-title: Mount Network Drive using CFIS utils
+title: Mount SMB Network Drive using CFIS utils
 tags: [linux, system, file-system]
 ---
 
@@ -82,3 +82,10 @@ sudo mount -a
 ```
 
 Then we should be to see the shared folder content in `~/Docker`.
+
+:::warning
+
+If you come across the permission issue accessing the shared folder by applications (e.g., Docker), it is because the `cifs` mount does not support the Unix/Linux file system permissions and ownership.
+The solution is to use `nfs` instead of `cifs`.
+
+:::
