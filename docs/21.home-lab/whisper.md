@@ -57,9 +57,16 @@ To fix it, we will need to change the `WHISHPER_HOST` in the `.env` file to `0.0
 
 ```bash
 # add-next-line
-WHISHPER_HOST=0.0.0.0:8082
+WHISHPER_HOST=your-whishper-server-ip:8082
 # delete-next-line
 WHISHPER_HOST=127.0.0.1:8082
+```
+
+And recreate the docker container.
+
+```bash
+sudo docker compose up -d
+# Do not use restart, restart does not apply the docker-compose file change
 ```
 
 - Reference: [Doc](https://whishper.net/troubleshooting/transcriptions-not-working/)
