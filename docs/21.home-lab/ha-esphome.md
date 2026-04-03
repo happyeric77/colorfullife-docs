@@ -80,5 +80,10 @@ api:
 
 Great! Now we have very good BLE range now, congratulations! 🎉
 
+## Related troubleshooting
+
+If the ESP32 Bluetooth proxy still looks online but silently stops scanning BLE devices, check this article:
+
+- [ESPHome BLE proxy watchdog and self-recovery](/home-lab/esphome-ble-proxy-watchdog)
 
 
