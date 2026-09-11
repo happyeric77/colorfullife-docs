@@ -1,26 +1,29 @@
 /**
  * Eric engineering brand layer.
  *
- * Tokens mirror the eric-profile design language: a green-tinted near-black
- * base, a #2EFF8B accent, Geist type, mono metadata and quiet surfaces.
- * Values come from eric-profile; do not introduce a second palette.
+ * ericlee-profile is the visual source of truth: #070D0B background,
+ * #2EFF8B accent, Geist typography, mono metadata, translucent surfaces,
+ * pill controls, quiet borders and restrained green ambient light.
  */
 
-/* Light mode tokens */
 :root {
   --eric-bg: #f6faf7;
-  --eric-bg-translucent: rgba(246, 250, 247, 0.72);
-  --eric-surface: rgba(7, 13, 11, 0.025);
-  --eric-surface-hover: rgba(7, 13, 11, 0.045);
+  --eric-bg-translucent: rgba(246, 250, 247, 0.78);
+  --eric-panel: #ffffff;
+  --eric-muted-surface: #eef5f0;
+  --eric-surface: rgba(7, 13, 11, 0.028);
+  --eric-surface-hover: rgba(7, 13, 11, 0.05);
   --eric-text: #0b1512;
   --eric-text-muted: #5f6f66;
   --eric-border: rgba(7, 13, 11, 0.1);
   --eric-border-strong: rgba(7, 13, 11, 0.18);
+  --eric-border-accent: rgba(0, 143, 90, 0.28);
   --eric-accent: #008f5a;
-  --eric-accent-soft: rgba(0, 143, 90, 0.12);
+  --eric-accent-soft: rgba(0, 143, 90, 0.1);
   --eric-accent-contrast: #ffffff;
   --eric-radius-sm: 12px;
   --eric-radius-md: 16px;
+  --eric-radius-lg: 24px;
   --eric-radius-pill: 999px;
   --eric-page-width: 1240px;
   --eric-reading-width: 760px;
@@ -34,7 +37,6 @@
   --ifm-color-primary-light: #00a468;
   --ifm-color-primary-lighter: #00b374;
   --ifm-color-primary-lightest: #46c795;
-
   --ifm-font-family-base: var(--eric-font-sans);
   --ifm-font-family-monospace: var(--eric-font-mono);
   --ifm-background-color: var(--eric-bg);
@@ -63,16 +65,18 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
 }
 
-/* Dark mode tokens (eric-profile exact values) */
 [data-theme='dark'] {
   --eric-bg: #070d0b;
   --eric-bg-translucent: rgba(7, 13, 11, 0.72);
-  --eric-surface: rgba(255, 255, 255, 0.03);
-  --eric-surface-hover: rgba(255, 255, 255, 0.05);
+  --eric-panel: #0b1512;
+  --eric-muted-surface: #0f1f18;
+  --eric-surface: rgba(255, 255, 255, 0.035);
+  --eric-surface-hover: rgba(255, 255, 255, 0.055);
   --eric-text: #e8f0e9;
   --eric-text-muted: #9aa8a0;
   --eric-border: rgba(255, 255, 255, 0.06);
   --eric-border-strong: rgba(255, 255, 255, 0.1);
+  --eric-border-accent: rgba(46, 255, 139, 0.22);
   --eric-accent: #2eff8b;
   --eric-accent-soft: rgba(46, 255, 139, 0.1);
   --eric-accent-contrast: #07130e;
@@ -84,14 +88,11 @@
   --ifm-color-primary-light: #43ff97;
   --ifm-color-primary-lighter: #58ffa3;
   --ifm-color-primary-lightest: #85ffb9;
-
   --ifm-background-color: var(--eric-bg);
   --ifm-background-surface-color: var(--eric-bg);
   --ifm-navbar-background-color: var(--eric-bg-translucent);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
-
-/* Global shell */
 
 html {
   scroll-behavior: smooth;
@@ -102,13 +103,15 @@ body {
   background-color: var(--eric-bg);
   color: var(--eric-text);
   font-family: var(--eric-font-sans);
+  overflow-x: hidden;
 }
 
 html[data-theme='dark'] {
   background-color: #070d0b;
   background-image:
-    radial-gradient(600px 400px at 12% -5%, rgba(46, 255, 139, 0.055), transparent 70%),
-    radial-gradient(760px 520px at 88% 18%, rgba(0, 201, 122, 0.04), transparent 70%);
+    radial-gradient(820px 820px at 18% -28%, rgba(46, 255, 139, 0.07), transparent 62%),
+    radial-gradient(640px 520px at 108% 34%, rgba(0, 201, 122, 0.05), transparent 68%),
+    radial-gradient(720px 420px at 28% 112%, rgba(46, 255, 139, 0.04), transparent 70%);
   background-attachment: fixed;
 }
 
@@ -116,10 +119,10 @@ html[data-theme='dark'] body {
   background: transparent;
 }
 
-/* Navbar */
-
+/* Navbar — same identity grammar as ericlee-profile. */
 .navbar {
   height: var(--ifm-navbar-height);
+  padding-inline: 1.5rem;
   border-bottom: 1px solid var(--eric-border);
   background-color: var(--eric-bg-translucent);
   backdrop-filter: blur(20px);
@@ -127,11 +130,32 @@ html[data-theme='dark'] body {
 }
 
 .navbar__inner {
+  width: 100%;
+  max-width: var(--eric-page-width);
   height: 100%;
+  margin: 0 auto;
 }
 
 .navbar__brand {
   height: 100%;
+  gap: 0.75rem;
+}
+
+.navbar__brand::after {
+  content: '●  ENGINEERING JOURNAL';
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--eric-border-accent);
+  border-radius: var(--eric-radius-pill);
+  background: var(--eric-accent-soft);
+  font-family: var(--eric-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--eric-accent);
+  white-space: nowrap;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--eric-accent) 35%, transparent);
 }
 
 .navbar__title {
@@ -146,6 +170,7 @@ html[data-theme='dark'] body {
   font-size: 13px;
   letter-spacing: 0.02em;
   color: var(--eric-text-muted);
+  transition: color 160ms ease;
 }
 
 .navbar__link:hover,
@@ -153,22 +178,41 @@ html[data-theme='dark'] body {
   color: var(--eric-text);
 }
 
+.navbar__items--right {
+  gap: 0.2rem;
+}
+
 .navbar__toggle {
   color: var(--eric-text-muted);
 }
 
-/* Buttons and links */
-
+/* Buttons — profile geometry instead of generic Infima geometry. */
 .button {
   border-radius: var(--eric-radius-pill);
   font-family: var(--eric-font-sans);
   font-weight: 600;
+  transition:
+    transform 160ms ease,
+    filter 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.button--lg {
+  min-height: 48px;
+  padding: 0.78rem 1.5rem;
+  font-size: 14px;
+}
+
+.button:active {
+  transform: scale(0.98);
 }
 
 .button--primary {
   background-color: var(--eric-accent);
   border-color: var(--eric-accent);
   color: var(--eric-accent-contrast);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--eric-accent) 22%, transparent);
 }
 
 .button--primary:hover {
@@ -178,22 +222,18 @@ html[data-theme='dark'] body {
   filter: brightness(1.05);
 }
 
-/* Infima ships `.button.button--secondary { color: var(--ifm-color-gray-900) }`
-   (specificity 0,2,0), which would otherwise win over a plain
-   `.button--secondary` rule and leave the label unreadable until hover. */
 .button.button--secondary {
   background-color: var(--eric-surface);
   border: 1px solid var(--eric-border-strong);
   color: var(--eric-text);
+  backdrop-filter: blur(12px);
 }
 
 .button.button--secondary:hover {
   background-color: var(--eric-surface-hover);
-  border-color: var(--eric-border-strong);
+  border-color: var(--eric-border-accent);
   color: var(--eric-text);
 }
-
-/* Footer */
 
 .footer {
   border-top: 1px solid var(--eric-border);
@@ -201,6 +241,10 @@ html[data-theme='dark'] body {
   font-family: var(--eric-font-mono);
   font-size: 11px;
   color: var(--eric-text-muted);
+}
+
+.footer .container {
+  max-width: var(--eric-page-width);
 }
 
 .footer__title {
@@ -228,11 +272,6 @@ html[data-theme='dark'] body {
   color: var(--eric-text-muted);
 }
 
-/* Editorial helpers shared by homepage sections.
-   Reveal content is only hidden once JS has added the `reveal-ready` marker
-   (inline head script). Without it — no JS, a hydration failure or a stale
-   dev server that predates the marker — content stays visible and readable. */
-
 html.reveal-ready [data-reveal] {
   opacity: 0;
   transform: translateY(14px);
@@ -246,6 +285,18 @@ html.reveal-ready [data-reveal].is-visible {
   transform: none;
 }
 
+@media (min-width: 997px) {
+  .navbar {
+    padding-inline: 2rem;
+  }
+}
+
+@media (max-width: 1150px) {
+  .navbar__brand::after {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -257,8 +308,6 @@ html.reveal-ready [data-reveal].is-visible {
     transition: none;
   }
 }
-
-/* Code blocks */
 
 .code-block-added-line,
 .code-block-highlighted-line {

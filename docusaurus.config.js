@@ -12,23 +12,15 @@ const config = {
   tagline: "I build software and write about how it gets made.",
   favicon: "img/favicon.svg",
 
-  // Set the production url of your site here
   url: "https://docs.dev-eric.work",
-  // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "happyeric77", // Usually your GitHub org/user name.
-  projectName: "colorfullife-docs", // Usually your repo name.
+  organizationName: "happyeric77",
+  projectName: "colorfullife-docs",
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
 
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
     locales: ["en"],
@@ -37,8 +29,6 @@ const config = {
     "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap",
   ],
   headTags: [
-    // Marks the document for the reveal-on-scroll CSS; without JS the
-    // content is never hidden and stays fully readable.
     {
       tagName: "script",
       attributes: {},
@@ -47,11 +37,9 @@ const config = {
   ],
   plugins: [
     ["drawio", {}],
-    // Aggregates Project / Journal / Topic metadata for cross-content pages.
     "./plugins/content-model",
     [
       "@docusaurus/plugin-content-docs",
-      // Second docs instance: Projects are content (MDX), not hardcoded data.
       {
         id: "projects",
         path: "projects",
@@ -68,13 +56,10 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          // Legacy tech notes live under /archive and keep docs-style navigation.
           routeBasePath: "archive",
           sidebarPath: require.resolve("./sidebars.js"),
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl,
         },
         blog: {
@@ -98,7 +83,7 @@ const config = {
     ({
       image: "img/social-card.png",
       navbar: {
-        title: "ERIC / ENGINEERING",
+        title: "Eric Lee",
         items: [
           {
             to: "/projects",
@@ -126,6 +111,11 @@ const config = {
             position: "left",
           },
           {
+            href: "https://profile.dev-eric.work",
+            label: "Profile ↗",
+            position: "right",
+          },
+          {
             href: "https://github.com/happyeric77/colorfullife-docs",
             label: "GitHub ↗",
             position: "right",
@@ -140,7 +130,6 @@ const config = {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
         magicComments: [
-          // Remember to extend the default highlight class name as well!
           {
             className: "code-block-highlighted-line",
             line: "highlight-next-line",
@@ -169,7 +158,6 @@ const config = {
         indexName: "colorfullife",
       },
     }),
-  // Mermaid graph feature: https://mermaid.js.org/syntax/pie.html
   markdown: {
     mermaid: true,
   },
