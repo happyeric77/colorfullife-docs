@@ -25,19 +25,24 @@ const JOURNAL_DIR = "blog";
 // ponytail: slug-to-label overrides for topics that don't pluralize well.
 // Replace with a topic registry file once Topics grow past a handful (PR 3).
 const TOPIC_LABELS = {
+  ai: "AI",
   alertmanager: "Alertmanager",
   argocd: "Argo CD",
   dns: "DNS",
   esp32: "ESP32",
   etcd: "etcd",
   fluxcd: "Flux CD",
+  graphql: "GraphQL",
   "kube-vip": "kube-vip",
   k3s: "K3s",
+  mcp: "MCP",
   mqtt: "MQTT",
   prometheus: "Prometheus",
   "raspberry-pi": "Raspberry Pi",
+  sdk: "SDK",
   sops: "SOPS",
   traefik: "Traefik",
+  typescript: "TypeScript",
 };
 
 function humanizeTopic(slug) {

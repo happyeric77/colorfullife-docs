@@ -1,0 +1,65 @@
+---
+id: sdk-architecture
+title: SDK Architecture
+description: A framework-agnostic TypeScript SDK platform — client core, multi-chain wallet connectivity, backend-driven configuration and public API evolution.
+type: system
+status: completed
+started: 2024
+featured: false
+topics:
+  - typescript
+  - sdk
+  - architecture
+  - graphql
+  - react
+  - wallet
+stack:
+  - TypeScript
+  - GraphQL
+  - React
+---
+
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
+A public SDK for web3 applications: an embeddable integration surface covering authentication, wallet connectivity and notifications. The work here is the architecture behind that SDK — the client core, the API layer, backend-driven configuration, and the long game of evolving a public API without breaking integrations that already depend on it.
+
+## What it is
+
+The platform ships as a set of packages:
+
+- a framework-agnostic TypeScript **client core** that owns authentication, signing and API logic
+- thin **framework bindings** (React first) that adapt the core to a UI
+- a **GraphQL API layer** with generated types instead of hand-maintained request and response models
+
+## Architecture
+
+### Client core
+
+A standalone TypeScript class — no framework dependency — owning the auth state machine, wallet signing adapters, the API layer and token lifecycle. It runs anywhere JavaScript runs, including non-UI environments such as scripts and background workers.
+
+### Framework bindings
+
+Each framework gets a thin adapter over the core rather than a reimplementation of it. Adding a framework does not duplicate business logic, and adding a chain does not touch UI code.
+
+### API layer
+
+The transport moved from REST with hand-written types to GraphQL with code generation against the schema. Generated types cannot drift from the API, and cross-team schema changes stop being a manual synchronization exercise.
+
+### Configuration
+
+Integration configuration is backend-driven: a tenant-level config document tells the client which capabilities, chains and UI entry points to expose. That keeps partner-specific behaviour out of the package and lets configuration change without a release.
+
+### Wallet connectivity
+
+Wallet support is abstracted behind provider adapters, so the SDK can follow wallet ecosystem standards without rewriting signing logic each time a wallet changes.
+
+## Story
+
+The SDK began as a single React hook bundling API calls, signing, auth state and business logic — a deliberate time-to-market trade-off. As the product grew to support ten-plus chains and multiple frameworks, the hook became the bottleneck: framework-locked, hard to test, and impossible to reuse outside React. The response was a phased extraction into the framework-agnostic core described above, run with zero downtime for existing integrations.
+
+- [From a React hook to a framework-agnostic SDK core](/journal/2026/03/06/from-a-react-hook-to-a-framework-agnostic-sdk-core)
+- [Designing unified error handling for a public SDK](/journal/2026/02/11/designing-unified-error-handling-for-a-public-sdk)
+- [Modernizing wallet connectivity with EIP-6963](/journal/2026/04/01/modernizing-wallet-connectivity-with-eip-6963)
+- [Backend-driven configuration for an embeddable SDK](/journal/2026/02/20/backend-driven-configuration-for-an-embeddable-sdk)
+
+<RelatedJournal />
