@@ -57,9 +57,4 @@ Wallet support is abstracted behind provider adapters, so the SDK can follow wal
 
 The SDK began as a single React hook bundling API calls, signing, auth state and business logic — a deliberate time-to-market trade-off. As the product grew to support ten-plus chains and multiple frameworks, the hook became the bottleneck: framework-locked, hard to test, and impossible to reuse outside React. The response was a phased extraction into the framework-agnostic core described above, run with zero downtime for existing integrations.
 
-- [From a React hook to a framework-agnostic SDK core](/journal/2026/03/06/from-a-react-hook-to-a-framework-agnostic-sdk-core)
-- [Designing unified error handling for a public SDK](/journal/2026/02/11/designing-unified-error-handling-for-a-public-sdk)
-- [Modernizing wallet connectivity with EIP-6963](/journal/2026/04/01/modernizing-wallet-connectivity-with-eip-6963)
-- [Backend-driven configuration for an embeddable SDK](/journal/2026/02/20/backend-driven-configuration-for-an-embeddable-sdk)
-
 <RelatedJournal />

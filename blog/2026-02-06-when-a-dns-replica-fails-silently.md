@@ -56,7 +56,3 @@ The system did not fail because DNS stopped working. It failed because the
 redundancy was never exercised, and the reporting chain had the same blind
 spot as the thing it reported on. Redundancy without a test is just a second
 copy of the same assumption.
-
-*This entry is a note from real work that does not belong to any single
-Project — which is fine. A Journal entry stands on its own; Projects are
-optional context, and Topics connect it to everything else.*

@@ -92,7 +92,7 @@ export default function Home() {
           <section className={styles.section}>
             <SectionHeader
               title="Topics"
-              subtitle="Technologies and concepts across projects."
+              subtitle="Technologies and concepts across Projects and Journal."
               to="/topics"
               actionLabel="All topics"
             />

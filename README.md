@@ -10,7 +10,7 @@ An engineering journal and project portfolio. Deployed at
 | Homepage     | `/`         | `src/pages` | Shell: current project, recent journal, topics  |
 | Projects     | `/projects` | `projects/` | Curated, durable canonical pages for selected work |
 | Journal      | `/journal`  | `blog/`     | Primary publishing stream: stories from real work |
-| Topics       | `/topics`   | metadata    | Cross-project technologies and concepts         |
+| Topics       | `/topics`   | metadata    | Cross-content technologies and concepts         |
 | Open Source  | `/opensource` | `src/pages` | GitHub activity, placeholder for now          |
 | Archive      | `/archive`  | `docs/`     | Legacy technical notes, kept for reference      |
 | About        | `/about`    | `src/pages` | About the site                                  |
