@@ -1,102 +1,328 @@
 ---
-title: Backend-driven configuration for an embeddable SDK
-description: Letting dApp developers define interactive on-chain actions in a backend admin panel, and rendering them through an SDK without coupling the SDK to any blockchain.
+title: Building backend-configured actions without coupling the SDK to a blockchain
+description: How I designed SmartLink so backend-defined interactive actions could render through the SDK while wallet connection, signing and transaction submission stayed under host-application control.
 date: 2026-02-20
 type: project-story
 project: sdk-architecture
 topics:
   - sdk
+  - architecture
   - configuration
   - graphql
+  - wallet
 featured: false
 ---
 
-Most SDK features are designed in code. This one was designed so that partners could define it in an admin panel.
+SmartLink started with a product requirement that sounds simple until the SDK boundary becomes part of the design: let a partner define an interactive action in a backend admin experience, render it through the SDK, and allow an end user to execute the action from the host application.
 
-The feature lets dApp developers configure interactive on-chain actions through a backend UI and render them as components through the SDK. When a user clicks an action, the SDK asks the backend for a serialized transaction, hands it to the host application, and lets the host sign and submit it. The feature went from a spike in late March 2025 to production in May 2025.
+Some of those actions could result in blockchain transactions.
 
-## The constraints
+I designed the SDK side of SmartLink around one constraint: **the SDK could describe and initiate an action, but it should not own the customer's blockchain execution environment.**
 
-- **Time to market.** The product team wanted a fast delivery path, which initially pushed the design toward a brand-new package.
-- **No breaking changes.** Existing consumers of the client and React packages could not be affected.
-- **Blockchain-agnostic.** The action-execution layer could not be tied to EVM, Solana, SUI or anything else; the SDK should return a transaction payload and let the host handle signing.
-- **A different auth model.** The feature does not require a logged-in user session. It only needs `authParams` — a wallet public key and a blockchain type — to sign the activation request.
+That decision shaped the client model, the package boundaries, the React API and the way transaction execution was handed back to the host.
 
-## The options
+## The product shape
 
-**A new package.** The original proposal was a separate package containing the UI components and a new client. On paper this avoids touching existing packages and gives clean separation.
+The goal was to let configuration live outside the customer's application code.
 
-The problems only show up when you draw the dependency graph:
+A partner could define a SmartLink and its actions through backend tooling. The frontend SDK would fetch that configuration and render the corresponding inputs and actions.
 
-- The UI needs types and the client from the existing frontend package, plus React context patterns — theme support, error views, CSS variables — that already live in the React package. It would either duplicate them or depend on the package it was trying to stay separate from.
-- Cross-package type imports were already fragile. One shared types package was importing `AuthParams` from the client package and had to use `import type` to avoid a circular dependency. Another package in the graph would have turned a line into a mesh.
-- The maintenance overhead would be real, and the isolation would be an illusion.
-
-**Integrate into the existing packages.** Add a GraphQL query to the API package, a REST call to the dataplane package, a sibling client to the frontend package, and a context plus components to the React package.
-
-This was the proposal I wrote up and brought to the team. The key realization: the feature is purely additive. New exports cannot break existing consumers, so the "no breaking changes" argument for a separate package was a false constraint.
-
-**Decision: integrate.** The `no breaking changes` risk was not real, and the code would immediately want to cross the package boundary anyway. The accepted trade-off is a slightly larger React package, mitigated by tree-shaking — consumers who do not import the feature don't pay for it.
-
-## Design decisions
-
-**A sibling client, not a subclass.** The feature has a fundamentally different auth model: no persistent session, no storage. Making it a subclass of the main client would have forced it to inherit behaviour it must not have. It became a sibling with a much lighter configuration:
-
-```ts
-type LinkClientConfig = {
-  env?: Environment;
-  authParams: AuthParams;
-};
-```
-
-**The SDK never touches the wallet.** The backend returns a serialized transaction; the SDK passes it to the host through an `actionHandler` callback. The host signs and submits. This is what keeps the feature blockchain-agnostic at the API boundary.
-
-**Reuse the existing UI infrastructure.** Theme support, error views, CSS variables and the established `classNames` override pattern all came from the React package instead of being reimplemented.
-
-## How it works
-
-The feature is split across four layers:
+At a high level:
 
 ```text
-api package      → a GraphQL query for the link configuration
-dataplane package → a REST call to activate an action
-frontend package  → models + a client + a factory function
-react package     → a context provider + components + input widgets
+Admin / backend
+      ↓
+SmartLink configuration
+      ↓
+SDK fetches configuration
+      ↓
+React renders actions + inputs
+      ↓
+user executes an action
 ```
 
-The data flow:
+This was important for product velocity. Adding or changing a configured action should not require every host application to hard-code a new UI or ship a new integration just to reflect backend configuration.
+
+But it also created a harder question: what happens when an action needs to produce and execute an on-chain transaction?
+
+## Where I wanted the boundary
+
+It would have been easy to let SmartLink keep expanding until it owned the whole execution path:
 
 ```text
-User visits the link URL
-  → provider initializes the link client
-  → component mounts and fetches the config
-      → GraphQL returns the raw config as a JSON string
-      → JSON.parse + a type guard validate it
-  → context stores the config per link id
-  → action state is initialized with default inputs per action
-
-User fills in inputs and clicks an action
-  → the action validates that the blockchain type matches the config
-  → the client POSTs { actionId, authParams, inputs } to the dataplane
-  → the response carries transactions plus success/failure messages
-  → actionHandler(payload) — the host signs and submits
+SmartLink
+  ↓
+wallet discovery
+  ↓
+wallet connection
+  ↓
+chain-specific signing
+  ↓
+transaction submission
 ```
 
-Three details worth copying:
+That would make a demo work quickly, but it would also make SmartLink responsible for every wallet and chain decision made by the host application.
 
-**Dictionaries keyed by id.** The context holds configs keyed by link id and action state keyed by `${linkId}:${actionId}`. A single provider can serve multiple components on the same page without refetching anything.
+The host already knows which wallet system it uses. It already owns connection state, wallet UX, chain selection and transaction submission behavior. Importing those responsibilities into SmartLink would duplicate state machines and couple a backend-configured feature to an unstable wallet ecosystem.
 
-**Dual service injection.** Config fetch is a GraphQL read (cacheable, tenant-level). Action execution is a REST write (user-specific, requires auth params). The client takes both services explicitly rather than hiding the difference.
+So I kept the boundary narrower:
 
-**A `preAction` prop.** The component accepts an optional pre-action with `disabled`, `label` and `onClick`. This lets the host gate execution behind a wallet-connection step without the SDK knowing anything about wallet state. If it is omitted, the action button executes directly.
+```text
+SmartLink
+  ↓
+activate configured action
+  ↓
+backend returns execution payload
+  ↓
+actionHandler(payload)
+  ↓
+host application signs / submits
+```
 
-## Outcome
+The SDK owns the product workflow. The host owns the execution environment.
 
-The feature shipped to production in May 2025 with zero breaking changes. The cross-package circular dependency was avoided with type-only imports, and a component test covered the new UI. One post-launch fix was needed: the dataplane endpoint path was case-sensitive and the deployment had it capitalized; the client was corrected to match.
+That is the decision that keeps SmartLink blockchain-agnostic at its public boundary.
 
-## What I took away
+## Backend configuration is a contract, not just JSON
 
-- For an additive feature, "we might break something" is rarely a reason to create a new package. New exports are safe by construction.
-- Draw the dependency graph before choosing the boundaries. A package that must depend on the thing it is supposed to be isolated from is just indirection.
-- Two different auth models deserve two sibling clients, not inheritance.
-- Letting the host sign the transaction is what makes a feature blockchain-agnostic. That is an API-boundary decision, not a refactor.
+The configuration flow crosses several layers:
+
+```text
+GraphQL
+  → fetch SmartLink configuration
+
+frontend client
+  → parse / normalize the domain model
+
+React context
+  → store link + action state
+
+components
+  → render configured inputs and actions
+```
+
+The backend configuration may arrive as serialized data, but I did not want arbitrary JSON leaking through the entire React tree. The SDK parses the response into a known SmartLink model and validates the shape before components depend on it.
+
+That gives each layer a specific responsibility:
+
+- **backend** defines the product configuration
+- **client** interprets the configuration as SDK domain data
+- **React context** manages interactive state
+- **components** render the experience
+
+This is the same principle I prefer elsewhere in SDK design: framework components should consume a domain model, not become the place where backend data is interpreted.
+
+## A separate client for a separate lifecycle
+
+One early design question was whether SmartLink should simply become another method set on `NotifiFrontendClient`.
+
+I chose a sibling client instead.
+
+The normal frontend client had accumulated a lifecycle around user authentication, persisted authorization and broader Notifi application state. SmartLink did not need to inherit that lifecycle just because it talked to some of the same services.
+
+Its needs were narrower. It needed environment and configuration access, and some actions could use lightweight auth parameters such as a wallet public key and blockchain type. It did not need the main client's full persistent session model.
+
+Conceptually:
+
+```text
+NotifiFrontendClient
+  → long-lived application / user lifecycle
+
+NotifiSmartLinkClient
+  → configured action lifecycle
+```
+
+Making SmartLink a subclass would have made reuse look elegant in the type hierarchy while coupling it to behavior it did not actually require.
+
+**Similar services do not imply the same lifecycle.** That was the reason to prefer sibling clients over inheritance.
+
+## Why I did not create a completely isolated package
+
+Another possible boundary was a standalone SmartLink package containing its own client, React components, types and styling.
+
+That sounds clean until the dependency graph is drawn.
+
+SmartLink still needed infrastructure that already existed in the SDK:
+
+- shared GraphQL types and services
+- frontend domain models
+- React context conventions
+- theme and CSS-variable infrastructure
+- common error and loading behavior
+
+A new package would either duplicate those systems or depend back on the existing frontend and React packages anyway. The isolation would be mostly organizational, not architectural.
+
+Instead, I placed the feature into the layers where each responsibility already belonged:
+
+```text
+notifi-graphql
+  → SmartLink configuration query
+
+notifi-dataplane
+  → action activation request
+
+notifi-frontend-client
+  → SmartLink models + client
+
+notifi-react
+  → context + components + inputs
+```
+
+The feature remained additive. Existing consumers did not need to import it, while the implementation could reuse the SDK's established infrastructure.
+
+## Reads and writes were intentionally different
+
+SmartLink has two service interactions that look related from the UI but have different operational characteristics.
+
+Configuration is a read:
+
+```text
+link id
+  ↓
+GraphQL
+  ↓
+SmartLink configuration
+```
+
+Action activation is a write:
+
+```text
+action id + auth params + user inputs
+  ↓
+dataplane request
+  ↓
+execution payload + result messages
+```
+
+I kept those dependencies explicit in the client rather than hiding them behind one generic service abstraction.
+
+The distinction is useful because the configuration is tenant/link-level data that can be fetched and reused, while action execution is user-specific and may require current wallet identity or other runtime inputs.
+
+An abstraction should remove accidental complexity, not erase meaningful differences between operations.
+
+## State is keyed by the domain, not by component instances
+
+A SmartLink can contain multiple actions, each with its own configured inputs and runtime values. A page can also render more than one SmartLink under the same provider.
+
+I modeled the context state around domain identifiers rather than component-local state:
+
+```text
+SmartLinkConfigDictionary
+  linkId → configuration
+
+ActionDictionary
+  linkId:actionId → action state + user inputs
+```
+
+This did two things.
+
+First, configuration could be fetched once and reused by multiple components instead of being tied to whichever component mounted first.
+
+Second, input state had a stable identity even as individual input components mounted or unmounted. Later fixes around initialization and reset behavior reinforced the same idea: **the action state is the source of truth; the input widget is only a view onto it.**
+
+That is a small implementation choice with a large effect on component reliability.
+
+## `preAction` instead of importing wallet state
+
+The host application sometimes needs something to happen before the configured action can execute. The most obvious example is wallet connection.
+
+SmartLink could have added APIs like:
+
+```text
+isWalletConnected
+connectWallet
+selectedChain
+openWalletModal
+```
+
+I deliberately did not do that.
+
+Instead, the React component exposes a small `preAction` extension point with behavior such as a label, disabled state and click handler. The host can use it to gate execution behind wallet connection or another prerequisite.
+
+That means the SDK can render:
+
+```text
+[ Connect wallet ]
+```
+
+when the host wants a prerequisite, and then render the normal action once the prerequisite is satisfied — without SmartLink learning anything about the host's wallet implementation.
+
+This is an important design pattern for public SDKs:
+
+> When behavior varies by host application, expose a boundary instead of importing the host's state machine into the SDK.
+
+## Action execution stays chain-agnostic
+
+When the user submits an action, SmartLink validates the configured inputs and sends the action request to the backend/dataplane layer.
+
+A simplified flow is:
+
+```text
+user fills configured inputs
+      ↓
+validate action inputs
+      ↓
+activate action
+  { actionId, authParams, inputs }
+      ↓
+backend returns result
+      ↓
+actionHandler(executionPayload)
+      ↓
+host signs / submits if needed
+```
+
+The important part is what is missing from the SmartLink API: there is no EVM-specific signer contract, no Solana wallet adapter and no chain-specific transaction UI.
+
+The backend and client can agree on an execution payload while the host decides how that payload becomes a real transaction in its environment.
+
+That keeps the SDK API stable as wallet integrations evolve independently.
+
+## Hardening the design through real UI behavior
+
+The first version established the architecture, but SmartLink became a production feature through a sequence of smaller refinements:
+
+- action input validation and constraints
+- loading and inactive states
+- reset behavior
+- theme support
+- banner and tenant metadata
+- pre-action behavior
+- better context ownership of fetched configuration
+- unit and component coverage
+- Cypress coverage for success and failure paths
+- explicit handling of unmatched blockchain configuration
+
+Those changes matter because configuration-driven UI has a lot of state that static component APIs do not: defaults, required fields, invalid values, temporarily unmounted inputs, inactive actions and backend-defined variations.
+
+The architecture had to survive those cases without pushing special-case logic back into the host application.
+
+## The broader lesson
+
+SmartLink was not mainly a React component project. The React UI was the visible part of a boundary-design problem.
+
+The design worked because responsibilities stayed separated:
+
+```text
+backend
+  owns what the action is
+
+SmartLink client
+  owns configuration + activation semantics
+
+React layer
+  owns rendering + interaction state
+
+host application
+  owns wallet / signing / transaction execution
+```
+
+The lessons I carried forward were:
+
+- **Backend-driven configuration works best when the SDK interprets it into a real domain model instead of passing raw data through the UI.**
+- **Different lifecycle requirements deserve different clients even when they share services.**
+- **A package boundary is only useful when it reduces dependencies; a package that immediately depends back on the system it was meant to isolate is usually just indirection.**
+- **Host-specific prerequisites should be extension points, not SDK-owned state machines.**
+- **Blockchain-agnostic behavior comes from deciding where chain-specific execution stops, not from pretending chains are identical.**
+
+The most important design choice was the simplest one to describe: SmartLink knows how to configure and initiate the action. The application that embeds it remains in control of actually executing it.
