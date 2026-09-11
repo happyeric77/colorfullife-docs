@@ -1,0 +1,144 @@
+.page {
+  padding: 4rem 0 5rem;
+}
+
+.header {
+  max-width: var(--eric-reading-width);
+  margin-bottom: 3rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--eric-accent);
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--eric-text);
+}
+
+.section {
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  margin: 0 0 1.25rem;
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--eric-text-muted);
+}
+
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  padding: 1.5rem;
+  border: 1px solid var(--eric-border);
+  border-radius: var(--eric-radius-md);
+  background: var(--eric-surface);
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.card:hover {
+  border-color: var(--eric-border-strong);
+  background: var(--eric-surface-hover);
+}
+
+.cardTitle,
+.rowTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.cardTitle a,
+.rowTitle a {
+  color: var(--eric-text);
+  text-decoration: none;
+}
+
+.cardTitle a:hover,
+.rowTitle a:hover {
+  color: var(--eric-accent);
+}
+
+.cardDescription,
+.rowDescription {
+  margin: 0 0 0.75rem;
+  color: var(--eric-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--eric-border);
+}
+
+.row:first-child {
+  padding-top: 0;
+}
+
+.rowDescription {
+  margin-bottom: 0.5rem;
+}
+
+.meta {
+  margin: 0;
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--eric-text-muted);
+}
+
+.meta a {
+  color: var(--eric-accent);
+  text-decoration: none;
+}
+
+.meta a:hover {
+  text-decoration: underline;
+}
+
+.more {
+  margin: 0;
+  font-family: var(--eric-font-mono);
+  font-size: 12px;
+}
+
+.more a {
+  color: var(--eric-text-muted);
+  text-decoration: none;
+}
+
+.more a:hover {
+  color: var(--eric-accent);
+}
+
+@media (max-width: 768px) {
+  .featuredGrid {
+    grid-template-columns: 1fr;
+  }
+}
