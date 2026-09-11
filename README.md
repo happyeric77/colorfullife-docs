@@ -21,8 +21,8 @@ Projects, Journal entries and Topics are aggregated at build time by
 
 ## Publishing conventions
 
-The canonical guide for content metadata is
-[`.agent/skills/colorfullife-publishing.md`](.agent/skills/colorfullife-publishing.md).
+The canonical guide for content metadata is the
+[`engineering-publishing` skill](.opencode/skills/engineering-publishing/SKILL.md).
 Short version:
 
 - **Project** (`projects/*.mdx`) — a long-lived public entity. Core front
