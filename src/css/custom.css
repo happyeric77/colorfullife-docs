@@ -125,7 +125,6 @@ html[data-theme='dark'] body {
   padding-inline: 1.5rem;
   border-bottom: 1px solid var(--eric-border);
   background-color: var(--eric-bg-translucent);
-  backdrop-filter: blur(20px);
   box-shadow: none;
 }
 
@@ -184,6 +183,132 @@ html[data-theme='dark'] body {
 
 .navbar__toggle {
   color: var(--eric-text-muted);
+}
+
+/*
+ * Mobile navigation.
+ *
+ * Keep backdrop-filter off the navbar itself at narrow widths. A filtered
+ * ancestor becomes the containing block for fixed descendants, which would
+ * constrain Docusaurus' fixed .navbar-sidebar to the 64px navbar and collapse
+ * the menu area below its 64px header. The drawer owns the blur instead.
+ */
+.navbar-sidebar {
+  --ifm-navbar-sidebar-width: min(88vw, 360px);
+  border-right: 1px solid var(--eric-border-strong);
+  background-color: var(--eric-bg-translucent);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 24px 0 64px rgba(0, 0, 0, 0.22);
+}
+
+.navbar-sidebar__backdrop {
+  background-color: rgba(2, 8, 6, 0.62);
+}
+
+.navbar-sidebar__brand {
+  flex: 0 0 auto;
+  gap: 0.45rem;
+  border-bottom: 1px solid var(--eric-border);
+  background: transparent;
+  box-shadow: none;
+}
+
+.navbar-sidebar__brand .navbar__brand {
+  height: auto;
+  margin-right: auto;
+  gap: 0.55rem;
+}
+
+.navbar-sidebar .navbar__brand::after {
+  display: inline-flex;
+  padding: 0.24rem 0.5rem;
+  font-size: 8px;
+  letter-spacing: 0.11em;
+}
+
+.navbar-sidebar__brand .clean-btn {
+  color: var(--eric-text-muted);
+}
+
+.navbar-sidebar__brand button.clean-btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--eric-border);
+  border-radius: var(--eric-radius-pill);
+  background: var(--eric-surface);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.navbar-sidebar__brand button.clean-btn:hover {
+  border-color: var(--eric-border-accent);
+  background: var(--eric-surface-hover);
+  color: var(--eric-text);
+}
+
+.navbar-sidebar__close {
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+}
+
+.navbar-sidebar__items {
+  background: transparent;
+}
+
+.navbar-sidebar__item {
+  padding: 1rem 1rem 1.25rem;
+}
+
+.navbar-sidebar .menu__list {
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-sidebar .menu__list-item {
+  margin-top: 0.35rem;
+}
+
+.navbar-sidebar .menu__list-item:first-child {
+  margin-top: 0;
+}
+
+.navbar-sidebar .menu__list > .menu__list-item:nth-child(6) {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--eric-border);
+}
+
+.navbar-sidebar .menu__link {
+  padding: 0.78rem 0.9rem;
+  border: 1px solid transparent;
+  border-radius: var(--eric-radius-sm);
+  background: transparent;
+  font-family: var(--eric-font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.015em;
+  color: var(--eric-text-muted);
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.navbar-sidebar .menu__link:hover {
+  border-color: var(--eric-border);
+  background: var(--eric-surface-hover);
+  color: var(--eric-text);
+}
+
+.navbar-sidebar .menu__link--active {
+  border-color: var(--eric-border-accent);
+  background: var(--eric-accent-soft);
+  color: var(--eric-accent);
 }
 
 /* Buttons — profile geometry instead of generic Infima geometry. */
@@ -288,6 +413,8 @@ html.reveal-ready [data-reveal].is-visible {
 @media (min-width: 997px) {
   .navbar {
     padding-inline: 2rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
   }
 }
 
