@@ -125,6 +125,7 @@ export default function Home() {
           <SectionHeader
             eyebrow="Open Source"
             title="Open source"
+            subtitle="Small tools and integrations built out of real engineering work."
             to="/opensource"
             actionLabel="View open source"
           />

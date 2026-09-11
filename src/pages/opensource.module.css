@@ -38,55 +38,6 @@
   color: var(--eric-text-muted);
 }
 
-.featuredGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-
-.card {
-  padding: 1.5rem;
-  border: 1px solid var(--eric-border);
-  border-radius: var(--eric-radius-md);
-  background: var(--eric-surface);
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease;
-}
-
-.card:hover {
-  border-color: var(--eric-border-strong);
-  background: var(--eric-surface-hover);
-}
-
-.cardTitle,
-.rowTitle {
-  margin: 0 0 0.5rem;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  overflow-wrap: anywhere;
-}
-
-.cardTitle a,
-.rowTitle a {
-  color: var(--eric-text);
-  text-decoration: none;
-}
-
-.cardTitle a:hover,
-.rowTitle a:hover {
-  color: var(--eric-accent);
-}
-
-.cardDescription,
-.rowDescription {
-  margin: 0 0 0.75rem;
-  color: var(--eric-text-muted);
-  font-size: 0.9375rem;
-  line-height: 1.6;
-}
-
 .rows {
   display: flex;
   flex-direction: column;
@@ -97,12 +48,28 @@
   border-bottom: 1px solid var(--eric-border);
 }
 
-.row:first-child {
-  padding-top: 0;
+.rowTitle {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.rowTitle a {
+  color: var(--eric-text);
+  text-decoration: none;
+}
+
+.rowTitle a:hover {
+  color: var(--eric-accent);
 }
 
 .rowDescription {
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem;
+  color: var(--eric-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
 }
 
 .meta {
@@ -135,10 +102,4 @@
 
 .more a:hover {
   color: var(--eric-accent);
-}
-
-@media (max-width: 768px) {
-  .featuredGrid {
-    grid-template-columns: 1fr;
-  }
 }

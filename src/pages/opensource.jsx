@@ -29,24 +29,26 @@ function RepoMeta({ repo }) {
   );
 }
 
-function RepoHeading({ repo, className }) {
+function RepoRow({ repo }) {
   return (
-    <h3 className={className}>
-      <a
-        href={repo.repository}
-        target="_blank"
-        rel="noreferrer noopener"
-        aria-label={`${repo.name} on GitHub`}
-      >
-        {repo.name} <span aria-hidden="true">↗</span>
-      </a>
-    </h3>
+    <div className={styles.row}>
+      <h3 className={styles.rowTitle}>
+        <a
+          href={repo.repository}
+          target="_blank"
+          rel="noreferrer noopener"
+          aria-label={`${repo.name} on GitHub`}
+        >
+          {repo.name} <span aria-hidden="true">↗</span>
+        </a>
+      </h3>
+      <p className={styles.rowDescription}>{repo.description}</p>
+      <RepoMeta repo={repo} />
+    </div>
   );
 }
 
 export default function OpenSourcePage() {
-  const featured = repositories.filter((repo) => repo.featured);
-
   return (
     <Layout
       title="Open Source"
@@ -62,19 +64,6 @@ export default function OpenSourcePage() {
             </h1>
           </header>
 
-          <section className={styles.section} data-reveal>
-            <h2 className={styles.sectionTitle}>Featured</h2>
-            <div className={styles.featuredGrid}>
-              {featured.map((repo) => (
-                <article key={repo.name} className={styles.card}>
-                  <RepoHeading repo={repo} className={styles.cardTitle} />
-                  <p className={styles.cardDescription}>{repo.description}</p>
-                  <RepoMeta repo={repo} />
-                </article>
-              ))}
-            </div>
-          </section>
-
           {groups.map((group) => (
             <section key={group.id} className={styles.section} data-reveal>
               <h2 className={styles.sectionTitle}>{group.label}</h2>
@@ -82,13 +71,7 @@ export default function OpenSourcePage() {
                 {repositories
                   .filter((repo) => repo.group === group.id)
                   .map((repo) => (
-                    <div key={repo.name} className={styles.row}>
-                      <RepoHeading repo={repo} className={styles.rowTitle} />
-                      <p className={styles.rowDescription}>
-                        {repo.description}
-                      </p>
-                      <RepoMeta repo={repo} />
-                    </div>
+                    <RepoRow key={repo.name} repo={repo} />
                   ))}
               </div>
             </section>

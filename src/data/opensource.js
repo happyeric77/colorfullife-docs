@@ -36,27 +36,20 @@ export const repositories = [
     featured: false,
   },
   {
-    name: "ollama-opencode-adapter",
-    repository: "https://github.com/happyeric77/ollama-opencode-adapter",
-    description:
-      "An Ollama-compatible adapter that routes requests through OpenCode providers.",
-    language: "TypeScript",
-    group: "agent-tooling",
-    featured: true,
-  },
-  {
     name: "agent-webhook-notify",
     repository: "https://github.com/happyeric77/agent-webhook-notify",
     description: "Webhook notifications for agent completion and blocked states.",
     language: "JavaScript",
+    license: "MIT",
     group: "agent-tooling",
-    featured: false,
+    featured: true,
   },
   {
     name: "agent-keep-awake",
     repository: "https://github.com/happyeric77/agent-keep-awake",
     description: "Keeps macOS awake while local agents are working.",
     language: "JavaScript",
+    license: "MIT",
     group: "agent-tooling",
     featured: false,
   },
@@ -64,7 +57,7 @@ export const repositories = [
     name: "wyoming-cloud-tts",
     repository: "https://github.com/happyeric77/wyoming-cloud-tts",
     description:
-      "A Wyoming Protocol TTS adapter for Home Assistant with multilingual cloud speech synthesis.",
+      "Wyoming Protocol TTS adapter for Home Assistant with multilingual cloud speech synthesis.",
     language: "TypeScript",
     group: "home-automation",
     featured: true,
@@ -74,10 +67,9 @@ export const repositories = [
     name: "wyoming-groq-whisper-adapter",
     repository: "https://github.com/happyeric77/wyoming-groq-whisper-adapter",
     description:
-      "A Wyoming Protocol speech-to-text adapter connecting Home Assistant to Groq Whisper.",
+      "Wyoming Protocol speech-to-text adapter connecting Home Assistant to Groq Whisper.",
     language: "TypeScript",
     group: "home-automation",
     featured: false,
-    relatedProject: "home-assistant",
   },
 ];
