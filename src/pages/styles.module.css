@@ -1,0 +1,43 @@
+.hero {
+  padding: 4rem 0 3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 3rem;
+}
+
+.heroTagline {
+  margin: 0.5rem 0 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 1.25rem;
+}
+
+.heroActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.section {
+  padding: 2.5rem 0;
+}
+
+.journalList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.placeholder {
+  color: var(--ifm-color-emphasis-600);
+}

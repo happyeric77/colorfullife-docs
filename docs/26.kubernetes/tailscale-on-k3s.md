@@ -130,4 +130,4 @@ It involves:
 ---
 
 For more advanced setups, consider using:
-[Kubernetes: multi-container pod (rsync server + Tailscale)](/kubernetes/multi-container-pod)
+[Kubernetes: multi-container pod (rsync server + Tailscale)](/archive/kubernetes/multi-container-pod)

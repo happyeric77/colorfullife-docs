@@ -4,10 +4,12 @@
 const lightCodeTheme = require("prism-react-renderer/themes/github");
 const darkCodeTheme = require("prism-react-renderer/themes/dracula");
 
+const editUrl = "https://github.com/happyeric77/colorfullife-docs/tree/master/";
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "ColorfulLife-Docs",
-  tagline: "Make your life colorful",
+  title: "ColorfulLife",
+  tagline: "I build software and write about how it gets made.",
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
@@ -31,28 +33,47 @@ const config = {
     defaultLocale: "en",
     locales: ["en"],
   },
-  plugins: [["drawio", {}]],
+  plugins: [
+    ["drawio", {}],
+    // Aggregates Project / Journal / Topic metadata for cross-content pages.
+    "./plugins/content-model",
+    [
+      "@docusaurus/plugin-content-docs",
+      // Second docs instance: Projects are content (MDX), not hardcoded data.
+      {
+        id: "projects",
+        path: "projects",
+        routeBasePath: "projects",
+        sidebarPath: false,
+        breadcrumbs: false,
+        editUrl,
+      },
+    ],
+  ],
   presets: [
     [
       "classic",
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          routeBasePath: "/",
+          // Legacy tech notes live under /archive and keep docs-style navigation.
+          routeBasePath: "archive",
           sidebarPath: require.resolve("./sidebars.js"),
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/happyeric77/colorfullife-docs/tree/master/",
+          editUrl,
         },
-        blog: false,
-        // blog: {
-        //   showReadingTime: true,
-        //   // Please change this to your repo.
-        //   // Remove this to remove the "edit this page" links.
-        //   editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-        // },
+        blog: {
+          routeBasePath: "journal",
+          blogTitle: "Journal",
+          blogDescription:
+            "Stories from the work: build logs, deep dives, retrospectives and field notes.",
+          blogSidebarTitle: "Latest entries",
+          showReadingTime: true,
+          editUrl,
+        },
         theme: {
           customCss: require.resolve("./src/css/custom.css"),
         },
@@ -66,22 +87,45 @@ const config = {
       // Replace with your project's social card
       image: "img/docusaurus-social-card.jpg",
       navbar: {
-        title: "ColorfulLife Docs",
+        title: "ColorfulLife",
         logo: {
-          alt: "My Site Logo",
+          alt: "ColorfulLife Logo",
           src: "img/logo.png",
         },
         items: [
-          // {
-          //   type: "docSidebar",
-          //   sidebarId: "tutorialSidebar",
-          //   position: "left",
-          //   label: "Tutorial",
-          // },
-          // { to: "/blog", label: "Blog", position: "left" },
+          {
+            to: "/projects",
+            label: "Projects",
+            position: "left",
+          },
+          {
+            to: "/journal",
+            label: "Journal",
+            position: "left",
+          },
+          {
+            to: "/topics",
+            label: "Topics",
+            position: "left",
+          },
+          {
+            to: "/opensource",
+            label: "Open Source",
+            position: "left",
+          },
+          {
+            to: "/archive",
+            label: "Archive",
+            position: "left",
+          },
+          {
+            to: "/about",
+            label: "About",
+            position: "left",
+          },
           {
             href: "https://github.com/happyeric77/colorfullife-docs",
-            label: "GitHub",
+            label: "GitHub ↗",
             position: "right",
           },
         ],
@@ -93,29 +137,20 @@ const config = {
       footer: {
         style: "dark",
         links: [
-          // {
-          //   title: "Docs",
-          //   items: [
-          //     {
-          //       label: "Tutorial",
-          //       to: "/docs/intro",
-          //     },
-          //   ],
-          // },
           {
-            title: "Community",
+            title: "Explore",
             items: [
-              // {
-              //   label: "Stack Overflow",
-              //   href: "https://stackoverflow.com/questions/tagged/docusaurus",
-              // },
               {
-                label: "Youtube",
-                href: "https://www.youtube.com/channel/UCwvJhJwr64cM7QUSg9nP4Bg",
+                label: "Projects",
+                to: "/projects",
               },
               {
-                label: "Twitter",
-                href: "https://twitter.com/happyeric77",
+                label: "Journal",
+                to: "/journal",
+              },
+              {
+                label: "Topics",
+                to: "/topics",
               },
             ],
           },
@@ -123,8 +158,29 @@ const config = {
             title: "More",
             items: [
               {
-                label: "ColorfulLife Blog",
-                to: "https://blog.colorfullife.ml/pages/diary/erics-daily-life/",
+                label: "Open Source",
+                to: "/opensource",
+              },
+              {
+                label: "Archive",
+                to: "/archive",
+              },
+              {
+                label: "About",
+                to: "/about",
+              },
+            ],
+          },
+          {
+            title: "Community",
+            items: [
+              {
+                label: "Youtube",
+                href: "https://www.youtube.com/channel/UCwvJhJwr64cM7QUSg9nP4Bg",
+              },
+              {
+                label: "Twitter",
+                href: "https://twitter.com/happyeric77",
               },
               {
                 label: "HackMD",

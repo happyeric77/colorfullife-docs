@@ -1,0 +1,39 @@
+---
+id: home-lab-k3s
+title: K3s Cluster
+description: The Kubernetes cluster that runs most of my self-hosted services.
+type: subproject
+status: active
+parent: home-lab
+started: 2022
+featured: true
+topics:
+  - kubernetes
+  - gitops
+  - observability
+stack:
+  - K3s
+  - Argo CD
+  - Grafana
+  - Prometheus
+---
+
+## What it is
+
+A single-node (for now) K3s cluster running on Proxmox, hosting everything
+from Tailscale routing to monitoring. This is a subproject of
+[Home Lab](/projects/home-lab).
+
+## Components
+
+Components live here, not as projects of their own:
+
+- **Argo CD** — GitOps delivery for cluster workloads.
+- **Grafana / Prometheus** — metrics and dashboards.
+- **Tailscale operator** — cluster ingress into the home network.
+
+## Story
+
+The cluster replaced a collection of docker-compose stacks that had become
+impossible to reason about. Moving it to GitOps was the turning point: the
+cluster became reproducible instead of remembered.

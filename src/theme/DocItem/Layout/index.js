@@ -2,6 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import { useWindowSize } from "@docusaurus/theme-common";
 import { useDoc } from "@docusaurus/theme-common/internal";
+import { useLocation } from "@docusaurus/router";
 import DocItemPaginator from "@theme/DocItem/Paginator";
 import DocVersionBanner from "@theme/DocVersionBanner";
 import DocVersionBadge from "@theme/DocVersionBadge";
@@ -32,6 +33,9 @@ function useDocTOC() {
 export default function DocItemLayout({ children }) {
   const docTOC = useDocTOC();
   const { colorMode } = useColorMode();
+  const { pathname } = useLocation();
+  // Comments belong to legacy Archive notes, not to Projects pages.
+  const showComments = pathname.startsWith("/archive");
   return (
     <div className="row">
       <div className={clsx("col", !docTOC.hidden && styles.docItemCol)}>
@@ -45,21 +49,23 @@ export default function DocItemLayout({ children }) {
             <DocItemFooter />
           </article>
           <DocItemPaginator />
-          <Giscus
-            id="comments"
-            repo="happyeric77/colorfullife-docs"
-            repoId="R_kgDOJUJ8oQ"
-            category="Show and tell"
-            categoryId="DIC_kwDOJUJ8oc4CVsZB"
-            mapping="pathname"
-            term="Welcome to @giscus/react component!"
-            reactionsEnabled="1"
-            emitMetadata="0"
-            inputPosition="top"
-            theme={colorMode ? "dark" : "light"}
-            lang="en"
-            loading="lazy"
-          />
+          {showComments && (
+            <Giscus
+              id="comments"
+              repo="happyeric77/colorfullife-docs"
+              repoId="R_kgDOJUJ8oQ"
+              category="Show and tell"
+              categoryId="DIC_kwDOJUJ8oc4CVsZB"
+              mapping="pathname"
+              term="Welcome to @giscus/react component!"
+              reactionsEnabled="1"
+              emitMetadata="0"
+              inputPosition="top"
+              theme={colorMode ? "dark" : "light"}
+              lang="en"
+              loading="lazy"
+            />
+          )}
         </div>
       </div>
       {docTOC.desktop && <div className="col col--3">{docTOC.desktop}</div>}
