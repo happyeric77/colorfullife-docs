@@ -26,7 +26,11 @@ const JOURNAL_DIR = "blog";
 // Replace with a topic registry file once Topics grow past a handful (PR 3).
 const TOPIC_LABELS = {
   argocd: "Argo CD",
+  fluxcd: "Flux CD",
+  "kube-vip": "kube-vip",
   k3s: "K3s",
+  sops: "SOPS",
+  traefik: "Traefik",
 };
 
 function humanizeTopic(slug) {

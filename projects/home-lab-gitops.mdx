@@ -1,0 +1,57 @@
+---
+id: home-lab-gitops
+title: GitOps Delivery
+description: Declarative, Git-driven deployment and secret management for the home lab cluster.
+type: system
+status: running
+started: 2026
+featured: false
+topics:
+  - gitops
+  - fluxcd
+  - sops
+  - secrets-management
+  - kubernetes
+stack:
+  - Flux CD
+  - SOPS
+  - age
+  - Kubernetes
+---
+
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
+## What it is
+
+The delivery system for the Kubernetes home lab: workloads and configuration
+live in a Git repository and are reconciled into the cluster automatically.
+This is a subproject of
+[Kubernetes Home Lab](/projects/home-lab-kubernetes).
+
+## How it works
+
+- A monorepo holds cluster-level configuration under `clusters/` and one
+  directory per application under `apps/`.
+- Each application has a `base/` directory of Kubernetes manifests plus a Flux
+  `Kustomization` that defines its reconciliation interval, pruning, health
+  checks and dependencies.
+- Changes are committed to Git rather than applied to the cluster directly.
+  Flux reconciles the desired state on a fixed interval, and rolling back is a
+  `git revert`.
+
+## Secrets
+
+Secret material is encrypted in Git with SOPS and an age key. The cluster holds
+only the decryption key, injected into the GitOps controller during bootstrap.
+Configuration stays reviewable in Git while secrets never appear in plain text.
+
+## Story
+
+Delivery started with manual `kubectl apply` and ad-hoc Helm commands, which
+worked until they did not: reconstructing what the cluster actually contained
+meant inspecting it piece by piece. Migrating to Flux and SOPS turned the
+cluster into the output of a repository. Onboarding a new application became
+"add a directory and a `Kustomization`" instead of replaying a sequence of
+remembered commands.
+
+<RelatedJournal />

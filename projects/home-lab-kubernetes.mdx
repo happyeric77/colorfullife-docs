@@ -1,0 +1,71 @@
+---
+id: home-lab-kubernetes
+title: Kubernetes Home Lab
+description: A small self-hosted Kubernetes cluster built to run and learn from real workloads.
+type: infrastructure
+status: running
+started: 2022
+featured: true
+topics:
+  - kubernetes
+  - k3s
+  - etcd
+  - high-availability
+  - traefik
+  - kube-vip
+  - observability
+stack:
+  - K3s
+  - Flux CD
+  - Traefik
+  - Longhorn
+  - kube-vip
+---
+
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
+## What it is
+
+A lightweight Kubernetes cluster running on a handful of small machines at
+home. It hosts the services that used to run as standalone containers, and it
+is the environment most of this site's infrastructure lessons come from.
+
+The control plane runs three nodes with embedded etcd, so the cluster has a
+real quorum instead of a single point of failure. The nodes started on Wi-Fi
+and were later moved to wired networking: etcd peer traffic is sensitive to
+latency and packet loss in ways ordinary workloads are not.
+
+## Architecture
+
+- **Control plane** — three nodes running the API server, scheduler, controller
+  manager and embedded etcd. A virtual IP managed by kube-vip provides a single
+  stable API endpoint and floats between the control-plane nodes.
+- **Ingress** — Traefik as the bundled ingress controller, exposing services by
+  hostname.
+- **Storage** — Longhorn provides replicated block storage for stateful
+  workloads.
+- **Delivery** — workloads are declared in Git and reconciled into the cluster
+  by Flux. See [GitOps Delivery](/projects/home-lab-gitops).
+
+## Components
+
+Components live here, not as projects of their own:
+
+- **Grafana / Prometheus / Alertmanager** — metrics, dashboards and alerting.
+- **Longhorn** — the storage layer behind persistent volumes.
+- **kube-vip** — the virtual IP that keeps the API endpoint reachable when a
+  control-plane node goes down.
+
+## Story
+
+The cluster replaced a collection of docker-compose stacks that had become
+impossible to reason about. Moving to Kubernetes gave every service a common
+deployment model; moving delivery to Git later made the cluster reproducible
+instead of remembered.
+
+The most expensive lesson so far came from treating a high-availability
+control plane as a checkbox. Quorum tolerates exactly one failure, and a
+broken network path can take down more than one node at once — which is how a
+small routing problem turns into an extended outage.
+
+<RelatedJournal />
