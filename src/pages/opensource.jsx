@@ -10,7 +10,9 @@ function RepoMeta({ repo }) {
   const related = repo.relatedProject
     ? projects.find((project) => project.id === repo.relatedProject)
     : undefined;
-  const basics = [repo.language, repo.license].filter(Boolean).join(' · ');
+  const basics = [repo.organization, repo.language, repo.license]
+    .filter(Boolean)
+    .join(' · ');
 
   if (!basics && !related) {
     return null;

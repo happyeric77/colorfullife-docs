@@ -20,6 +20,7 @@ stack:
 ---
 
 import RelatedJournal from '@site/src/components/RelatedJournal';
+import RelatedOpenSource from '@site/src/components/RelatedOpenSource';
 
 A public SDK for web3 applications: an embeddable integration surface covering authentication, wallet connectivity and notifications. The work here is the architecture behind that SDK — the client core, the API layer, backend-driven configuration, and the long game of evolving a public API without breaking integrations that already depend on it.
 
@@ -53,8 +54,20 @@ Integration configuration is backend-driven: a tenant-level config document tell
 
 Wallet support is abstracted behind provider adapters, so the SDK can follow wallet ecosystem standards without rewriting signing logic each time a wallet changes.
 
+### Productizing the SDK
+
+An embeddable SDK was not always enough. Some integrations needed a complete web experience that could be handed to a customer, branded for them, connected to their tenant configuration and deployed without rebuilding the application from scratch.
+
+The response was a reusable full-page Next.js baseline rather than a collection of one-off customer apps. The stable parts — authentication flow, notification subscriptions, SDK wiring and deployment shape — stay in the template. The parts that vary by integration are explicit configuration points: tenant credentials, subscription configuration, chain, copy and branding.
+
+Wallet support became its own boundary for the same reason. Different customers can require different chains and wallets, but the application should not need a new authentication architecture for each one. A dedicated wallet-provider package normalizes connection, key formats and signing behind one React-facing contract while adapters absorb chain-specific behaviour.
+
+Together these pieces turn the SDK from a library into a repeatable integration platform: customers can embed the SDK directly, start from a public full-page example, or self-host a customized deployment without forking the core product logic.
+
 ## Story
 
 The SDK began as a single React hook bundling API calls, signing, auth state and business logic — a deliberate time-to-market trade-off. As the product grew to support ten-plus chains and multiple frameworks, the hook became the bottleneck: framework-locked, hard to test, and impossible to reuse outside React. The response was a phased extraction into the framework-agnostic core described above, run with zero downtime for existing integrations.
 
 <RelatedJournal />
+
+<RelatedOpenSource />
