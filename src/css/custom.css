@@ -178,13 +178,16 @@ html[data-theme='dark'] body {
   filter: brightness(1.05);
 }
 
-.button--secondary {
+/* Infima ships `.button.button--secondary { color: var(--ifm-color-gray-900) }`
+   (specificity 0,2,0), which would otherwise win over a plain
+   `.button--secondary` rule and leave the label unreadable until hover. */
+.button.button--secondary {
   background-color: var(--eric-surface);
   border: 1px solid var(--eric-border-strong);
   color: var(--eric-text);
 }
 
-.button--secondary:hover {
+.button.button--secondary:hover {
   background-color: var(--eric-surface-hover);
   border-color: var(--eric-border-strong);
   color: var(--eric-text);
