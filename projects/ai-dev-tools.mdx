@@ -1,0 +1,52 @@
+---
+id: ai-dev-tools
+title: AI Developer Tools
+description: Bringing an AI agent into an existing platform — MCP servers, reusable skills and evaluations as developer tooling.
+type: system
+status: completed
+started: 2026
+featured: false
+topics:
+  - ai
+  - mcp
+  - developer-tools
+  - evals
+stack:
+  - TypeScript
+  - MCP
+---
+
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
+Tooling that lets AI agents work inside an existing platform: a server that exposes platform capabilities as tools, a skills layer that teaches repeatable workflows, and an evaluation harness that treats agent behaviour like software that has to keep working.
+
+## What it is
+
+The work covers three layers:
+
+- an **MCP server** that wraps the platform's operations and API surface as tools an agent can call
+- **skills** — packaged workflow instructions that turn platform knowledge into repeatable agent behaviour
+- **evaluations** that run those workflows end to end and fail when the agent regresses
+
+## How it works
+
+### MCP server
+
+The server exposes a curated set of platform operations rather than the raw API. Each tool has a narrow contract, validated inputs and a single responsibility, so the agent chooses between capabilities instead of composing low-level requests.
+
+### Skills
+
+A skill packages a workflow as instructions an agent can load on demand: what the task is, which tools to use, what the expected result looks like. Skills keep platform knowledge versioned next to the code instead of living in prompts and tribal memory.
+
+### Evaluations
+
+Agent workflows are tested like programs. Evaluation cases run real tasks against a real environment and assert on the outcome, which turns prompt and tool changes into something a CI run can catch before a user does.
+
+## Story
+
+The effort started as an experiment: could an agent operate the platform through a controlled interface without giving it unrestricted API access? The MCP server answered the capability question; skills answered the repeatability question; evaluations answered the trust question. Together they turned a demo into tooling that other engineers could use. The articles below cover the design decisions and the parts that did not work the first time.
+
+- [Building an MCP server for an existing platform](/journal/2026/04/13/building-an-mcp-server-for-an-existing-platform)
+- [Skills and evals: teaching an AI agent platform workflows](/journal/2026/05/26/skills-and-evals-teaching-an-ai-agent-platform-workflows)
+
+<RelatedJournal />
