@@ -35,8 +35,12 @@ export default function Topics() {
                 >
                   <h2 className={styles.topicTitle}>{topic.label}</h2>
                   <p className={styles.counts}>
-                    {topic.projects.length} projects · {topic.journal.length}{' '}
-                    journal entries
+                    {topic.projects.length}{' '}
+                    {topic.projects.length === 1 ? 'project' : 'projects'} ·{' '}
+                    {topic.journal.length}{' '}
+                    {topic.journal.length === 1
+                      ? 'journal entry'
+                      : 'journal entries'}
                   </p>
                   <ul className={styles.links}>
                     {topic.projects.map((project) => (
