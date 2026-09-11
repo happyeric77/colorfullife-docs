@@ -40,7 +40,7 @@ This is the architecture PR, not the design PR. It establishes:
 2. The blog plugin became the **Journal**, served at `/journal`.
 3. A second docs instance became the **Projects** collection at `/projects`,
    with MDX project pages instead of hardcoded React objects.
-4. Project front matter gained `parent`, `status`, `stack` and `topics`, so the
+4. Project front matter gained `parentProject`, `status`, `stack` and `topics`, so
    Home Lab → K3s Cluster hierarchy is expressed in content.
 5. A small content-model plugin aggregates projects, journal entries and
    topics at build time, which powers the homepage, the topic index and the

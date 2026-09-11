@@ -7,6 +7,17 @@ const {
   normalizeUrl,
   parseMarkdownString,
 } = require("@docusaurus/utils");
+const {
+  JOURNAL_TYPES,
+  PROJECT_STATUSES,
+  PROJECT_TYPES,
+  assertNoHierarchyCycles,
+  assertOneOf,
+  assertReferences,
+  assertUniqueProjectIds,
+  normalizeTopics,
+  toArray,
+} = require("./validate");
 
 const PROJECTS_DIR = "projects";
 const JOURNAL_DIR = "blog";
@@ -17,9 +28,6 @@ const TOPIC_LABELS = {
   argocd: "Argo CD",
   k3s: "K3s",
 };
-
-const toArray = (value) =>
-  Array.isArray(value) ? value : value ? [value] : [];
 
 function humanizeTopic(slug) {
   if (TOPIC_LABELS[slug]) {
@@ -44,7 +52,7 @@ async function readFrontMatter(dir) {
     absolute: true,
   });
   const entries = [];
-  for (const file of files) {
+  for (const file of files.sort()) {
     const source = await fs.readFile(file, "utf8");
     const { frontMatter } = parseMarkdownString(source);
     entries.push({ file, frontMatter });
@@ -63,21 +71,39 @@ async function loadProjects(siteDir) {
     const relativePath = path
       .relative(projectsDir, file)
       .replace(/\\/g, "/");
+    if ("parent" in frontMatter) {
+      throw new Error(
+        `${relativePath}: "parent" was renamed to "parentProject". Update the front matter.`,
+      );
+    }
     const slug = frontMatter.slug ?? relativePath.replace(/\.mdx?$/, "");
     projects.push({
       id: String(frontMatter.id),
       title: frontMatter.title ?? String(frontMatter.id),
       description: frontMatter.description ?? "",
-      type: frontMatter.type ?? "project",
-      status: frontMatter.status ?? "active",
-      parent: frontMatter.parent ? String(frontMatter.parent) : null,
+      type: assertOneOf(
+        frontMatter.type ?? "project",
+        PROJECT_TYPES,
+        "project type",
+        relativePath,
+      ),
+      status: assertOneOf(
+        frontMatter.status ?? "active",
+        PROJECT_STATUSES,
+        "project status",
+        relativePath,
+      ),
+      parentProject: frontMatter.parentProject
+        ? String(frontMatter.parentProject)
+        : null,
       started: frontMatter.started ?? null,
       featured: Boolean(frontMatter.featured),
-      topics: toArray(frontMatter.topics).map(String),
+      topics: normalizeTopics(frontMatter.topics, relativePath),
       stack: toArray(frontMatter.stack).map(String),
       github: frontMatter.github ?? "",
       website: frontMatter.website ?? "",
       permalink: normalizeUrl(["/projects", String(slug)]),
+      file: relativePath,
     });
   }
   return projects;
@@ -112,11 +138,17 @@ async function loadJournal(siteDir) {
         toISODate(frontMatter.date) ??
         /^\d{4}-\d{2}-\d{2}/.exec(basename)?.[0] ??
         null,
-      type: frontMatter.type ?? "field-note",
+      type: assertOneOf(
+        frontMatter.type ?? "field-note",
+        JOURNAL_TYPES,
+        "journal type",
+        relativePath,
+      ),
       project: frontMatter.project ? String(frontMatter.project) : null,
-      topics: toArray(frontMatter.topics).map(String),
+      topics: normalizeTopics(frontMatter.topics, relativePath),
       featured: Boolean(frontMatter.featured),
       permalink: normalizeUrl(["/journal", String(slug)]),
+      file: relativePath,
     });
   }
   return journal.sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -166,6 +198,10 @@ module.exports = function contentModelPlugin(context) {
     async loadContent() {
       const projects = await loadProjects(context.siteDir);
       const journal = await loadJournal(context.siteDir);
+
+      assertUniqueProjectIds(projects);
+      assertReferences(projects, journal);
+      assertNoHierarchyCycles(projects);
 
       const projectById = new Map(projects.map((p) => [p.id, p]));
       const journalWithProject = journal.map((entry) => ({
