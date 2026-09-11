@@ -1,0 +1,36 @@
+---
+id: home-assistant
+title: Home Assistant
+description: Home automation — Zigbee, ESPHome and the slow path to a smart home that stays up.
+type: service
+status: running
+started: 2021
+featured: false
+topics:
+  - home-automation
+  - esphome
+  - esp32
+  - bluetooth
+  - zigbee
+  - mqtt
+stack:
+  - Home Assistant
+  - ESPHome
+  - Zigbee2MQTT
+  - MQTT
+---
+
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
+## What it is
+
+Home Assistant runs the smart home: lights, sensors, presence and the
+ESPHome-based devices around the house.
+
+## Story
+
+Most of the work here is reliability, not features: BLE proxies that recover
+themselves, Zigbee networks that survive a reboot, and automations that fail
+quietly instead of loudly.
+
+<RelatedJournal />

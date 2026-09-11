@@ -1,0 +1,104 @@
+---
+id: home-lab-kubernetes
+title: Kubernetes Home Lab
+description: A small self-hosted Kubernetes cluster built to run and learn from real workloads.
+type: infrastructure
+status: running
+started: 2022
+featured: true
+topics:
+  - kubernetes
+  - k3s
+  - gitops
+  - fluxcd
+  - sops
+  - etcd
+  - high-availability
+  - traefik
+  - kube-vip
+  - observability
+stack:
+  - K3s
+  - Flux CD
+  - SOPS
+  - Longhorn
+  - Traefik
+---
+
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
+## What it is
+
+A lightweight Kubernetes cluster running on a handful of small machines at
+home. It hosts the services that used to run as standalone containers, and it
+is the environment most of this site's infrastructure lessons come from.
+
+The control plane runs three nodes with embedded etcd, so the cluster has a
+real quorum instead of a single point of failure. The nodes started on Wi-Fi
+and were later moved to wired networking: etcd peer traffic is sensitive to
+latency and packet loss in ways ordinary workloads are not.
+
+## Architecture
+
+### Control plane
+
+Three nodes run the API server, scheduler, controller manager and embedded
+etcd. A virtual IP managed by kube-vip provides a single stable API endpoint
+and floats between the control-plane nodes.
+
+### Ingress
+
+Traefik is the bundled ingress controller. Services are exposed by hostname,
+and the load-balancer service is reachable on every node.
+
+### Storage
+
+Longhorn provides replicated block storage for stateful workloads, with
+volumes attached to whichever node is running the workload.
+
+### Delivery / GitOps
+
+Workloads and configuration live in a Git repository and are reconciled into
+the cluster by Flux CD:
+
+- A monorepo holds cluster-level configuration under `clusters/` and one
+  directory per application under `apps/`.
+- Each application has a `base/` directory of Kubernetes manifests plus a
+  Flux `Kustomization` that defines its reconciliation interval, pruning,
+  health checks and dependencies.
+- Changes are committed to Git rather than applied directly to the cluster;
+  rolling back is a `git revert`.
+- Secret material is encrypted in Git with SOPS and an age key. The cluster
+  holds only the decryption key, injected into the GitOps controller during
+  bootstrap, so secrets stay reviewable in Git without appearing in plain
+  text.
+
+## Components
+
+Components live here, not as projects of their own:
+
+- **Grafana / Prometheus / Alertmanager** — metrics, dashboards and alerting.
+- **Longhorn** — the storage layer behind persistent volumes.
+- **kube-vip** — the virtual IP that keeps the API endpoint reachable when a
+  control-plane node goes down.
+
+## Story
+
+The cluster replaced a collection of docker-compose stacks that had become
+impossible to reason about. Moving to Kubernetes gave every service a common
+deployment model; moving delivery to Git later made the cluster reproducible
+instead of remembered.
+
+Delivery started with manual `kubectl apply` and ad-hoc Helm commands, which
+worked until they did not: reconstructing what the cluster actually contained
+meant inspecting it piece by piece. Migrating to Flux and SOPS turned the
+cluster into the output of a repository, and onboarding a new application into
+"add a directory and a `Kustomization`" instead of replaying a sequence of
+remembered commands.
+
+The most expensive lesson so far came from treating a high-availability
+control plane as a checkbox. Quorum tolerates exactly one failure, and a
+broken network path can take down more than one node at once — which is how a
+small routing problem turns into an extended outage.
+
+<RelatedJournal />

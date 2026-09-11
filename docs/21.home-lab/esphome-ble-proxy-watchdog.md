@@ -36,7 +36,7 @@ The affected devices were ESP32 Bluetooth proxies managed through ESPHome.
 
 If you are starting from scratch with ESPHome Bluetooth proxy setup, check this first:
 
-- [Home Assistant + esphome integration](/home-lab/ha-esphome)
+- [Home Assistant + esphome integration](/archive/home-lab/ha-esphome)
 
 ## First confirmation
 
@@ -222,4 +222,4 @@ For example:
 
 ## Related reading
 
-- [Home Assistant + esphome integration](/home-lab/ha-esphome)
+- [Home Assistant + esphome integration](/archive/home-lab/ha-esphome)

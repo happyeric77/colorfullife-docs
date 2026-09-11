@@ -215,5 +215,5 @@ This confirms the rsync server is reachable and correctly exposed over Tailscale
 
 ## References
 
-- 🔧 [Linux: Rsync Daemon Setup](/linux/rsync-daemon)
-- 🌐 [Tailscale on k3s](/kubernetes/tailscale-on-k3s)
+- 🔧 [Linux: Rsync Daemon Setup](/archive/linux/rsync-daemon)
+- 🌐 [Tailscale on k3s](/archive/kubernetes/tailscale-on-k3s)

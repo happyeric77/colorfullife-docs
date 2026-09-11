@@ -249,5 +249,5 @@ In my homelab, the IP rule is the clearest protection because it makes the routi
 
 ## Related Reading
 
-- [Setup Tailscale as a Home VPN](/home-lab/tailscale)
-- [Setup Pi-hole as Home DNS & Ad Blocker](/home-lab/pihole)
+- [Setup Tailscale as a Home VPN](/archive/home-lab/tailscale)
+- [Setup Pi-hole as Home DNS & Ad Blocker](/archive/home-lab/pihole)

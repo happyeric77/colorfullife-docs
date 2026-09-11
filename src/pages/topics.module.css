@@ -1,0 +1,23 @@
+.topic {
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.title {
+  margin-bottom: 0.25rem;
+}
+
+.counts {
+  margin: 0;
+  color: var(--ifm-color-emphasis-600);
+  font-size: 0.9rem;
+}
+
+.links {
+  margin: 0.75rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.date {
+  color: var(--ifm-color-emphasis-600);
+}
