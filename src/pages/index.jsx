@@ -8,6 +8,7 @@ import ProjectCard from '@site/src/components/ProjectCard';
 import ProjectList from '@site/src/components/ProjectList';
 import JournalRow from '@site/src/components/JournalRow';
 import TopicTag from '@site/src/components/TopicTag';
+import { repositories } from '@site/src/data/opensource';
 import styles from './styles.module.css';
 
 const MAX_TOPICS = 12;
@@ -35,6 +36,7 @@ export default function Home() {
         (a.projects.length + a.journal.length),
     )
     .slice(0, MAX_TOPICS);
+  const openSourceFeatured = repositories.filter((repo) => repo.featured);
 
   return (
     <Layout title={siteConfig.title} description={siteConfig.tagline}>
@@ -123,13 +125,27 @@ export default function Home() {
           <SectionHeader
             eyebrow="Open Source"
             title="Open source"
+            subtitle="Small tools and integrations built out of real engineering work."
             to="/opensource"
-            actionLabel="View activity"
+            actionLabel="View open source"
           />
-          <p className={styles.placeholder}>
-            Selected repositories and contributions across the projects I work
-            on.
-          </p>
+          <ul className={styles.openSourceList}>
+            {openSourceFeatured.map((repo) => (
+              <li key={repo.name} className={styles.openSourceItem}>
+                <a
+                  href={repo.repository}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label={`${repo.name} on GitHub`}
+                >
+                  {repo.name} <span aria-hidden="true">↗</span>
+                </a>
+                {repo.language && (
+                  <span className={styles.openSourceMeta}>{repo.language}</span>
+                )}
+              </li>
+            ))}
+          </ul>
         </section>
       </main>
     </Layout>
