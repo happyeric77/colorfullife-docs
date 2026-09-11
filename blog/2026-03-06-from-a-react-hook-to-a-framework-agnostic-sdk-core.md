@@ -25,16 +25,12 @@ The architecture only became a problem after the customer base grew.
 
 The early stack looked roughly like this:
 
-```text
-notifi-react-card
-      ↓
-useNotifiSubscribe
-      ↓
-useNotifiClient
-      ↓
-useNotifiService
-      ↓
-Notifi API
+```mermaid
+flowchart TD
+  Card["notifi-react-card"] --> Subscribe["useNotifiSubscribe"]
+  Subscribe --> ClientHook["useNotifiClient"]
+  ClientHook --> ServiceHook["useNotifiService"]
+  ServiceHook --> API["Notifi API"]
 ```
 
 The hooks were not just React bindings. Over time they accumulated responsibilities that belonged to the product domain:
@@ -67,11 +63,13 @@ The boundary needed to move.
 
 The consolidation plan was to make `notifi-frontend-client` the owner of frontend domain behavior and let React consume it like any other client:
 
-```text
-React SDK ─────────┐
-Vue integration ──┼──→ NotifiFrontendClient ──→ Notifi services
-Angular app ───────┤
-plain TS / JS ─────┘
+```mermaid
+flowchart LR
+  React["React SDK"] --> Client["NotifiFrontendClient"]
+  Vue["Vue integration"] --> Client
+  Angular["Angular app"] --> Client
+  TS["Plain TS / JS"] --> Client
+  Client --> Services["Notifi services"]
 ```
 
 The key distinction was responsibility.
@@ -130,18 +128,13 @@ The backend already stored tenant-level configuration for embeddable experiences
 
 A simplified flow became:
 
-```text
-Backend TenantConfig
-       ↓
-fetchSubscriptionCard()
-       ↓
-CardConfigItemV1
-       ↓
-EventTypeItem
-       ↓
-FrontendClient operations
-       ↓
-React renders the experience
+```mermaid
+flowchart TD
+  Tenant["Backend TenantConfig"] --> Fetch["fetchSubscriptionCard()"]
+  Fetch --> Card["CardConfigItemV1"]
+  Card --> Event["EventTypeItem"]
+  Event --> Ops["FrontendClient operations"]
+  Ops --> React["React renders the experience"]
 ```
 
 That separation matters because backend-driven UI is much easier to evolve when the rendering framework is not also responsible for interpreting the product domain.
@@ -158,22 +151,15 @@ Existing customer integrations already depended on the hooks and React card pack
 
 So the migration moved in independently shippable stages:
 
-```text
-build FrontendClient capability parity
-        ↓
-consolidate shared domain types
-        ↓
-move configuration and data fetching
-        ↓
-move subscription and target operations
-        ↓
-let React support both implementations
-        ↓
-make FrontendClient the default
-        ↓
-keep the hooks path as a fallback
-        ↓
-remove legacy packages after the new path is established
+```mermaid
+flowchart TD
+  P1["Build FrontendClient capability parity"] --> P2["Consolidate shared domain types"]
+  P2 --> P3["Move configuration and data fetching"]
+  P3 --> P4["Move subscription and target operations"]
+  P4 --> P5["Let React support both implementations"]
+  P5 --> P6["Make FrontendClient the default"]
+  P6 --> P7["Keep hooks path as a fallback"]
+  P7 --> P8["Remove legacy packages"]
 ```
 
 During 2023 the React card progressively gained a `frontendClient` path for fetching data, rendering subscription state and executing individual event-type operations. For a period, components could run either implementation.
@@ -200,12 +186,10 @@ The framework-agnostic client eventually became the foundation for the newer `no
 
 The resulting architecture was much simpler conceptually:
 
-```text
-Framework / application layer
-        ↓
-NotifiFrontendClient
-        ↓
-GraphQL + service layer
+```mermaid
+flowchart TD
+  Framework["Framework / application layer"] --> Client["NotifiFrontendClient"]
+  Client --> Service["GraphQL + service layer"]
 ```
 
 React still had a first-class integration. It just no longer defined the SDK's domain architecture.
