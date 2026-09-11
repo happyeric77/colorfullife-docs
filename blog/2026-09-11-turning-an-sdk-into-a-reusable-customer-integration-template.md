@@ -1,7 +1,7 @@
 ---
 title: Turning an SDK into a reusable customer integration template
 description: How a library-first integration model evolved into a configurable full-page application that could be branded, deployed and self-hosted without rebuilding the same product for every customer.
-date: 2026-09-11
+date: 2024-04-08
 type: project-story
 project: sdk-architecture
 topics:
@@ -80,14 +80,11 @@ That is a small design decision with a large operational effect.
 
 For a normal customer variation, the workflow becomes roughly:
 
-```text
-stable application baseline
-        +
-customer configuration
-        +
-brand styling
-        =
-customer deployment
+```mermaid
+flowchart LR
+  A["Stable application baseline"] --> D["Customer deployment"]
+  B["Customer configuration"] --> D
+  C["Brand styling"] --> D
 ```
 
 The application architecture is no longer part of every customization project.
@@ -102,15 +99,13 @@ The public package therefore also documents a deployment path built around devel
 
 This is an important distinction between a sample and a delivery baseline:
 
-```text
-sample
-→ demonstrates an API
-
-template
-→ demonstrates the API
-→ defines configuration boundaries
-→ defines operational expectations
-→ can become a real deployment
+```mermaid
+flowchart LR
+  S["Sample"] --> S1["Demonstrates an API"]
+  T["Template"] --> T1["Demonstrates the API"]
+  T1 --> T2["Defines configuration boundaries"]
+  T2 --> T3["Defines operational expectations"]
+  T3 --> T4["Can become a real deployment"]
 ```
 
 Once deployment is repeatable, customer work moves away from infrastructure invention and toward the places where customization is actually valuable.
@@ -142,16 +137,13 @@ That separation turned out to be one of the most important parts of making the t
 
 The useful mental model is not "SDK plus example app." It is a set of integration levels built on the same product surface:
 
-```text
-Notifi SDK
-   │
-   ├── embed into an existing application
-   │
-   └── reusable full-page application
-          │
-          ├── customer-hosted
-          ├── provider-hosted
-          └── customized through explicit variation points
+```mermaid
+flowchart TD
+  SDK["Notifi SDK"] --> Embed["Embed into an existing application"]
+  SDK --> FullPage["Reusable full-page application"]
+  FullPage --> CustomerHosted["Customer-hosted"]
+  FullPage --> ProviderHosted["Provider-hosted"]
+  FullPage --> Customized["Customized through explicit variation points"]
 ```
 
 The SDK remains the source of product behavior. The full-page app provides a stable integration shell. The wallet layer isolates one of the messiest external dependencies. Configuration carries the customer-specific values.

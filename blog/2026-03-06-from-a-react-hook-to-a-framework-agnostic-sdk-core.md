@@ -1,7 +1,7 @@
 ---
-title: From a React hook to a framework-agnostic SDK core
-description: Why a single React hook became hard to maintain at scale, and how it was extracted into a framework-agnostic TypeScript client without breaking live integrations.
-date: 2026-03-06
+title: From React hooks to a framework-agnostic SDK client
+description: How a React-first SDK optimized for time to market evolved into a reusable domain client as customer integrations expanded beyond React.
+date: 2023-09-07
 type: project-story
 project: sdk-architecture
 topics:
@@ -13,63 +13,197 @@ topics:
 featured: false
 ---
 
-Every SDK starts with a trade-off. Ours was explicit: ship the fastest possible integration path, and defer the architecture until the product had customers.
+We did not start with a framework-agnostic client. We started with React because that was where our customers were.
 
-## The starting point
+Early on, the product goal was simple: make it as fast as possible for a customer to add Notifi to an existing web application. Most of those applications were built with React, so a React-first SDK was the shortest path to a useful integration. We packaged service access, authentication and subscription behavior behind hooks and paired them with a component library that customers could drop into their applications.
 
-The first version of the SDK was a single React hooks package. One hook owned almost everything:
+That trade-off worked. It reduced integration work and helped us get the product in front of customers quickly.
 
-- API communication over REST, with hand-written request and response types
-- multi-chain wallet signing adapters
-- auth and token lifecycle
-- loading and error state
-- business logic
+The architecture only became a problem after the customer base grew.
 
-For a small startup this is a reasonable design. It maximizes time to market and minimizes integration friction: a partner installs one package, mounts a provider, and the hook does the rest.
+## The architecture we optimized for first
 
-## Where it started to hurt
+The early stack looked roughly like this:
 
-Three problems appeared as the product grew.
+```mermaid
+flowchart TD
+  Card["notifi-react-card"] --> Subscribe["useNotifiSubscribe"]
+  Subscribe --> ClientHook["useNotifiClient"]
+  ClientHook --> ServiceHook["useNotifiService"]
+  ServiceHook --> API["Notifi API"]
+```
 
-**Framework lock-in.** All logic was bound to the React lifecycle. Anything that was not React — a Vue or Svelte integration, a script, a background worker — could not reuse the SDK at all.
+The hooks were not just React bindings. Over time they accumulated responsibilities that belonged to the product domain:
 
-**Maintenance burden.** Ten-plus supported chains turned the hook into a giant switch-case abstraction. Responsibilities blurred: API concerns, signing concerns and UI state lived in the same file.
+- authentication and token state
+- targets and target groups
+- alert creation and subscription behavior
+- notification history
+- configuration fetching and interpretation
+- chain-specific signing behavior
+- orchestration across service calls
 
-**Testability.** Testing business logic required mounting React components. That made tests slow and brittle, and it quietly discouraged coverage.
+For a React application this was convenient. The component could call a hook, the hook knew how to perform the operation, and the customer did not need to understand the underlying service model.
 
-## The constraints
+The problem was that the business logic and the framework boundary had become the same thing.
 
-The migration had to be done by one engineer, alongside normal feature delivery. Live customers were running the old architecture in production, so downtime was not an option. There was no hard deadline, but there was also no freeze: the new architecture had to coexist with the old one, and customers could adopt it at their own pace.
+## Success changed the constraint
 
-## The options
+As integrations expanded, React was no longer a safe assumption. Some customers used Vue. Others used Angular. Some wanted to integrate the service without adopting our React component library at all.
 
-**Split the hook into smaller hooks** — `useAuth`, `useSigning`, `useAlerts`. Rejected: the logic stays React-bound, so the framework lock-in and testability problems remain. It only delays them.
+At that point the existing API had an architectural limitation: even when the operation itself had nothing to do with React, consuming it meant pulling in a React-specific layer.
 
-**A framework adapter over a monolithic core** — invert the dependency but keep the core shaped by one framework's needs. Rejected: every supported framework becomes another maintenance surface.
+The problem was not that hooks were inherently wrong. They were the right optimization for the first customer set. The problem was that they had become the owner of domain behavior that other frameworks also needed.
 
-**A pure TypeScript client with thin framework wrappers.** Chosen. The core owns the logic; React, Vue or anything else becomes a small adapter.
+Splitting one large hook into more hooks would not solve that. `useAuth`, `useAlerts` and `useTargets` would be cleaner React code, but the product model would still be trapped behind React lifecycle and context.
 
-## The extraction
+The boundary needed to move.
 
-The core became a standalone TypeScript package: a client class owning the auth state machine, wallet signing adapters, the API layer and the token lifecycle. It has no React dependency and runs anywhere JavaScript runs.
+## The target architecture
 
-Around the same time, the communication layer moved from REST to GraphQL. Hand-maintained types were replaced by code generation against the schema. That eliminated a class of schema drift bugs and reduced cross-team coordination cost — the types could no longer disagree with the API.
+The consolidation plan was to make `notifi-frontend-client` the owner of frontend domain behavior and let React consume it like any other client:
 
-The migration itself ran in three phases:
+```mermaid
+flowchart LR
+  React["React SDK"] --> Client["NotifiFrontendClient"]
+  Vue["Vue integration"] --> Client
+  Angular["Angular app"] --> Client
+  TS["Plain TS / JS"] --> Client
+  Client --> Services["Notifi services"]
+```
 
-1. **Coexistence.** The old hooks and the new client lived side by side inside the existing React package. Customers were unaffected.
-2. **New surface.** A new React package was built entirely on the new core, replacing the old one.
-3. **Removal.** Once the last customers had migrated, the legacy packages were removed in a major version.
+The key distinction was responsibility.
 
-## The outcome
+`NotifiFrontendClient` would own things that should behave the same regardless of UI framework:
 
-The SDK became a platform core: one place for auth, signing and API logic, usable from any framework or no framework at all. The full migration took about three quarters with zero downtime. Adding a chain no longer means touching React code, which cuts regression risk.
+```text
+authentication state
+configuration interpretation
+alerts and subscriptions
+targets and target groups
+notification history
+storage
+service orchestration
+chain-specific domain behavior
+```
 
-## What I would do differently
+Framework packages would own the things that actually are framework-specific:
 
-- Decouple earlier. The pain was predictable; waiting for it to become acute cost more than starting the extraction would have.
-- Treat a framework-agnostic core as a day-one principle, not a later refactor.
-- Define a formal deprecation policy before the first breaking change.
-- Run integration tests that exercise the old and new paths side by side during coexistence. Behavioural drift between them is the biggest risk in this kind of migration, and it stays invisible until a customer hits it.
+```text
+rendering
+context / providers
+component state
+framework lifecycle
+UI composition
+```
 
-Migrating a live SDK is mostly a communication problem wearing an architecture costume. Phased, independently shippable steps are what make it survivable — especially when there is only one engineer.
+This was more than converting hooks into class methods. It was turning React from the location of the SDK's business logic into one consumer of a stable domain API.
+
+## Building the client before replacing the hooks
+
+The new client was introduced gradually rather than as a rewrite.
+
+The first `notifi-frontend-client` work established a TypeScript API facade over the GraphQL service. Its intended direction was already broader than React: business logic should be reusable across frontend frameworks and, where possible, across blockchain integrations.
+
+The next step was capability parity. Before the React stack could depend on the client, the client had to cover the behavior that the hooks already provided.
+
+That meant moving or consolidating operations such as:
+
+- initialization and persisted auth state
+- login and logout
+- target-group operations
+- alert creation and deletion
+- subscription-card configuration
+- notification history
+- wallet-related subscription behavior
+- conversation operations used by support UI
+
+It also meant expanding the client across the event types and chains that the existing React packages already supported. A framework-agnostic abstraction is not useful if customers still have to fall back to a React hook whenever they hit an older feature.
+
+## Configuration became a domain concern
+
+One important part of the extraction was configuration.
+
+The backend already stored tenant-level configuration for embeddable experiences. Instead of making each React component understand the raw backend shape, `NotifiFrontendClient` became the layer that fetched and interpreted that configuration.
+
+A simplified flow became:
+
+```mermaid
+flowchart TD
+  Tenant["Backend TenantConfig"] --> Fetch["fetchSubscriptionCard()"]
+  Fetch --> Card["CardConfigItemV1"]
+  Card --> Event["EventTypeItem"]
+  Event --> Ops["FrontendClient operations"]
+  Ops --> React["React renders the experience"]
+```
+
+That separation matters because backend-driven UI is much easier to evolve when the rendering framework is not also responsible for interpreting the product domain.
+
+The backend can own **what is configured**. The client can own **what that configuration means operationally**. React can own **how it is presented**.
+
+This also reduced duplicated models. During the migration, React components increasingly consumed the types and configuration models exposed by the frontend client instead of maintaining parallel representations.
+
+## Migrating a live SDK without a big-bang cutover
+
+The most important design decision was not the client class itself. It was the migration path.
+
+Existing customer integrations already depended on the hooks and React card packages. Replacing their implementation in one release would have made every behavioral mismatch a customer-facing regression.
+
+So the migration moved in independently shippable stages:
+
+```mermaid
+flowchart TD
+  P1["Build FrontendClient capability parity"] --> P2["Consolidate shared domain types"]
+  P2 --> P3["Move configuration and data fetching"]
+  P3 --> P4["Move subscription and target operations"]
+  P4 --> P5["Let React support both implementations"]
+  P5 --> P6["Make FrontendClient the default"]
+  P6 --> P7["Keep hooks path as a fallback"]
+  P7 --> P8["Remove legacy packages"]
+```
+
+During 2023 the React card progressively gained a `frontendClient` path for fetching data, rendering subscription state and executing individual event-type operations. For a period, components could run either implementation.
+
+That duplication was intentional. It created a compatibility window where we could compare behavior and fix gaps without forcing every customer onto the new architecture at once.
+
+Later that year, the default flipped: React used `FrontendClient` unless an integration explicitly chose the legacy hooks path.
+
+That was the real migration milestone. The new client was no longer an experiment running next to the SDK; it had become the SDK's default domain implementation while the old path remained available as a safety valve.
+
+## The awkward middle was part of the design
+
+Running two implementations introduced its own problems.
+
+Initialization order mattered. React could not safely render children before the frontend client had restored its state. There were also cases where both the hook path and the frontend-client path could trigger rendering work, creating race conditions or duplicate updates.
+
+Those issues are easy to interpret as evidence that a migration should have been done all at once. I see them differently. They were the cost of preserving compatibility while changing a public SDK underneath live integrations.
+
+The important part was keeping that period temporary and directional: every new piece of business logic moved toward the client, not back into the hooks.
+
+## Completing the transition
+
+The framework-agnostic client eventually became the foundation for the newer `notifi-react` package as well as other integrations. By 2024 the old stack — including `notifi-react-hooks`, the legacy React card, the old core and Axios adapter packages — could be deprecated and removed from the workspace.
+
+The resulting architecture was much simpler conceptually:
+
+```mermaid
+flowchart TD
+  Framework["Framework / application layer"] --> Client["NotifiFrontendClient"]
+  Client --> Service["GraphQL + service layer"]
+```
+
+React still had a first-class integration. It just no longer defined the SDK's domain architecture.
+
+That distinction became increasingly valuable as the product expanded. New authentication flows, target types, wallet behavior and backend configuration could evolve in the client without requiring the domain implementation to be rewritten around a React hook.
+
+## What I took away
+
+**Optimize for the market you have, but know which decisions are temporary.** Starting with React was the right time-to-market decision. Treating React as the permanent owner of business logic would not have been.
+
+**Framework APIs should orchestrate UI, not own domain behavior.** Hooks are a good ergonomic surface. They are a poor portability boundary when every important operation only exists inside them.
+
+**A client facade should model product concepts, not just wrap HTTP calls.** The value of `NotifiFrontendClient` came from giving authentication, subscriptions, targets and configuration a stable API independent of React and transport details.
+
+**Migration compatibility is part of architecture.** Supporting the old and new implementations side by side was not elegant, but it made the boundary movable without turning the refactor into a coordinated customer migration.
+
+**The clean architecture is usually the end state, not the starting point.** The useful question is not whether the first version was perfectly decoupled. It is whether the system can evolve when the assumptions that made the first version successful stop being true.

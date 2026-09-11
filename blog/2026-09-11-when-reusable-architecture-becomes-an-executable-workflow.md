@@ -1,7 +1,7 @@
 ---
 title: When reusable architecture becomes an executable workflow
 description: How a customer integration template, wallet abstraction, explicit decision rules and evals turned repeated implementation work into an agent-operable workflow.
-date: 2026-09-11
+date: 2026-06-29
 type: retrospective
 project: sdk-architecture
 topics:
@@ -52,14 +52,11 @@ That architecture was designed for reuse by engineers, not for AI.
 
 But it created exactly the conditions an agent workflow needs:
 
-```text
-stable baseline
-+
-explicit variation points
-+
-known extension boundaries
-=
-repeatable integration work
+```mermaid
+flowchart LR
+  Baseline["Stable baseline"] --> Work["Repeatable integration work"]
+  Variation["Explicit variation points"] --> Work
+  Boundaries["Known extension boundaries"] --> Work
 ```
 
 Once the work is repeatable, the next question is whether the repetition can be expressed as a decision process instead of tribal knowledge.
@@ -94,26 +91,18 @@ The public [`notifi-react-integration` skill](https://github.com/notifi-network/
 
 At a high level, the decision flow looks like this:
 
-```text
-Does the user want a full-page app?
-        ↓ yes
-Use the DApp example baseline
-        ↓
-Confirm tenantId
-        ↓
-Confirm cardId
-        ↓
-Resolve environment
-        ↓
-Choose chain group
-        ↓
-Choose supported wallet(s)
-        ↓
-Resolve auth path
-        ↓
-Modify a prepared working copy
-        ↓
-Validate the result
+```mermaid
+flowchart TD
+  Start{"Full-page app?"}
+  Start -->|Yes| Baseline["Use DApp example baseline"]
+  Baseline --> Tenant["Confirm tenantId"]
+  Tenant --> Card["Confirm cardId"]
+  Card --> Env["Resolve environment"]
+  Env --> Chain["Choose chain group"]
+  Chain --> Wallet["Choose supported wallet(s)"]
+  Wallet --> Auth["Resolve auth path"]
+  Auth --> Copy["Modify a prepared working copy"]
+  Copy --> Validate["Validate the result"]
 ```
 
 The sequence matters.
@@ -143,12 +132,13 @@ The part I find most important is not how the skill describes the happy path. It
 
 For the full-page path, missing core information is treated as blocking:
 
-```text
-no tenantId        → do not generate
-no cardId          → do not generate
-no chain group     → do not choose wallets
-unknown auth path  → do not invent one
-unsupported wallet → do not silently substitute another
+```mermaid
+flowchart LR
+  Tenant["Missing tenantId"] --> Stop1["Stop generation"]
+  Card["Missing cardId"] --> Stop2["Stop generation"]
+  Chain["Missing chain group"] --> Stop3["Do not choose wallets"]
+  Auth["Unknown auth path"] --> Stop4["Do not invent one"]
+  Wallet["Unsupported wallet"] --> Stop5["Do not silently substitute"]
 ```
 
 The public skill also separates the working copy from the SDK source tree. The agent is expected to prepare or pull a copy of `packages/notifi-dapp-example` and customize that copy rather than editing the monorepo package in place.
@@ -169,18 +159,13 @@ The product already had a wallet abstraction. The workflow should use it.
 
 Conceptually:
 
-```text
-customer request
-      ↓
-chain group
-      ↓
-supported wallet selection
-      ↓
-notifi-wallet-provider
-      ↓
-normalized wallet/auth surface
-      ↓
-DApp baseline
+```mermaid
+flowchart TD
+  Request["Customer request"] --> Chain["Chain group"]
+  Chain --> Wallet["Supported wallet selection"]
+  Wallet --> Provider["notifi-wallet-provider"]
+  Provider --> Surface["Normalized wallet / auth surface"]
+  Surface --> Baseline["DApp baseline"]
 ```
 
 The agent does not need separate integration strategies for MetaMask, Phantom, Keplr, Lace and every future wallet if the product has already centralized that knowledge behind the provider package.
@@ -201,16 +186,17 @@ The difference is important.
 
 A generated scaffold starts from the model's idea of what the integration should look like. A reusable baseline starts from code the product team already maintains.
 
-```text
-free-form generation
-→ model invents structure
-→ product conventions must be reconstructed
-→ more room for architectural drift
+```mermaid
+flowchart LR
+  subgraph FreeForm["Free-form generation"]
+    F1["Model invents structure"] --> F2["Product conventions must be reconstructed"]
+    F2 --> F3["More room for architectural drift"]
+  end
 
-known baseline
-→ model starts from maintained structure
-→ variation is applied at explicit boundaries
-→ less architecture needs to be regenerated
+  subgraph KnownBaseline["Known baseline"]
+    K1["Start from maintained structure"] --> K2["Apply variation at explicit boundaries"]
+    K2 --> K3["Less architecture needs to be regenerated"]
+  end
 ```
 
 The agent still writes code, but it is operating inside a narrower design space.
@@ -246,26 +232,22 @@ This is the point where the work starts overlapping with my broader [AI Develope
 
 The progression from 2024 to 2026 can look like an AI story:
 
-```text
-manual customer integration
-→ template
-→ agent-generated integration
+```mermaid
+flowchart LR
+  Manual["Manual customer integration"] --> Template["Template"]
+  Template --> Agent["Agent-generated integration"]
 ```
 
 I think that framing misses the useful lesson.
 
 The more accurate progression is:
 
-```text
-implicit engineering decisions
-        ↓
-reusable architecture
-        ↓
-explicit variation points
-        ↓
-explicit decision workflow
-        ↓
-testable agent operation
+```mermaid
+flowchart TD
+  Decisions["Implicit engineering decisions"] --> Architecture["Reusable architecture"]
+  Architecture --> Variation["Explicit variation points"]
+  Variation --> Workflow["Explicit decision workflow"]
+  Workflow --> Operation["Testable agent operation"]
 ```
 
 The agent arrives near the end of the sequence.
@@ -291,24 +273,24 @@ The workflow changes who performs the repeated coordination work.
 
 Before:
 
-```text
-engineer reads requirements
-→ asks integration questions
-→ clones template
-→ selects chain/wallet path
-→ configures the app
-→ validates
+```mermaid
+flowchart LR
+  B1["Engineer reads requirements"] --> B2["Ask integration questions"]
+  B2 --> B3["Clone template"]
+  B3 --> B4["Select chain / wallet path"]
+  B4 --> B5["Configure the app"]
+  B5 --> B6["Validate"]
 ```
 
 With the workflow encoded:
 
-```text
-agent collects required decisions
-→ applies the known baseline
-→ selects a supported integration path
-→ makes the bounded changes
-→ runs through validation expectations
-→ engineer reviews
+```mermaid
+flowchart LR
+  A1["Agent collects required decisions"] --> A2["Apply known baseline"]
+  A2 --> A3["Select supported integration path"]
+  A3 --> A4["Make bounded changes"]
+  A4 --> A5["Run validation expectations"]
+  A5 --> A6["Engineer reviews"]
 ```
 
 But several things do not disappear:

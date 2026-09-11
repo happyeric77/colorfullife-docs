@@ -1,7 +1,7 @@
 ---
 title: Modernizing wallet connectivity with EIP-6963
 description: A wallet extension stopped injecting its custom global and the connect flow broke. Fixing it meant moving the whole wallet layer to standard discovery.
-date: 2026-04-01
+date: 2026-04-03
 type: build-log
 project: sdk-architecture
 topics:
