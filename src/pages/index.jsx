@@ -62,9 +62,6 @@ export default function Home() {
         <div className={`container ${styles.heroContainer}`}>
           <div className={styles.heroGrid}>
             <div className={styles.heroCopy}>
-              <p className={styles.eyebrow} data-reveal>
-                ERIC / ENGINEERING
-              </p>
               <h1 className={styles.title} data-reveal>
                 {siteConfig.tagline}
               </h1>
