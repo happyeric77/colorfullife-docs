@@ -8,20 +8,20 @@ const editUrl = "https://github.com/happyeric77/colorfullife-docs/tree/master/";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "ColorfulLife",
+  title: "Eric Lee — Engineering Journal",
   tagline: "I build software and write about how it gets made.",
-  favicon: "img/favicon.ico",
+  favicon: "img/favicon.svg",
 
   // Set the production url of your site here
-  url: "https://docs.colorfullife.ml",
+  url: "https://docs.dev-eric.work",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: "colorfullife", // Usually your GitHub org/user name.
-  projectName: "colorfullife", // Usually your repo name.
+  organizationName: "happyeric77", // Usually your GitHub org/user name.
+  projectName: "colorfullife-docs", // Usually your repo name.
 
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
@@ -33,6 +33,18 @@ const config = {
     defaultLocale: "en",
     locales: ["en"],
   },
+  stylesheets: [
+    "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap",
+  ],
+  headTags: [
+    // Marks the document for the reveal-on-scroll CSS; without JS the
+    // content is never hidden and stays fully readable.
+    {
+      tagName: "script",
+      attributes: {},
+      innerHTML: "document.documentElement.classList.add('reveal-ready');",
+    },
+  ],
   plugins: [
     ["drawio", {}],
     // Aggregates Project / Journal / Topic metadata for cross-content pages.
@@ -84,14 +96,9 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: "img/docusaurus-social-card.jpg",
+      image: "img/social-card.png",
       navbar: {
-        title: "ColorfulLife",
-        logo: {
-          alt: "ColorfulLife Logo",
-          src: "img/logo.png",
-        },
+        title: "ERIC / ENGINEERING",
         items: [
           {
             to: "/projects",
@@ -119,11 +126,6 @@ const config = {
             position: "left",
           },
           {
-            to: "/about",
-            label: "About",
-            position: "left",
-          },
-          {
             href: "https://github.com/happyeric77/colorfullife-docs",
             label: "GitHub ↗",
             position: "right",
@@ -133,63 +135,6 @@ const config = {
       colorMode: {
         defaultMode: "dark",
         disableSwitch: false,
-      },
-      footer: {
-        style: "dark",
-        links: [
-          {
-            title: "Explore",
-            items: [
-              {
-                label: "Projects",
-                to: "/projects",
-              },
-              {
-                label: "Journal",
-                to: "/journal",
-              },
-              {
-                label: "Topics",
-                to: "/topics",
-              },
-            ],
-          },
-          {
-            title: "More",
-            items: [
-              {
-                label: "Open Source",
-                to: "/opensource",
-              },
-              {
-                label: "Archive",
-                to: "/archive",
-              },
-              {
-                label: "About",
-                to: "/about",
-              },
-            ],
-          },
-          {
-            title: "Community",
-            items: [
-              {
-                label: "Youtube",
-                href: "https://www.youtube.com/channel/UCwvJhJwr64cM7QUSg9nP4Bg",
-              },
-              {
-                label: "Twitter",
-                href: "https://twitter.com/happyeric77",
-              },
-              {
-                label: "HackMD",
-                href: "https://hackmd.io/@happyeric77",
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} ColorfulLife, Inc. All rights reserved`,
       },
       prism: {
         theme: lightCodeTheme,

@@ -6,54 +6,95 @@ import { useContentModel } from '@site/src/lib/content-model';
 import SectionHeader from '@site/src/components/SectionHeader';
 import ProjectCard from '@site/src/components/ProjectCard';
 import ProjectList from '@site/src/components/ProjectList';
-import JournalCard from '@site/src/components/JournalCard';
+import JournalRow from '@site/src/components/JournalRow';
 import TopicTag from '@site/src/components/TopicTag';
 import styles from './styles.module.css';
+
+const MAX_TOPICS = 12;
 
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   const { projects, journal, topics } = useContentModel();
 
-  const currentlyBuilding =
-    projects.find((project) => project.featured && project.status === 'active') ??
-    projects.find((project) => project.status === 'active') ??
-    projects.find((project) => project.featured);
-  const selectedProjects = projects.filter((project) => project.featured);
-  const latestJournal = journal.slice(0, 3);
+  const featuredProject =
+    projects.find(
+      (project) => project.featured && project.status === 'running',
+    ) ??
+    projects.find((project) => project.status === 'running') ??
+    projects.find((project) => project.featured) ??
+    projects[0];
+  const selectedProjects = projects.filter(
+    (project) => project.id !== featuredProject?.id,
+  );
+  const latestJournal = journal.slice(0, 4);
+  const trendingTopics = [...topics]
+    .sort(
+      (a, b) =>
+        b.projects.length +
+        b.journal.length -
+        (a.projects.length + a.journal.length),
+    )
+    .slice(0, MAX_TOPICS);
 
   return (
     <Layout title={siteConfig.title} description={siteConfig.tagline}>
       <header className={styles.hero}>
         <div className="container">
-          <h1 className={styles.heroTitle}>{siteConfig.title}</h1>
-          <p className={styles.heroTagline}>{siteConfig.tagline}</p>
-          <div className={styles.heroActions}>
-            <Link className="button button--primary button--lg" to="/projects">
-              Browse projects
-            </Link>
-            <Link className="button button--secondary button--lg" to="/journal">
+          <p className={styles.eyebrow} data-reveal>
+            ERIC / ENGINEERING
+          </p>
+          <h1 className={styles.title} data-reveal>
+            {siteConfig.tagline}
+          </h1>
+          <p className={styles.subtitle} data-reveal>
+            Engineering stories about SDK architecture, AI developer tools,
+            infrastructure, home automation and the systems I run.
+          </p>
+          <div className={styles.actions} data-reveal>
+            <Link className="button button--primary button--lg" to="/journal">
               Read the journal
+            </Link>
+            <Link className="button button--secondary button--lg" to="/projects">
+              View projects
             </Link>
           </div>
         </div>
       </header>
 
       <main className="container">
-        {currentlyBuilding && (
-          <section className={styles.section}>
+        {latestJournal.length > 0 && (
+          <section className={styles.section} data-reveal>
             <SectionHeader
-              title="Currently Building"
+              eyebrow="Journal"
+              title="Latest entries"
+              to="/journal"
+              actionLabel="All entries"
+            />
+            <div className={styles.journalStream}>
+              {latestJournal.map((entry) => (
+                <JournalRow key={entry.permalink} entry={entry} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {featuredProject && (
+          <section className={styles.section} data-reveal>
+            <SectionHeader
+              eyebrow="Project"
+              title="Featured project"
               to="/projects"
               actionLabel="All projects"
             />
-            <ProjectCard project={currentlyBuilding} />
+            <ProjectCard project={featuredProject} />
           </section>
         )}
 
         {selectedProjects.length > 0 && (
-          <section className={styles.section}>
+          <section className={styles.section} data-reveal>
             <SectionHeader
-              title="Selected Projects"
+              eyebrow="Selected work"
+              title="Selected projects"
               to="/projects"
               actionLabel="All projects"
             />
@@ -61,48 +102,35 @@ export default function Home() {
           </section>
         )}
 
-        {latestJournal.length > 0 && (
-          <section className={styles.section}>
+        {trendingTopics.length > 0 && (
+          <section className={styles.section} data-reveal>
             <SectionHeader
-              title="Latest Journal"
-              to="/journal"
-              actionLabel="All entries"
-            />
-            <div className={styles.journalList}>
-              {latestJournal.map((entry) => (
-                <JournalCard key={entry.permalink} entry={entry} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        <section className={styles.section}>
-          <SectionHeader
-            title="Recent Activity"
-            subtitle="Commits, releases and contributions across my projects."
-            to="/opensource"
-            actionLabel="Open Source"
-          />
-          <p className={styles.placeholder}>
-            Open Source activity is coming in a follow-up PR.
-          </p>
-        </section>
-
-        {topics.length > 0 && (
-          <section className={styles.section}>
-            <SectionHeader
+              eyebrow="Index"
               title="Topics"
               subtitle="Technologies and concepts across Projects and Journal."
               to="/topics"
               actionLabel="All topics"
             />
             <div className={styles.topics}>
-              {topics.map((topic) => (
+              {trendingTopics.map((topic) => (
                 <TopicTag key={topic.slug} slug={topic.slug} />
               ))}
             </div>
           </section>
         )}
+
+        <section className={styles.section} data-reveal>
+          <SectionHeader
+            eyebrow="Open Source"
+            title="Open source"
+            to="/opensource"
+            actionLabel="View activity"
+          />
+          <p className={styles.placeholder}>
+            Selected repositories and contributions across the projects I work
+            on.
+          </p>
+        </section>
       </main>
     </Layout>
   );

@@ -7,9 +7,11 @@ export default function JournalCard({ entry }) {
   return (
     <article className={styles.card}>
       <div className={styles.meta}>
-        {entry.date && <time>{entry.date}</time>}
+        {entry.date && <time className={styles.date}>{entry.date}</time>}
         <span className={styles.type}>{entry.type}</span>
-        {entry.projectTitle && <span>{entry.projectTitle}</span>}
+        {entry.projectTitle && (
+          <span className={styles.project}>{entry.projectTitle}</span>
+        )}
       </div>
       <h3 className={styles.title}>
         <Link to={entry.permalink}>{entry.title}</Link>

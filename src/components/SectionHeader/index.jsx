@@ -3,6 +3,7 @@ import Link from '@docusaurus/Link';
 import styles from './styles.module.css';
 
 export default function SectionHeader({
+  eyebrow,
   title,
   subtitle,
   to,
@@ -10,10 +11,12 @@ export default function SectionHeader({
 }) {
   return (
     <div className={styles.header}>
-      <div>
+      <div className={styles.heading}>
+        {eyebrow && <p className={styles.eyebrow}>{eyebrow}</p>}
         <h2 className={styles.title}>{title}</h2>
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
       </div>
+      <span className={styles.rule} aria-hidden="true" />
       {to && actionLabel && (
         <Link className={styles.action} to={to}>
           {actionLabel} →

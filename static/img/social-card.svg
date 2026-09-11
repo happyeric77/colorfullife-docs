@@ -1,0 +1,65 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="1200"
+  height="630"
+  viewBox="0 0 1200 630"
+>
+  <defs>
+    <radialGradient id="glow" cx="80%" cy="8%" r="75%">
+      <stop offset="0%" stop-color="#2EFF8B" stop-opacity="0.16" />
+      <stop offset="55%" stop-color="#2EFF8B" stop-opacity="0.04" />
+      <stop offset="100%" stop-color="#2EFF8B" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#070D0B" />
+  <rect width="1200" height="630" fill="url(#glow)" />
+  <rect
+    x="1"
+    y="1"
+    width="1198"
+    height="628"
+    fill="none"
+    stroke="rgba(46,255,139,0.22)"
+    stroke-width="2"
+  />
+  <text
+    x="80"
+    y="150"
+    font-family="ui-monospace, 'Geist Mono', Menlo, monospace"
+    font-size="26"
+    letter-spacing="6"
+    fill="#2EFF8B"
+  >
+    ERIC / ENGINEERING
+  </text>
+  <text
+    x="78"
+    y="312"
+    font-family="'Geist', 'Helvetica Neue', Arial, sans-serif"
+    font-size="64"
+    font-weight="700"
+    fill="#E8F0E9"
+  >
+    I build software and write
+  </text>
+  <text
+    x="78"
+    y="392"
+    font-family="'Geist', 'Helvetica Neue', Arial, sans-serif"
+    font-size="64"
+    font-weight="700"
+    fill="#E8F0E9"
+  >
+    about how it gets made.
+  </text>
+  <text
+    x="80"
+    y="540"
+    font-family="ui-monospace, 'Geist Mono', Menlo, monospace"
+    font-size="24"
+    letter-spacing="2"
+    fill="#9AA8A0"
+  >
+    docs.dev-eric.work
+  </text>
+</svg>

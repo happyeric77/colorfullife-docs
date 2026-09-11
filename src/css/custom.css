@@ -1,53 +1,282 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Eric engineering brand layer.
+ *
+ * Tokens mirror the eric-profile design language: a green-tinted near-black
+ * base, a #2EFF8B accent, Geist type, mono metadata and quiet surfaces.
+ * Values come from eric-profile; do not introduce a second palette.
  */
 
-/* You can override the default Infima variables here. */
+/* Light mode tokens */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --eric-bg: #f6faf7;
+  --eric-bg-translucent: rgba(246, 250, 247, 0.72);
+  --eric-surface: rgba(7, 13, 11, 0.025);
+  --eric-surface-hover: rgba(7, 13, 11, 0.045);
+  --eric-text: #0b1512;
+  --eric-text-muted: #5f6f66;
+  --eric-border: rgba(7, 13, 11, 0.1);
+  --eric-border-strong: rgba(7, 13, 11, 0.18);
+  --eric-accent: #008f5a;
+  --eric-accent-soft: rgba(0, 143, 90, 0.12);
+  --eric-accent-contrast: #ffffff;
+  --eric-radius-sm: 12px;
+  --eric-radius-md: 16px;
+  --eric-radius-pill: 999px;
+  --eric-page-width: 1240px;
+  --eric-reading-width: 760px;
+  --eric-font-sans: 'Geist', Arial, Helvetica, sans-serif;
+  --eric-font-mono: 'Geist Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --ifm-color-primary: #008f5a;
+  --ifm-color-primary-dark: #007a4d;
+  --ifm-color-primary-darker: #006b43;
+  --ifm-color-primary-darkest: #005434;
+  --ifm-color-primary-light: #00a468;
+  --ifm-color-primary-lighter: #00b374;
+  --ifm-color-primary-lightest: #46c795;
+
+  --ifm-font-family-base: var(--eric-font-sans);
+  --ifm-font-family-monospace: var(--eric-font-mono);
+  --ifm-background-color: var(--eric-bg);
+  --ifm-background-surface-color: var(--eric-bg);
+  --ifm-font-color-base: var(--eric-text);
+  --ifm-heading-color: var(--eric-text);
+  --ifm-link-color: var(--eric-accent);
+  --ifm-link-hover-color: var(--eric-accent);
+  --ifm-navbar-height: 64px;
+  --ifm-navbar-background-color: var(--eric-bg-translucent);
+  --ifm-navbar-link-color: var(--eric-text-muted);
+  --ifm-navbar-link-hover-color: var(--eric-text);
+  --ifm-footer-background-color: transparent;
+  --ifm-footer-color: var(--eric-text-muted);
+  --ifm-footer-link-color: var(--eric-text-muted);
+  --ifm-footer-link-hover-color: var(--eric-text);
+  --ifm-container-width: 1200px;
+  --ifm-container-width-xl: var(--eric-page-width);
+  --ifm-global-radius: var(--eric-radius-sm);
+  --ifm-code-font-size: 92%;
+  --ifm-line-height-base: 1.7;
+  --ifm-heading-font-weight: 800;
+  --ifm-toc-border-color: var(--eric-border);
+  --ifm-hr-border-color: var(--eric-border);
+  --ifm-table-border-color: var(--eric-border);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.08);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme="dark"] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+/* Dark mode tokens (eric-profile exact values) */
+[data-theme='dark'] {
+  --eric-bg: #070d0b;
+  --eric-bg-translucent: rgba(7, 13, 11, 0.72);
+  --eric-surface: rgba(255, 255, 255, 0.03);
+  --eric-surface-hover: rgba(255, 255, 255, 0.05);
+  --eric-text: #e8f0e9;
+  --eric-text-muted: #9aa8a0;
+  --eric-border: rgba(255, 255, 255, 0.06);
+  --eric-border-strong: rgba(255, 255, 255, 0.1);
+  --eric-accent: #2eff8b;
+  --eric-accent-soft: rgba(46, 255, 139, 0.1);
+  --eric-accent-contrast: #07130e;
+
+  --ifm-color-primary: #2eff8b;
+  --ifm-color-primary-dark: #29e57d;
+  --ifm-color-primary-darker: #26d875;
+  --ifm-color-primary-darkest: #1fb860;
+  --ifm-color-primary-light: #43ff97;
+  --ifm-color-primary-lighter: #58ffa3;
+  --ifm-color-primary-lightest: #85ffb9;
+
+  --ifm-background-color: var(--eric-bg);
+  --ifm-background-surface-color: var(--eric-bg);
+  --ifm-navbar-background-color: var(--eric-bg-translucent);
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-/* Custom CSS for code blocks */
+/* Global shell */
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 84px;
+}
+
+body {
+  background-color: var(--eric-bg);
+  color: var(--eric-text);
+  font-family: var(--eric-font-sans);
+}
+
+html[data-theme='dark'] {
+  background-color: #070d0b;
+  background-image:
+    radial-gradient(600px 400px at 12% -5%, rgba(46, 255, 139, 0.055), transparent 70%),
+    radial-gradient(760px 520px at 88% 18%, rgba(0, 201, 122, 0.04), transparent 70%);
+  background-attachment: fixed;
+}
+
+html[data-theme='dark'] body {
+  background: transparent;
+}
+
+/* Navbar */
+
+.navbar {
+  height: var(--ifm-navbar-height);
+  border-bottom: 1px solid var(--eric-border);
+  background-color: var(--eric-bg-translucent);
+  backdrop-filter: blur(20px);
+  box-shadow: none;
+}
+
+.navbar__inner {
+  height: 100%;
+}
+
+.navbar__brand {
+  height: 100%;
+}
+
+.navbar__title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--eric-text);
+}
+
+.navbar__link {
+  font-family: var(--eric-font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--eric-text-muted);
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--eric-text);
+}
+
+.navbar__toggle {
+  color: var(--eric-text-muted);
+}
+
+/* Buttons and links */
+
+.button {
+  border-radius: var(--eric-radius-pill);
+  font-family: var(--eric-font-sans);
+  font-weight: 600;
+}
+
+.button--primary {
+  background-color: var(--eric-accent);
+  border-color: var(--eric-accent);
+  color: var(--eric-accent-contrast);
+}
+
+.button--primary:hover {
+  background-color: var(--eric-accent);
+  border-color: var(--eric-accent);
+  color: var(--eric-accent-contrast);
+  filter: brightness(1.05);
+}
+
+/* Infima ships `.button.button--secondary { color: var(--ifm-color-gray-900) }`
+   (specificity 0,2,0), which would otherwise win over a plain
+   `.button--secondary` rule and leave the label unreadable until hover. */
+.button.button--secondary {
+  background-color: var(--eric-surface);
+  border: 1px solid var(--eric-border-strong);
+  color: var(--eric-text);
+}
+
+.button.button--secondary:hover {
+  background-color: var(--eric-surface-hover);
+  border-color: var(--eric-border-strong);
+  color: var(--eric-text);
+}
+
+/* Footer */
+
+.footer {
+  border-top: 1px solid var(--eric-border);
+  background: transparent;
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  color: var(--eric-text-muted);
+}
+
+.footer__title {
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--eric-text-muted);
+}
+
+.footer__link-item {
+  font-family: var(--eric-font-mono);
+  font-size: 12px;
+  color: var(--eric-text-muted);
+}
+
+.footer__link-item:hover {
+  color: var(--eric-text);
+}
+
+.footer__copyright {
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  color: var(--eric-text-muted);
+}
+
+/* Editorial helpers shared by homepage sections.
+   Reveal content is only hidden once JS has added the `reveal-ready` marker
+   (inline head script). Without it — no JS, a hydration failure or a stale
+   dev server that predates the marker — content stays visible and readable. */
+
+html.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html.reveal-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html.reveal-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Code blocks */
 
 .code-block-added-line,
 .code-block-highlighted-line {
-  background-color: #37423b;
+  background-color: var(--eric-accent-soft);
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
 }
 
 .code-block-highlighted-line {
-  border-left: 3px solid green;
+  border-left: 3px solid var(--eric-accent);
 }
 
 .code-block-added-line::before {
-  content: "+ ";
+  content: '+ ';
   position: absolute;
   left: 0.2rem;
-  color: #1a8870;
+  color: var(--eric-accent);
 }
 
 .code-block-deleted-line,
@@ -63,7 +292,7 @@
 }
 
 .code-block-deleted-line::before {
-  content: "- ";
+  content: '- ';
   position: absolute;
   left: 0.2rem;
   color: #ff000080;

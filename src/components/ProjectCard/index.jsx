@@ -8,7 +8,7 @@ export default function ProjectCard({ project }) {
     <article className={styles.card}>
       <div className={styles.meta}>
         <span className={styles.status}>{project.status}</span>
-        <span>{project.type}</span>
+        <span className={styles.type}>{project.type}</span>
       </div>
       <h3 className={styles.title}>
         <Link to={project.permalink}>{project.title}</Link>
