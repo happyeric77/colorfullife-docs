@@ -32,11 +32,14 @@ assert.throws(
   /Duplicate project id "a"/,
 );
 
-// Journal.project and Project.parentProject must reference real ids.
+// Journal.project is optional; when present it must reference a real id.
 assert.doesNotThrow(() =>
   assertReferences([project("a"), project("b", "a")], [
     { file: "j.md", project: "b" },
   ]),
+);
+assert.doesNotThrow(() =>
+  assertReferences([project("a")], [{ file: "j.md", project: null }]),
 );
 assert.throws(
   () => assertReferences([project("a")], [{ file: "j.md", project: "missing" }]),

@@ -15,25 +15,26 @@ dependency and infrastructure changes are out of scope.
 
 ## Core model
 
-| Concept | Question it answers                     | Lives in                     |
-| ------- | --------------------------------------- | ---------------------------- |
-| Project | What do I build?                        | `projects/*.mdx`             |
-| Journal | What happened while building it?        | `blog/*.md(x)`               |
-| Topics  | Which technologies/concepts cross both? | front matter metadata only   |
-| Archive | What did I write down before this model?| `docs/` (legacy, do not grow)|
+| Concept | Question it answers                    | Lives in                      |
+| ------- | -------------------------------------- | ----------------------------- |
+| Journal | What happened, what did I do, why, what broke, what did I learn? | `blog/*.md(x)` |
+| Project | Is this durable work that deserves its own canonical page? | `projects/*.mdx` |
+| Topics  | Which technologies/concepts connect this content to other content? | front matter metadata only |
+| Archive | What was written before this model?    | `docs/` (legacy, do not grow) |
 
-- **Project** = a long-lived engineering entity that deserves a canonical page.
-- **Journal** = a story, event, decision or retrospective that came out of
-  real engineering work.
-- **Topics** = the shared cross-content index of technologies, concepts and
-  domains for Projects and Journal entries.
+- **Journal** = the primary publishing stream: a publishable story, event,
+  decision, investigation or retrospective from real engineering work.
+- **Project** = optional durable context: a thing worth presenting through a
+  long-lived canonical overview page. A Journal does not need a Project.
+- **Topics** = the concepts and technologies that connect content across the
+  site, on both Projects and Journal entries.
 - **Archive** = legacy reference notes, not part of the publishing model.
 
 Relationships:
 
 ```text
-Journal.project       → Project.id
-Project.parentProject → Project.id
+Journal.project?      → Project.id   (optional)
+Project.parentProject? → Project.id  (optional, structural hint only)
 Project.topics        → Topic slugs
 Journal.topics        → Topic slugs
 ```
@@ -55,45 +56,58 @@ article list.
 ## Decision tree
 
 ```text
-Is this a long-lived public thing?
-    Yes → Project
+Is there something from real engineering work worth publishing?
+  ├─ Yes → Journal
+  └─ No → normally do not publish as a new Journal
 
-Is this a meaningful event/story from real work?
-    Yes → Journal
+Does this Journal naturally belong to an existing Project?
+  ├─ Yes → add project: <project-id>
+  └─ No → leave project unset
 
-Is this only a technology/concept?
-    → Topic (front matter slug, no page to write)
-
-Is this only an implementation component?
-    → keep it inside the parent Project
+Is there a durable thing that deserves its own canonical overview page?
+  ├─ Yes → create/update Project
+  └─ No → keep it as context/component/capability
 ```
 
-## Project vs Component rule
+A Journal must never be unpublishable because it lacks a Project.
 
-Do not turn every service into a Project. Only create a Project when the
-thing has:
+## Project, capability and component
 
-- its own story
-- long-term evolution
-- its own lifecycle/history
-- the potential to produce multiple future Journal entries
-- enough substance to deserve its own URL
+Do not turn every service into a Project. `Capability` is a conceptual
+distinction, not a data model — there is no capability entity or route.
 
 Example:
 
 ```text
-Home Lab       → Project
-K3s Cluster    → Project / child Project (parentProject: home-lab)
-Home Assistant → Project / child Project (parentProject: home-lab)
-Grafana        → Component by default
-Prometheus     → Component by default
-Argo CD        → Component by default
-Kubernetes     → Topic
-GitOps         → Topic
+Home Lab            → Project
+K3s Cluster         → Project
+GitOps Delivery     → capability (project page section by default)
+Argo CD             → component
+Observability       → capability (project page section by default)
+Prometheus, Grafana → components
+Storage, Longhorn   → capability, component
+Networking          → capability
+Kubernetes, GitOps  → Topics
 ```
 
-A component lives inside its parent Project's page or Journal entries. It can
-be promoted to a Project later if it grows a story and lifecycle. Do not
+Usually **not** Projects: GitOps Delivery, Observability, Storage,
+Networking, Grafana, Prometheus, Argo CD. They can live as sections of a
+Project page, as architecture areas, or as components.
+
+Only create a Project when the thing has a durable identity and:
+
+- its own overview page answers: what is it, why does it exist, what state
+  is it in, what can it do, which stories relate to it
+- long-term existence and evolution of its own
+- the potential to accumulate multiple Journal entries
+- it is still understandable detached from its parent
+
+Most of these true → Project. Complexity alone does not make something a
+Project, and a Project is not the container every Journal must belong to.
+
+A capability can be promoted to a Project later if it becomes an independent
+reusable system, has its own repository, is used across multiple Projects,
+evolves long-term, or produces many independent Journal entries. Do not
 pre-build the whole infrastructure inventory as Projects.
 
 ## Project metadata
@@ -110,7 +124,7 @@ description: Lightweight Kubernetes infrastructure for my home services.
 type: infrastructure
 status: running
 
-parentProject: home-lab
+parentProject: home-lab # optional structural hint, not the main site IA
 
 started: 2026-01
 featured: true
@@ -123,12 +137,17 @@ topics:
 
 stack:
   - K3s
-  - Argo CD
+  - Flux CD
   - Longhorn
 
 github:
 website:
 ```
+
+`parentProject` is an optional structural relationship between two Projects.
+Use it sparingly: generally at most Project → child Project. Do not build
+deep chains (Project → Cluster → Namespace → Deployment → Component); this is
+not a CMDB.
 
 Do not add new metadata fields ad hoc. If a new field seems necessary, check
 `plugins/content-model/`, the README and existing content first, and confirm
@@ -164,13 +183,12 @@ There is no separate lifecycle schema. A Project's history is told by its
 Journal timeline:
 
 ```text
-2025-01  Project Story   Started the first Home Lab setup
-2025-08  Build Log       Migrated from Docker Compose to K3s
-2026-02  Retrospective   Six months running K3s at home
+2025-01  Journal   Started the first Home Lab setup
+2025-08  Journal   Migrated from Docker Compose to K3s
+2026-02  Journal   Six months running K3s at home
 ```
 
-`status` = current state. Journal = lifecycle and history. Do not build a
-state machine.
+`status` = current state. Journal = history. Do not build a state machine.
 
 ## Journal
 
@@ -186,7 +204,7 @@ date: 2026-09-20
 
 type: build-log
 
-project: home-lab-k3s
+project: home-lab-k3s # optional; when present must match a Project id
 
 topics:
   - kubernetes
@@ -197,9 +215,27 @@ topics:
 featured: false
 ```
 
-`project` must match a Project `id`. That is the only link between the two
-collections. When a clear Project exists, always set one primary `project`.
-Never create a Project relationship by copying an article.
+`Journal.project` is optional. Set it only when a natural, existing Project
+clearly provides useful context. When present it must match a Project `id`.
+A Journal without a `project` is fully valid and still appears in `/journal`,
+in the homepage Journal list and in its Topics. Never invent a Project solely
+because a Journal entry needs somewhere to belong, and never create a Project
+relationship by copying an article.
+
+```yaml
+# Valid: a field-note that does not belong to any Project yet
+title: An unexpected TCP behavior in a container network
+description: A short note on connection reuse that surprised me.
+date: 2026-03-04
+
+type: field-note
+
+topics:
+  - networking
+  - tcp
+
+featured: false
+```
 
 ### JournalType
 
@@ -233,8 +269,9 @@ Journal
 └── Running SaaS workers on Kubernetes
 ```
 
-These relationships are aggregated from metadata automatically. Do not create
-or maintain topic article lists by hand.
+These relationships are aggregated from metadata automatically, including
+Journal entries that have no `project`. Do not create or maintain topic
+article lists by hand.
 
 ### Topic convention
 
@@ -258,31 +295,36 @@ or maintain topic article lists by hand.
 
 When asked to publish engineering content:
 
-1. Decide whether this updates an existing Project or adds a Journal entry.
-2. Search for the existing Project the content belongs to.
-3. Decide whether a new Project is actually needed (see the rule above).
-4. Add or update the Project page in `projects/`.
-5. Add a Journal entry in `blog/`.
-6. Point `Journal.project` at the Project `id`.
+1. Identify the story, finding or information worth publishing.
+2. Decide whether it is a Journal entry. If it comes from real engineering
+   work and is worth sharing, it can be a Journal.
+3. Search for an existing Project that is naturally related.
+4. If an existing Project clearly provides useful context, set
+   `Journal.project` to its id.
+5. If no Project fits, leave `project` unset. That is a valid Journal.
+6. Only create a new Project if the subject deserves its own long-lived
+   canonical overview page (see the threshold above).
 7. Add canonical lowercase Topic slugs to `topics`.
-8. Do not create or update topic article lists by hand.
-9. Run validation:
+8. Never create a Project only to satisfy Journal metadata.
+9. Do not create or update topic article lists by hand.
+10. Run validation:
 
-   ```bash
-   npm run typecheck
-   npm test
-   npm run build
-   ```
+    ```bash
+    npm run typecheck
+    npm test
+    npm run build
+    ```
 
-10. Verify the relationships: the Journal page renders under `/journal`, the
-    Project page under `/projects`, and the Topics appear on `/topics`.
+**Never invent a Project solely because a Journal entry needs somewhere to
+belong.**
 
 ## Validation failures
 
 The content model validates at build time and rejects:
 
 - duplicate Project IDs
-- invalid Journal → Project references
+- invalid Journal → Project references (a missing `project` is fine; an
+  unknown `project` id is not)
 - invalid `parentProject` references
 - Project hierarchy cycles
 - invalid ProjectType
@@ -299,5 +341,5 @@ through.
 
 `docs/` (`/archive`) is legacy reference content. Do not add new Project or
 Journal style engineering content to it. New engineering stories should be
-classified as Project or Journal. Only modify the Archive for genuine legacy
-or reference maintenance.
+classified as Journal (and optionally linked to a Project). Only modify the
+Archive for genuine legacy or reference maintenance.
