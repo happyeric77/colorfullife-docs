@@ -13,7 +13,6 @@ An engineering journal and project portfolio. Deployed at
 | Topics       | `/topics`   | metadata    | Cross-content technologies and concepts         |
 | Open Source  | `/opensource` | `src/pages` | GitHub activity, placeholder for now          |
 | Archive      | `/archive`  | `docs/`     | Legacy technical notes, kept for reference      |
-| About        | `/about`    | `src/pages` | About the site                                  |
 
 Projects, Journal entries and Topics are aggregated at build time by
 `plugins/content-model/index.js` and exposed to React via

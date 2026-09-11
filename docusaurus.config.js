@@ -125,11 +125,6 @@ const config = {
             position: "left",
           },
           {
-            to: "/about",
-            label: "About",
-            position: "left",
-          },
-          {
             href: "https://github.com/happyeric77/colorfullife-docs",
             label: "GitHub ↗",
             position: "right",
@@ -158,11 +153,6 @@ const config = {
                 label: "Topics",
                 to: "/topics",
               },
-            ],
-          },
-          {
-            title: "More",
-            items: [
               {
                 label: "Open Source",
                 to: "/opensource",
@@ -170,10 +160,6 @@ const config = {
               {
                 label: "Archive",
                 to: "/archive",
-              },
-              {
-                label: "About",
-                to: "/about",
               },
             ],
           },
@@ -186,7 +172,11 @@ const config = {
               },
               {
                 label: "Profile",
-                href: "https://dev-eric.work",
+                href: "https://profile.dev-eric.work",
+              },
+              {
+                label: "LinkedIn",
+                href: "https://www.linkedin.com/in/eric-lee-24b342ab/",
               },
             ],
           },
