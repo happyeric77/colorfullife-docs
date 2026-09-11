@@ -11,7 +11,10 @@ export default function Root({ children }) {
     if (nodes.length === 0) {
       return undefined;
     }
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (
+      typeof IntersectionObserver === 'undefined' ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) {
       nodes.forEach((node) => node.classList.add('is-visible'));
       return undefined;
     }

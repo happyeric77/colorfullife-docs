@@ -36,6 +36,15 @@ const config = {
   stylesheets: [
     "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500;600&display=swap",
   ],
+  headTags: [
+    // Marks the document for the reveal-on-scroll CSS; without JS the
+    // content is never hidden and stays fully readable.
+    {
+      tagName: "script",
+      attributes: {},
+      innerHTML: "document.documentElement.classList.add('reveal-ready');",
+    },
+  ],
   plugins: [
     ["drawio", {}],
     // Aggregates Project / Journal / Topic metadata for cross-content pages.
