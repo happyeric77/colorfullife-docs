@@ -3,12 +3,39 @@
 // editorial. Add or edit entries here.
 
 export const groups = [
+  { id: "public-sdk-work", label: "Public SDK Work" },
   { id: "joplin-tooling", label: "Joplin Tooling" },
   { id: "agent-tooling", label: "Agent Tooling" },
   { id: "home-automation", label: "Home Automation" },
 ];
 
 export const repositories = [
+  {
+    name: "Notifi DApp Example",
+    repository:
+      "https://github.com/notifi-network/notifi-sdk-ts/tree/main/packages/notifi-dapp-example",
+    description:
+      "A reusable full-page integration baseline for customer-hosted Notifi experiences.",
+    organization: "Notifi Network",
+    language: "TypeScript",
+    license: "MIT",
+    group: "public-sdk-work",
+    featured: false,
+    relatedProject: "sdk-architecture",
+  },
+  {
+    name: "Notifi Wallet Provider",
+    repository:
+      "https://github.com/notifi-network/notifi-sdk-ts/tree/main/packages/notifi-wallet-provider",
+    description:
+      "A unified React wallet layer for multi-chain Notifi integrations.",
+    organization: "Notifi Network",
+    language: "TypeScript",
+    license: "MIT",
+    group: "public-sdk-work",
+    featured: false,
+    relatedProject: "sdk-architecture",
+  },
   {
     name: "joplin.nvim",
     repository: "https://github.com/happyeric77/joplin.nvim",
