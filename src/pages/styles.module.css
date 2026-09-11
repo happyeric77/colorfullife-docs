@@ -21,22 +21,13 @@
   max-width: 760px;
 }
 
-.eyebrow {
-  margin: 0 0 1.1rem;
-  font-family: var(--eric-font-mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--eric-accent);
-}
-
 .title {
-  max-width: 760px;
+  max-width: 700px;
   margin: 0;
-  font-size: clamp(3.2rem, 6vw, 5.45rem);
+  font-size: clamp(2.75rem, 4.8vw, 4.4rem);
   font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 0.96;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
 }
 
 .subtitle {
@@ -349,7 +340,7 @@
   }
 
   .title {
-    max-width: 720px;
+    max-width: 660px;
   }
 }
 
@@ -359,7 +350,7 @@
   }
 
   .title {
-    font-size: clamp(2.65rem, 13vw, 4rem);
+    font-size: clamp(2.35rem, 10vw, 3.35rem);
   }
 
   .panelBody {
