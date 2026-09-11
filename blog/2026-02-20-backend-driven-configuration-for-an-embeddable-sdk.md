@@ -29,16 +29,12 @@ A partner could define a SmartLink and its actions through backend tooling. The 
 
 At a high level:
 
-```text
-Admin / backend
-      ↓
-SmartLink configuration
-      ↓
-SDK fetches configuration
-      ↓
-React renders actions + inputs
-      ↓
-user executes an action
+```mermaid
+flowchart TD
+  Admin["Admin / backend"] --> Config["SmartLink configuration"]
+  Config --> Fetch["SDK fetches configuration"]
+  Fetch --> Render["React renders actions + inputs"]
+  Render --> Execute["User executes an action"]
 ```
 
 This was important for product velocity. Adding or changing a configured action should not require every host application to hard-code a new UI or ship a new integration just to reflect backend configuration.
@@ -49,16 +45,12 @@ But it also created a harder question: what happens when an action needs to prod
 
 It would have been easy to let SmartLink keep expanding until it owned the whole execution path:
 
-```text
-SmartLink
-  ↓
-wallet discovery
-  ↓
-wallet connection
-  ↓
-chain-specific signing
-  ↓
-transaction submission
+```mermaid
+flowchart TD
+  SmartLink["SmartLink"] --> Discovery["Wallet discovery"]
+  Discovery --> Connect["Wallet connection"]
+  Connect --> Sign["Chain-specific signing"]
+  Sign --> Submit["Transaction submission"]
 ```
 
 That would make a demo work quickly, but it would also make SmartLink responsible for every wallet and chain decision made by the host application.
@@ -67,16 +59,12 @@ The host already knows which wallet system it uses. It already owns connection s
 
 So I kept the boundary narrower:
 
-```text
-SmartLink
-  ↓
-activate configured action
-  ↓
-backend returns execution payload
-  ↓
-actionHandler(payload)
-  ↓
-host application signs / submits
+```mermaid
+flowchart TD
+  SmartLink["SmartLink"] --> Activate["Activate configured action"]
+  Activate --> Payload["Backend returns execution payload"]
+  Payload --> Handler["actionHandler(payload)"]
+  Handler --> Host["Host application signs / submits"]
 ```
 
 The SDK owns the product workflow. The host owns the execution environment.
@@ -87,18 +75,11 @@ That is the decision that keeps SmartLink blockchain-agnostic at its public boun
 
 The configuration flow crosses several layers:
 
-```text
-GraphQL
-  → fetch SmartLink configuration
-
-frontend client
-  → parse / normalize the domain model
-
-React context
-  → store link + action state
-
-components
-  → render configured inputs and actions
+```mermaid
+flowchart TD
+  GraphQL["GraphQL"] --> Client["Frontend client"]
+  Client --> Context["React context"]
+  Context --> Components["Components"]
 ```
 
 The backend configuration may arrive as serialized data, but I did not want arbitrary JSON leaking through the entire React tree. The SDK parses the response into a known SmartLink model and validates the shape before components depend on it.
@@ -124,12 +105,10 @@ Its needs were narrower. It needed environment and configuration access, and som
 
 Conceptually:
 
-```text
-NotifiFrontendClient
-  → long-lived application / user lifecycle
-
-NotifiSmartLinkClient
-  → configured action lifecycle
+```mermaid
+flowchart LR
+  Frontend["NotifiFrontendClient"] --> LongLived["Long-lived application / user lifecycle"]
+  Smart["NotifiSmartLinkClient"] --> Action["Configured action lifecycle"]
 ```
 
 Making SmartLink a subclass would have made reuse look elegant in the type hierarchy while coupling it to behavior it did not actually require.
@@ -154,18 +133,11 @@ A new package would either duplicate those systems or depend back on the existin
 
 Instead, I placed the feature into the layers where each responsibility already belonged:
 
-```text
-notifi-graphql
-  → SmartLink configuration query
-
-notifi-dataplane
-  → action activation request
-
-notifi-frontend-client
-  → SmartLink models + client
-
-notifi-react
-  → context + components + inputs
+```mermaid
+flowchart TD
+  GQL["notifi-graphql: configuration query"] --> Client["notifi-frontend-client: SmartLink models + client"]
+  Data["notifi-dataplane: action activation request"] --> Client
+  Client --> React["notifi-react: context + components + inputs"]
 ```
 
 The feature remained additive. Existing consumers did not need to import it, while the implementation could reuse the SDK's established infrastructure.
@@ -174,24 +146,13 @@ The feature remained additive. Existing consumers did not need to import it, whi
 
 SmartLink has two service interactions that look related from the UI but have different operational characteristics.
 
-Configuration is a read:
+```mermaid
+flowchart LR
+  Link["Link id"] --> GraphQL["GraphQL"]
+  GraphQL --> Config["SmartLink configuration"]
 
-```text
-link id
-  ↓
-GraphQL
-  ↓
-SmartLink configuration
-```
-
-Action activation is a write:
-
-```text
-action id + auth params + user inputs
-  ↓
-dataplane request
-  ↓
-execution payload + result messages
+  Action["Action id + auth params + user inputs"] --> Data["Dataplane request"]
+  Data --> Result["Execution payload + result messages"]
 ```
 
 I kept those dependencies explicit in the client rather than hiding them behind one generic service abstraction.
@@ -257,20 +218,16 @@ When the user submits an action, SmartLink validates the configured inputs and s
 
 A simplified flow is:
 
-```text
-user fills configured inputs
-      ↓
-validate action inputs
-      ↓
-activate action
-  { actionId, authParams, inputs }
-      ↓
-backend returns result
-      ↓
-actionHandler(executionPayload)
-      ↓
-host signs / submits if needed
+```mermaid
+flowchart TD
+  Inputs["User fills configured inputs"] --> Validate["Validate action inputs"]
+  Validate --> Activate["Activate action request"]
+  Activate --> Result["Backend returns result"]
+  Result --> Handler["actionHandler(executionPayload)"]
+  Handler --> Host["Host signs / submits if needed"]
 ```
+
+The action request carries `actionId`, `authParams` and the configured input values.
 
 The important part is what is missing from the SmartLink API: there is no EVM-specific signer contract, no Solana wallet adapter and no chain-specific transaction UI.
 
@@ -303,18 +260,11 @@ SmartLink was not mainly a React component project. The React UI was the visible
 
 The design worked because responsibilities stayed separated:
 
-```text
-backend
-  owns what the action is
-
-SmartLink client
-  owns configuration + activation semantics
-
-React layer
-  owns rendering + interaction state
-
-host application
-  owns wallet / signing / transaction execution
+```mermaid
+flowchart TD
+  Backend["Backend: owns what the action is"] --> Client["SmartLink client: owns configuration + activation semantics"]
+  Client --> React["React layer: owns rendering + interaction state"]
+  React --> Host["Host application: owns wallet / signing / transaction execution"]
 ```
 
 The lessons I carried forward were:
