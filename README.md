@@ -57,7 +57,7 @@ title: "..."
 description: "..."
 date: 2026-09-11
 type: build-log # project-story | build-log | deep-dive | retrospective | field-note
-project: colorfullife-docs # optional; when present must match a project id
+project: home-lab-kubernetes # optional; when present must match a project id
 topics: [docusaurus, information-architecture]
 featured: false
 ```

@@ -16,7 +16,8 @@ export default function Home() {
 
   const currentlyBuilding =
     projects.find((project) => project.featured && project.status === 'active') ??
-    projects.find((project) => project.status === 'active');
+    projects.find((project) => project.status === 'active') ??
+    projects.find((project) => project.featured);
   const selectedProjects = projects.filter((project) => project.featured);
   const latestJournal = journal.slice(0, 3);
 
