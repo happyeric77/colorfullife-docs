@@ -41,15 +41,15 @@ If the host application owns those details, authentication quickly becomes a tre
 
 The reusable application would then need to know both product behavior and wallet protocol behavior:
 
-```text
-page
-├── notification state
-├── routing
-├── customer configuration
-├── EVM wallet handling
-├── Solana wallet handling
-├── Cosmos wallet handling
-└── Cardano wallet handling
+```mermaid
+flowchart TD
+  Page["Customer application"] --> Notification["Notification state"]
+  Page --> Routing["Routing"]
+  Page --> Config["Customer configuration"]
+  Page --> EVM["EVM wallet handling"]
+  Page --> Solana["Solana wallet handling"]
+  Page --> Cosmos["Cosmos wallet handling"]
+  Page --> Cardano["Cardano wallet handling"]
 ```
 
 That is the wrong dependency direction.
@@ -64,16 +64,19 @@ The important part is not the React context itself. The important part is what t
 
 At a high level, the boundary looks like this:
 
-```text
-MetaMask ─────┐
-Coinbase ─────┤
-WalletConnect ┤
-Keplr ────────┤
-Phantom ──────┤── wallet adapters ── normalized wallet contract ── application
-Lace ─────────┤
-Eternl ───────┤
-Nufi ─────────┤
-... ──────────┘
+```mermaid
+flowchart LR
+  MetaMask["MetaMask"] --> Adapters["Wallet adapters"]
+  Coinbase["Coinbase"] --> Adapters
+  WalletConnect["WalletConnect"] --> Adapters
+  Keplr["Keplr"] --> Adapters
+  Phantom["Phantom"] --> Adapters
+  Lace["Lace"] --> Adapters
+  Eternl["Eternl"] --> Adapters
+  Nufi["Nufi"] --> Adapters
+  Other["Other supported wallets"] --> Adapters
+  Adapters --> Contract["Normalized wallet contract"]
+  Contract --> App["Application"]
 ```
 
 The public package now supports wallets across EVM, Cosmos, Solana and Cardano families. The application consumes one provider instead of importing each wallet implementation directly.
@@ -132,16 +135,12 @@ Once wallet behavior is behind one interface, adding support becomes a local cha
 
 Conceptually:
 
-```text
-new wallet
-   ↓
-implement adapter / hook
-   ↓
-register it in wallet configuration
-   ↓
-expose through provider
-   ↓
-existing application can consume it
+```mermaid
+flowchart TD
+  NewWallet["New wallet"] --> Adapter["Implement adapter / hook"]
+  Adapter --> Register["Register wallet configuration"]
+  Register --> Provider["Expose through provider"]
+  Provider --> App["Existing application consumes it"]
 ```
 
 That does not mean every wallet is zero-cost. Detection can be inconsistent. Some providers initialize late. Standards evolve. Hardware wallets and chain-specific signing flows create special cases.
@@ -165,12 +164,13 @@ Customer D + Cardano + Lace
 
 With a wallet boundary, the shape is different:
 
-```text
-                  customer app template
-                         │
-                  wallet provider
-                 ┌───────┼───────┐
-                EVM    Solana   Cosmos / Cardano
+```mermaid
+flowchart TD
+  Template["Customer app template"] --> Provider["Wallet provider"]
+  Provider --> EVM["EVM"]
+  Provider --> Solana["Solana"]
+  Provider --> Cosmos["Cosmos"]
+  Provider --> Cardano["Cardano"]
 ```
 
 The customer-specific choice moves into configuration and supported-provider selection rather than application architecture.
