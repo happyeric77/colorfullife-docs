@@ -26,22 +26,28 @@ export default function RelatedOpenSource() {
     <section className={styles.section}>
       <h2>Open Source</h2>
       <div className={styles.rows}>
-        {related.map((repo) => (
-          <div key={repo.name} className={styles.row}>
-            <h3 className={styles.title}>
-              <a
-                href={repo.repository}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label={`${repo.name} on GitHub`}
-              >
-                {repo.name} <span aria-hidden="true">↗</span>
-              </a>
-            </h3>
-            <p className={styles.description}>{repo.description}</p>
-            {repo.language && <p className={styles.meta}>{repo.language}</p>}
-          </div>
-        ))}
+        {related.map((repo) => {
+          const meta = [repo.organization, repo.language, repo.license]
+            .filter(Boolean)
+            .join(' · ');
+
+          return (
+            <div key={repo.name} className={styles.row}>
+              <h3 className={styles.title}>
+                <a
+                  href={repo.repository}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  aria-label={`${repo.name} on GitHub`}
+                >
+                  {repo.name} <span aria-hidden="true">↗</span>
+                </a>
+              </h3>
+              <p className={styles.description}>{repo.description}</p>
+              {meta && <p className={styles.meta}>{meta}</p>}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
