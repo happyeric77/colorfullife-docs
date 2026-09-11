@@ -1,7 +1,7 @@
 ---
 title: From React hooks to a framework-agnostic SDK client
 description: How a React-first SDK optimized for time to market evolved into a reusable domain client as customer integrations expanded beyond React.
-date: 2026-03-06
+date: 2023-09-07
 type: project-story
 project: sdk-architecture
 topics:

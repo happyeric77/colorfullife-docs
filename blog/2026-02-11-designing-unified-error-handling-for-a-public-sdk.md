@@ -1,7 +1,7 @@
 ---
 title: Designing unified error handling for a public SDK
 description: A GraphQL API has two different error channels. An SDK that only surfaces one of them is lying by omission — here is how we unified both behind a single error type.
-date: 2026-02-11
+date: 2026-02-02
 type: build-log
 project: sdk-architecture
 topics:

@@ -1,7 +1,7 @@
 ---
 title: Building backend-configured actions without coupling the SDK to a blockchain
 description: How I designed SmartLink so backend-defined interactive actions could render through the SDK while wallet connection, signing and transaction submission stayed under host-application control.
-date: 2026-02-20
+date: 2025-05-14
 type: project-story
 project: sdk-architecture
 topics:

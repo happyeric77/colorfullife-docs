@@ -1,7 +1,7 @@
 ---
 title: Turning an SDK into a reusable customer integration template
 description: How a library-first integration model evolved into a configurable full-page application that could be branded, deployed and self-hosted without rebuilding the same product for every customer.
-date: 2026-09-11
+date: 2024-04-08
 type: project-story
 project: sdk-architecture
 topics:

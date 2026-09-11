@@ -1,7 +1,7 @@
 ---
 title: Designing a pluggable wallet layer for multi-chain integrations
 description: How a shared wallet provider isolated chain-specific connection, key and signing behavior so customer applications could change wallets without changing their authentication architecture.
-date: 2026-09-11
+date: 2024-04-08
 type: deep-dive
 project: sdk-architecture
 topics:

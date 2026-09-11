@@ -1,7 +1,7 @@
 ---
 title: When reusable architecture becomes an executable workflow
 description: How a customer integration template, wallet abstraction, explicit decision rules and evals turned repeated implementation work into an agent-operable workflow.
-date: 2026-09-11
+date: 2026-06-29
 type: retrospective
 project: sdk-architecture
 topics:
