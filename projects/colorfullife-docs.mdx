@@ -1,7 +1,7 @@
 ---
 id: colorfullife-docs
 title: ColorfulLife Docs
-description: This site — a project-first engineering journal about the things I build and run.
+description: This site — an engineering journal and project portfolio about the things I build and run.
 type: project
 status: active
 started: 2026
@@ -18,19 +18,21 @@ github: https://github.com/happyeric77/colorfullife-docs
 website: https://docs.colorfullife.ml
 ---
 
+import RelatedJournal from '@site/src/components/RelatedJournal';
+
 ## What it is
 
 ColorfulLife Docs is the site you are reading. It started as a pile of
-technical notes and is being rebuilt as a **project-first engineering
-journal**: what I build, what happened while building it, and which
-technologies show up across projects.
+technical notes and is being rebuilt as an **engineering journal**: the
+stories from real work, the Projects that give them durable context, and the
+technologies that connect them.
 
 ## Structure
 
 The site has four content systems:
 
-- **Projects** — the entities, like this one.
-- **Journal** — dated entries produced by the work.
+- **Projects** — curated canonical hubs for durable work, like this one.
+- **Journal** — the primary publishing stream: dated entries produced by the work.
 - **Topics** — cross-project discovery paths (Docusaurus, Kubernetes, GitOps).
 - **Archive** — the legacy technical notes, kept for reference.
 
@@ -38,9 +40,8 @@ The site has four content systems:
 
 The original site was documentation-only: every note was a page in one big
 docs tree. That worked for reference, but it had no place for the actual
-work — the decisions, dead ends and retrospectives. The rebuild introduces
-Projects and a Journal without deleting or rewriting the archive.
+work — the decisions, dead ends and retrospectives. The rebuild introduces a
+Journal as the primary publishing stream and Projects as durable context,
+without deleting or rewriting the archive.
 
-## Links
-
-- [Journal: Rebuilding ColorfulLife Docs as a project-first journal](/journal/2026/09/11/project-first-content-architecture)
+<RelatedJournal />

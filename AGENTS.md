@@ -1,6 +1,6 @@
 # Repository agent instructions
 
-This repository is a project-first engineering journal built with Docusaurus.
+This repository is an engineering journal and project portfolio built with Docusaurus.
 
 ## Publishing
 

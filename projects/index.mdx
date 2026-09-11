@@ -1,17 +1,20 @@
 ---
 title: Projects
-description: Everything I build and maintain, from Home Lab infrastructure to small SaaS products.
+description: Selected systems, products and infrastructure that are worth understanding as long-lived work.
 slug: /
 ---
 
 import ProjectList from '@site/src/components/ProjectList';
 
-Every project I build or maintain. Projects are entities: they have a
-lifecycle, a story, and can produce journal entries over time.
+Selected systems, products and infrastructure that are worth understanding as
+long-lived work. A Project is not everything I touch — it is durable work that
+deserves its own canonical page: a story, a lifecycle, and possibly several
+Journal entries over time.
 
-Projects can have **subprojects** (`parentProject` in front matter). Services that
-only make sense inside a project stay components — Grafana is a component of
-the K3s Cluster, not a project of its own, until it grows a story and lifecycle
-worth tracking.
+Some projects have a **parent project** (`parentProject` in front matter), but
+that hierarchy is a structural hint, not the main structure of the site.
+Services and capabilities that only make sense inside a project stay
+components or sections of its page — Grafana is a component of the Kubernetes
+cluster, not a project of its own.
 
 <ProjectList />

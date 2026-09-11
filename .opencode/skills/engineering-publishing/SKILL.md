@@ -117,8 +117,8 @@ Optional fields: `parentProject`, `started`, `featured`, `stack`, `github`,
 `website`.
 
 ```yaml
-id: home-lab-k3s
-title: K3s Cluster
+id: home-lab-kubernetes
+title: Kubernetes Home Lab
 description: Lightweight Kubernetes infrastructure for my home services.
 
 type: infrastructure
@@ -204,7 +204,7 @@ date: 2026-09-20
 
 type: build-log
 
-project: home-lab-k3s # optional; when present must match a Project id
+project: home-lab-kubernetes # optional; when present must match a Project id
 
 topics:
   - kubernetes

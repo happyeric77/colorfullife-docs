@@ -1,8 +1,8 @@
 ---
-title: 'Rebuilding ColorfulLife Docs as a project-first journal'
+title: 'Rebuilding the site as an engineering journal'
 description: >-
-  Why the site moved from one pile of technical notes to Projects, Journal and
-  Topics — and what the first architecture PR changed.
+  Why the site moved from one pile of technical notes to a Journal, Projects
+  and Topics content model — and what the first architecture PR changed.
 date: 2026-09-11
 type: build-log
 project: colorfullife-docs
@@ -15,18 +15,20 @@ featured: false
 The original ColorfulLife Docs was a single Docusaurus docs tree. Every note —
 Docusaurus tricks, Kubernetes commands, Home Lab fixes — was a page in the
 same sidebar, with no idea of *what it came from*. It worked as a reference,
-but it could not answer the question I actually care about: what am I
-building, and what happened while building it?
+but it could not answer the question I actually care about: what happened
+while I was building and running these things?
 
 ## The content model
 
-The rebuild is project-first. Three concepts:
+The site is an engineering journal first. Three concepts:
 
-- **Project** — what I build and maintain. An entity with a lifecycle.
-- **Journal** — dated stories produced by the work: build logs, deep dives,
-  retrospectives, field notes.
-- **Topics** — cross-project discovery. Kubernetes connects the K3s cluster,
-  the Home Lab and eventually the SaaS work.
+- **Journal** — the primary publishing stream: dated stories produced by the
+  work — build logs, deep dives, retrospectives, field notes.
+- **Project** — a curated canonical hub for durable work that is worth
+  understanding on its own. A Journal may reference one Project when it adds
+  useful context, but a Journal does not need a Project.
+- **Topics** — cross-content discovery. Kubernetes connects the cluster, the
+  Home Lab and eventually the SaaS work.
 
 The existing technical notes are not rewritten or deleted. They keep their
 docs-style navigation under `/archive`, because reference material deserves a
@@ -41,7 +43,7 @@ This is the architecture PR, not the design PR. It establishes:
 3. A second docs instance became the **Projects** collection at `/projects`,
    with MDX project pages instead of hardcoded React objects.
 4. Project front matter gained `parentProject`, `status`, `stack` and `topics`, so
-   Home Lab → K3s Cluster hierarchy is expressed in content.
+   Project → child Project relationships are expressed in content.
 5. A small content-model plugin aggregates projects, journal entries and
    topics at build time, which powers the homepage, the topic index and the
    project list.
@@ -54,11 +56,11 @@ content systems can coexist:
 
 ```text
 /archive   legacy reference notes
-/projects  the entities
-/journal   the stories
-/topics    the cross-project index
+/projects  the durable hubs
+/journal   the publishing stream
+/topics    the cross-content index
 ```
 
-If that holds, adding the next project — a SaaS, a new subproject, another
-Kubernetes migration — is just new content, not another information
-architecture change.
+If that holds, adding the next Journal entry — a SaaS build log, a new
+experiment, another Kubernetes migration — is just new content, not another
+information architecture change.

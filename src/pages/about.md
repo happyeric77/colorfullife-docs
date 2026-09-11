@@ -1,6 +1,6 @@
 ---
 title: About
-description: About ColorfulLife — a project-first engineering journal.
+description: About ColorfulLife — an engineering journal and project portfolio.
 ---
 
 # About
@@ -8,12 +8,12 @@ description: About ColorfulLife — a project-first engineering journal.
 Hi, I'm Eric. I build and run software systems — from Home Lab infrastructure
 to small SaaS products — and I write down how they get made.
 
-This site is organized project-first:
+This site is an engineering journal and project portfolio:
 
-- **[Projects](/projects)** — what I build and maintain, including
-  subprojects.
-- **[Journal](/journal)** — stories from the work: build logs, deep dives,
-  retrospectives and field notes.
+- **[Projects](/projects)** — curated canonical hubs for durable work worth
+  understanding on its own.
+- **[Journal](/journal)** — the primary publishing stream: stories from the
+  work — build logs, deep dives, retrospectives and field notes.
 - **[Topics](/topics)** — technologies and concepts that cut across projects.
 - **[Archive](/archive)** — legacy technical notes, kept for reference.
 

@@ -1,6 +1,6 @@
 # ColorfulLife Docs
 
-A project-first engineering journal. Deployed at
+An engineering journal and project portfolio. Deployed at
 [https://docs.colorfullife.ml](https://docs.colorfullife.ml).
 
 ## Content model
@@ -38,16 +38,16 @@ Short version:
 Project front matter:
 
 ```yaml
-id: home-lab-k3s
-title: K3s Cluster
+id: home-lab-kubernetes
+title: Kubernetes Home Lab
 description: "..."
 type: infrastructure # project | product | service | system | infrastructure | open-source | experiment
 status: running # active | running | completed | paused | archived
-parentProject: home-lab # optional; must match another project id
+# parentProject: home-lab # optional; must match another project id
 started: 2022
 featured: true
-topics: [kubernetes, gitops]
-stack: [K3s, Argo CD]
+topics: [kubernetes, gitops, fluxcd]
+stack: [K3s, Flux CD]
 ```
 
 Journal front matter:
@@ -72,8 +72,8 @@ rules and the agent publishing workflow.
 
 A service is only a Project/Subproject if it has its own story and lifecycle;
 complexity alone does not make something a Project. Otherwise it is a
-component of the project that contains it (Grafana is a component of the K3s
-Cluster).
+component of the project that contains it (Grafana is a component of the
+Kubernetes Home Lab).
 
 ## Local development
 
