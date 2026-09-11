@@ -5,11 +5,11 @@ import styles from './styles.module.css';
 
 export default function ProjectList({ projects }) {
   const { projects: allProjects } = useContentModel();
-  const list = projects ?? allProjects;
+  const items = projects ?? allProjects;
 
   return (
     <div className={styles.grid}>
-      {list.map((project) => (
+      {items.map((project) => (
         <ProjectCard key={project.id} project={project} />
       ))}
     </div>

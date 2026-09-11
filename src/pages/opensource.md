@@ -1,20 +1,10 @@
 ---
 title: Open Source
-description: Open source activity across ColorfulLife projects.
+description: Open source activity across Eric Lee's projects.
 ---
 
-# Open Source
+Selected repositories and contributions across the projects I work on.
 
-This is the future home of Open Source activity for the projects documented
-here: repositories, releases, notable pull requests and contributions.
-
-Until the automation lands, follow along on
+Browse [projects](/projects) or the [journal](/journal) for the engineering
+work behind them, or find everything on
 [GitHub](https://github.com/happyeric77).
-
-Planned sections:
-
-- **Repositories** — project repos and their current state
-- **Releases** — tagged versions worth mentioning
-- **Contributions** — pull requests and issues outside my own projects
-
-For the projects themselves, start at [Projects](/projects).

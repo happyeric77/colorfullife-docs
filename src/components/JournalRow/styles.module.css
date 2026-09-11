@@ -1,0 +1,52 @@
+.row {
+  padding: 1.15rem 0;
+  border-bottom: 1px solid var(--eric-border);
+}
+
+.meta {
+  margin: 0 0 0.35rem;
+  font-family: var(--eric-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eric-text-muted);
+}
+
+.type {
+  color: var(--eric-accent);
+}
+
+.separator {
+  margin: 0 0.45rem;
+}
+
+.title {
+  margin: 0 0 0.3rem;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.title a {
+  color: var(--eric-text);
+}
+
+.title a:hover {
+  color: var(--eric-accent);
+  text-decoration: none;
+}
+
+.description {
+  margin: 0 0 0.4rem;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--eric-text-muted);
+}
+
+.context {
+  margin: 0;
+  font-family: var(--eric-font-mono);
+  font-size: 11.5px;
+  color: var(--eric-text-muted);
+}

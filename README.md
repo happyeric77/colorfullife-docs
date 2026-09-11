@@ -1,7 +1,7 @@
-# ColorfulLife Docs
+# Eric Lee — Engineering Journal
 
 An engineering journal and project portfolio. Deployed at
-[https://docs.colorfullife.ml](https://docs.colorfullife.ml).
+[https://docs.dev-eric.work](https://docs.dev-eric.work).
 
 ## Content model
 

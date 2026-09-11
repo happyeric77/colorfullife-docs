@@ -1,22 +1,19 @@
 ---
 title: About
-description: About ColorfulLife — an engineering journal and project portfolio.
+description: About Eric Lee — an engineering journal and project portfolio.
 ---
 
-# About
-
-Hi, I'm Eric. I build and run software systems — from Home Lab infrastructure
-to small SaaS products — and I write down how they get made.
+Hi, I'm Eric Lee. I build software and write about how it gets made.
 
 This site is an engineering journal and project portfolio:
 
-- **[Projects](/projects)** — curated canonical hubs for durable work worth
+- **Projects** — curated canonical hubs for durable work that is worth
   understanding on its own.
-- **[Journal](/journal)** — the primary publishing stream: stories from the
-  work — build logs, deep dives, retrospectives and field notes.
-- **[Topics](/topics)** — technologies and concepts that cut across projects.
-- **[Archive](/archive)** — legacy technical notes, kept for reference.
+- **Journal** — the primary publishing stream: stories from real work,
+  including build logs, deep dives, retrospectives and field notes.
+- **Topics** — the technologies and concepts connecting content across the
+  site.
+- **Archive** — older reference notes kept for their technical detail.
 
-Find me on [GitHub](https://github.com/happyeric77),
-[YouTube](https://www.youtube.com/channel/UCwvJhJwr64cM7QUSg9nP4Bg) and
-[Twitter](https://twitter.com/happyeric77).
+Elsewhere: [GitHub](https://github.com/happyeric77) ·
+[Profile](https://dev-eric.work)
