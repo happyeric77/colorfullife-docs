@@ -1,22 +1,39 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.7rem;
   height: 100%;
+  overflow: hidden;
   padding: 1.5rem;
   border: 1px solid var(--eric-border);
   border-radius: var(--eric-radius-md);
   background: var(--eric-surface);
+  backdrop-filter: blur(12px);
   transition:
-    transform 200ms ease,
-    border-color 200ms ease,
-    background 200ms ease;
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--eric-border-accent), transparent);
+  opacity: 0;
+  transition: opacity 180ms ease;
 }
 
 .card:hover {
   transform: translateY(-2px);
-  border-color: var(--eric-border-strong);
+  border-color: var(--eric-border-accent);
   background: var(--eric-surface-hover);
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .meta {
@@ -30,8 +47,8 @@
 }
 
 .status {
-  padding: 0.15rem 0.55rem;
-  border: 1px solid var(--eric-border);
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--eric-border-accent);
   border-radius: var(--eric-radius-pill);
   color: var(--eric-accent);
   background: var(--eric-accent-soft);
@@ -43,10 +60,10 @@
 
 .title {
   margin: 0;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.25;
+  letter-spacing: -0.025em;
+  line-height: 1.22;
 }
 
 .title a {
@@ -73,7 +90,7 @@
   padding: 0;
   list-style: none;
   font-family: var(--eric-font-mono);
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--eric-text-muted);
 }
 
@@ -87,5 +104,5 @@
   flex-wrap: wrap;
   gap: 0.4rem;
   margin-top: auto;
-  padding-top: 0.75rem;
+  padding-top: 0.85rem;
 }

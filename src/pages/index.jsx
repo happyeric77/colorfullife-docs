@@ -13,6 +13,22 @@ import styles from './styles.module.css';
 
 const MAX_TOPICS = 12;
 
+function formatDate(date) {
+  if (!date) return '';
+  const parsed = new Date(`${date}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return date;
+  return parsed.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+function formatType(type) {
+  return type ? type.replace(/-/g, ' ').toUpperCase() : '';
+}
+
 export default function Home() {
   const { siteConfig } = useDocusaurusContext();
   const { projects, journal, topics } = useContentModel();
@@ -28,6 +44,7 @@ export default function Home() {
     (project) => project.id !== featuredProject?.id,
   );
   const latestJournal = journal.slice(0, 4);
+  const latestEntry = latestJournal[0];
   const trendingTopics = [...topics]
     .sort(
       (a, b) =>
@@ -37,28 +54,113 @@ export default function Home() {
     )
     .slice(0, MAX_TOPICS);
   const openSourceFeatured = repositories.filter((repo) => repo.featured);
+  const featuredRepository = openSourceFeatured[0];
 
   return (
     <Layout title={siteConfig.title} description={siteConfig.tagline}>
       <header className={styles.hero}>
-        <div className="container">
-          <p className={styles.eyebrow} data-reveal>
-            ERIC / ENGINEERING
-          </p>
-          <h1 className={styles.title} data-reveal>
-            {siteConfig.tagline}
-          </h1>
-          <p className={styles.subtitle} data-reveal>
-            Engineering stories about SDK architecture, AI developer tools,
-            infrastructure, home automation and the systems I run.
-          </p>
-          <div className={styles.actions} data-reveal>
-            <Link className="button button--primary button--lg" to="/journal">
-              Read the journal
-            </Link>
-            <Link className="button button--secondary button--lg" to="/projects">
-              View projects
-            </Link>
+        <div className={`container ${styles.heroContainer}`}>
+          <div className={styles.heroGrid}>
+            <div className={styles.heroCopy}>
+              <p className={styles.eyebrow} data-reveal>
+                ERIC / ENGINEERING
+              </p>
+              <h1 className={styles.title} data-reveal>
+                {siteConfig.tagline}
+              </h1>
+              <p className={styles.subtitle} data-reveal>
+                Engineering stories about SDK architecture, AI developer tools,
+                infrastructure, home automation and the systems I run.
+              </p>
+              <div className={styles.actions} data-reveal>
+                <Link className="button button--primary button--lg" to="/journal">
+                  Read the journal
+                  <span className={styles.actionArrow} aria-hidden="true">→</span>
+                </Link>
+                <Link className="button button--secondary button--lg" to="/projects">
+                  View projects
+                </Link>
+              </div>
+              <div className={styles.heroTags} data-reveal>
+                <span>SDK Architecture</span>
+                <span>AI Developer Tools</span>
+                <span>Infrastructure</span>
+                <span>Home Automation</span>
+                <span className={styles.heroTagAccent}>→ systems in practice</span>
+              </div>
+            </div>
+
+            <div className={styles.heroPanelWrap} data-reveal>
+              <div className={styles.heroPanelGlow} aria-hidden="true" />
+              <aside className={styles.heroPanel} aria-label="Engineering journal overview">
+                <div className={styles.panelChrome}>
+                  <div className={styles.panelDots} aria-hidden="true">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <span className={styles.panelFile}>engineering.log</span>
+                  <span className={styles.panelStatus} aria-hidden="true" />
+                </div>
+
+                <div className={styles.panelBody}>
+                  {latestEntry && (
+                    <div className={styles.panelItem}>
+                      <span className={styles.panelLabel}>Latest</span>
+                      <Link className={styles.panelTitle} to={latestEntry.permalink}>
+                        {latestEntry.title}
+                      </Link>
+                      <span className={styles.panelMeta}>
+                        {formatType(latestEntry.type)} · {formatDate(latestEntry.date)}
+                      </span>
+                    </div>
+                  )}
+
+                  {featuredProject && (
+                    <div className={styles.panelItem}>
+                      <span className={styles.panelLabel}>Project</span>
+                      <Link className={styles.panelTitle} to={featuredProject.permalink}>
+                        {featuredProject.title}
+                      </Link>
+                      <span className={styles.panelMeta}>
+                        {featuredProject.type} · {featuredProject.status}
+                      </span>
+                    </div>
+                  )}
+
+                  {featuredRepository && (
+                    <div className={styles.panelItem}>
+                      <span className={styles.panelLabel}>Open source</span>
+                      <a
+                        className={styles.panelTitle}
+                        href={featuredRepository.repository}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        {featuredRepository.name} ↗
+                      </a>
+                      <span className={styles.panelMeta}>
+                        {featuredRepository.language || 'Public repository'}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={styles.panelFocus}>
+                    <div>
+                      <span className={styles.panelFocusLabel}>Engineering corpus</span>
+                      <strong>Architecture → systems</strong>
+                    </div>
+                    <span>journal · projects<br />public work</span>
+                  </div>
+                </div>
+
+                <div className={styles.panelFooter}>
+                  <span>JOURNAL</span>
+                  <span>PROJECTS</span>
+                  <span>OPEN SOURCE</span>
+                </div>
+              </aside>
+            </div>
           </div>
         </div>
       </header>
