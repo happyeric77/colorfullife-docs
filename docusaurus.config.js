@@ -135,54 +135,6 @@ const config = {
         defaultMode: "dark",
         disableSwitch: false,
       },
-      footer: {
-        style: "dark",
-        links: [
-          {
-            title: "Explore",
-            items: [
-              {
-                label: "Projects",
-                to: "/projects",
-              },
-              {
-                label: "Journal",
-                to: "/journal",
-              },
-              {
-                label: "Topics",
-                to: "/topics",
-              },
-              {
-                label: "Open Source",
-                to: "/opensource",
-              },
-              {
-                label: "Archive",
-                to: "/archive",
-              },
-            ],
-          },
-          {
-            title: "Elsewhere",
-            items: [
-              {
-                label: "GitHub",
-                href: "https://github.com/happyeric77",
-              },
-              {
-                label: "Profile",
-                href: "https://profile.dev-eric.work",
-              },
-              {
-                label: "LinkedIn",
-                href: "https://www.linkedin.com/in/eric-lee-24b342ab/",
-              },
-            ],
-          },
-        ],
-        copyright: `© ${new Date().getFullYear()} Eric Lee.`,
-      },
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
