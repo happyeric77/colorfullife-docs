@@ -55,3 +55,5 @@ This is part one of a Herdr utility series. Part two,
 `agent-webhook-notify`, answers the other half of the problem: knowing
 when the agent finished — or got blocked — without watching the
 terminal.
+
+_Originally published as an [X thread](https://x.com/Happyeric77/status/2105127920402620685)._
